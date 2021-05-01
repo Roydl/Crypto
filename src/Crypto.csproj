@@ -9,11 +9,11 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Class that allows data encryption and decryption.</Description>
+    <Description>Classes for data encryption and decryption</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
-    <PackageTags>encryption decryption</PackageTags>
+    <PackageTags>encryption decryption base32 base64 base64 base85 base91 adler32 crc16 crc32 crc64 md5 sha1 sha256 sha384 sha512 aes aes128 aes192 aes256</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
