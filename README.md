@@ -2,4 +2,4 @@
 
 # Roydl.Crypto
 
-Provides functionality for data encryption and decryption.
+Classes for data encryption and decryption.
