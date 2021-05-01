@@ -8,9 +8,9 @@
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Base10"/> class.
+    ///     Initializes a new instance of the <see cref="Radix2"/> class.
     /// </summary>
-    public sealed class Base10 : BinaryToTextSample
+    public sealed class Radix2 : BinaryToTextSample
     {
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
@@ -55,7 +55,7 @@
                 var p = 0;
                 while ((i = inputStream.ReadByte()) != -1)
                 {
-                    var s = Convert.ToString(i, 10).PadLeft(3, '0');
+                    var s = Convert.ToString(i, 2).PadLeft(8, '0');
                     foreach (var b in Utils.Utf8NoBom.GetBytes(s))
                         WriteLine(outputStream, b, lineLength, ref p);
                 }
@@ -113,14 +113,17 @@
                 var cl = new List<char>();
                 while ((i = inputStream.ReadByte()) != -1)
                 {
-                    if (i is '\0' or '\t' or '\n' or '\r' or ' ' or ',')
-                        continue;
-                    if (i is not (>= '0' and <= '9'))
-                        throw new DecoderFallbackException(ExceptionMessages.CharsInStreamAreInvalid);
+                    switch (i)
+                    {
+                        case '\0' or '\t' or '\n' or '\r' or ' ' or ',':
+                            continue;
+                        case not '0' and not '1':
+                            throw new DecoderFallbackException(ExceptionMessages.CharsInStreamAreInvalid);
+                    }
                     cl.Add((char)i);
-                    if (cl.Count % 3 != 0)
+                    if (cl.Count % 8 != 0)
                         continue;
-                    outputStream.WriteByte(Convert.ToByte(new string(cl.ToArray()), 10));
+                    outputStream.WriteByte(Convert.ToByte(new string(cl.ToArray()), 2));
                     cl.Clear();
                 }
             }

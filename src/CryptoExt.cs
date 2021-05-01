@@ -15,22 +15,22 @@
         /// <summary>
         ///     Binary.
         /// </summary>
-        Base2,
+        Radix2,
 
         /// <summary>
         ///     Octal.
         /// </summary>
-        Base8,
+        Radix8,
 
         /// <summary>
         ///     Decimal.
         /// </summary>
-        Base10,
+        RadixA,
 
         /// <summary>
         ///     Hexadecimal.
         /// </summary>
-        Base16,
+        RadixF,
 
         /// <summary>
         ///     Base32.

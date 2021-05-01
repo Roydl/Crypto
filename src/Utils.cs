@@ -140,10 +140,10 @@
         internal static BinaryToTextSample GetDefaultInstance(BinaryToTextEncoding algorithm) =>
             algorithm switch
             {
-                BinaryToTextEncoding.Base2 => CacheInvestor.GetDefault<Base2>(),
-                BinaryToTextEncoding.Base8 => CacheInvestor.GetDefault<Base8>(),
-                BinaryToTextEncoding.Base10 => CacheInvestor.GetDefault<Base10>(),
-                BinaryToTextEncoding.Base16 => CacheInvestor.GetDefault<Base16>(),
+                BinaryToTextEncoding.Radix2 => CacheInvestor.GetDefault<Radix2>(),
+                BinaryToTextEncoding.Radix8 => CacheInvestor.GetDefault<Radix8>(),
+                BinaryToTextEncoding.RadixA => CacheInvestor.GetDefault<RadixA>(),
+                BinaryToTextEncoding.RadixF => CacheInvestor.GetDefault<RadixF>(),
                 BinaryToTextEncoding.Base32 => CacheInvestor.GetDefault<Base32>(),
                 BinaryToTextEncoding.Base64 => CacheInvestor.GetDefault<Base64>(),
                 BinaryToTextEncoding.Base85 => CacheInvestor.GetDefault<Base85>(),

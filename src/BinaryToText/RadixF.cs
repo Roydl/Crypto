@@ -9,9 +9,9 @@
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Base16"/> class.
+    ///     Initializes a new instance of the <see cref="RadixF"/> class.
     /// </summary>
-    public sealed class Base16 : BinaryToTextSample
+    public sealed class RadixF : BinaryToTextSample
     {
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
