@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>Roydl.Crypto</AssemblyName>
+    <RootNamespace>Roydl.Crypto</RootNamespace>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>© Roy Schroedel. All rights reserved.</Copyright>
+    <Company>Roy Schroedel</Company>
+    <Authors>Roy Schroedel</Authors>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <Description>Class that allows data encryption and decryption.</Description>
+    <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
+    <PackageIcon>LOGO.png</PackageIcon>
+    <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
+    <PackageTags>encryption decryption</PackageTags>
+    <RepositoryType></RepositoryType>
+    <SignAssembly>false</SignAssembly>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>obj\Debug\Roydl.Crypto.xml</DocumentationFile>
+    <OutputPath>..\bin\Debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>obj\Release\Roydl.Crypto.xml</DocumentationFile>
+    <OutputPath>..\bin\Release</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <None Include="..\LOGO.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Roydl.CacheInvestor" Version="1.0.1" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\ExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
