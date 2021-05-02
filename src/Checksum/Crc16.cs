@@ -1,8 +1,10 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Threading;
     using AbstractSamples;
 
     /// <summary>
@@ -15,13 +17,40 @@
         /// </summary>
         public const int HashLength = 4;
 
-        private const ushort Polynomial = 0xa001;
-        private const ushort Seed = ushort.MaxValue;
+        private const ushort Polynomial = 0x1021;
+        private const ushort Seed = 0x1d0f;
+        private static volatile IReadOnlyList<ushort> _crcTable;
 
         /// <summary>
         ///     Gets the raw data of computed hash.
         /// </summary>
         public new ushort RawHash { get; private set; }
+
+        private static IReadOnlyList<ushort> CrcTable
+        {
+            get
+            {
+                if (_crcTable != null)
+                    return _crcTable;
+                var table = new ushort[256];
+                for (var i = 0; i < table.Length; ++i)
+                {
+                    var us = ushort.MinValue;
+                    var x = (ushort)(i << 8);
+                    for (var j = 0; j < 8; ++j)
+                    {
+                        if (((us ^ x) & 0x8000) != 0)
+                            us = (ushort)((us << 1) ^ Polynomial);
+                        else
+                            us <<= 1;
+                        x <<= 1;
+                    }
+                    table[i] = us;
+                }
+                Interlocked.CompareExchange(ref _crcTable, table, null);
+                return _crcTable;
+            }
+        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc16"/> class.
@@ -89,14 +118,11 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            int i, x = Seed;
+            int i;
+            var us = Seed;
             while ((i = stream.ReadByte()) != -1)
-                for (var j = 0; j < 8; j++)
-                {
-                    x = ((x ^ i) & 1) == 1 ? (x >> 1) ^ Polynomial : x >> 1;
-                    i >>= 1;
-                }
-            RawHash = (ushort)(((byte)(x % 256) << 8) | (byte)(x / 256));
+                us = (ushort)((us << 8) ^ CrcTable[(us >> 8) ^ (0xff & i)]);
+            RawHash = us;
         }
 
         /// <summary>
