@@ -29,7 +29,9 @@ byte[] original = value.Decode(BinaryToTextEncoding.Base85); // if `value` to de
 string original = value.DecodeString(BinaryToTextEncoding.Base85); // if `value` to decode is `string`
 
 // The `value` of type `string` can also be a file path, which is not
-// recommended for large files. 
+// recommended for large files, in this case you should create a
+// `Base85` instance and use `FileStream` to write the data directly
+// to the hard drive. 
 string base85text = value.EncodeFile(BinaryToTextEncoding.Base85);
 byte[] original = value.DecodeFile(BinaryToTextEncoding.Base85);
 ```
