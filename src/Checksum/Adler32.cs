@@ -1,7 +1,6 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
     using AbstractSamples;
@@ -15,6 +14,9 @@
         ///     Gets the required hash length.
         /// </summary>
         public const int HashLength = 8;
+
+        private const uint AMod = 0xfff1;
+        private const uint Mask = 0xffffffffu;
 
         /// <summary>
         ///     Gets the computed hash code value.
@@ -86,7 +88,6 @@
         /// <exception cref="ArgumentNullException">
         ///     stream is null.
         /// </exception>
-        [SuppressMessage("ReSharper", "ShiftExpressionResultEqualsZero")]
         public override void Encrypt(Stream stream)
         {
             if (stream == null)
@@ -94,15 +95,15 @@
             int i;
             var uia = new[]
             {
-                1 & 0xffffu,
-                (1 >> 16) & 0xffffu
+                1u,
+                0u
             };
             while ((i = stream.ReadByte()) != -1)
             {
-                uia[0] = (uia[0] + (uint)i) % 65521;
-                uia[1] = (uia[1] + uia[0]) % 65521;
+                uia[0] = (uia[0] + (uint)i) % AMod;
+                uia[1] = (uia[1] + uia[0]) % AMod;
             }
-            RawHash = (uia[1] << 16) | uia[0];
+            RawHash = ((uia[1] << 16) | uia[0]) & Mask;
         }
 
         /// <summary>

@@ -17,8 +17,9 @@
         /// </summary>
         public const int HashLength = 16;
 
-        private const ulong Polynomial = 0x42f0e1eba9ea3693uL;
-        private const ulong Seed = ulong.MinValue;
+        private const ulong Mask = 0xffffffffffffffffuL;
+        private const ulong Poly = 0x42f0e1eba9ea3693uL;
+        private const ulong Seed = 0x0000000000000000uL;
         private static volatile ulong[] _crcTable;
 
         /// <summary>
@@ -33,15 +34,14 @@
                 if (_crcTable != null)
                     return _crcTable;
                 const ulong top = 1uL << (64 - 1);
-                const ulong mask = 0xffffffffffffffffuL;
                 var table = new ulong[256];
                 for (var i = 0; i < table.Length; i++)
                 {
                     var ul = (ulong)i;
                     ul <<= 64 - 8;
                     for (var j = 0; j < 8; j++)
-                        ul = (ul & top) != 0 ? (ul << 1) ^ Polynomial : ul << 1;
-                    table[i] = ul & mask;
+                        ul = (ul & top) != 0 ? (ul << 1) ^ Poly : ul << 1;
+                    table[i] = ul & Mask;
                 }
                 Interlocked.CompareExchange(ref _crcTable, table, default);
                 return _crcTable;
@@ -117,7 +117,7 @@
             int i;
             var ul = Seed;
             while ((i = stream.ReadByte()) != -1)
-                ul = CrcTable[(int)(((ul >> 56) ^ (ulong)i) & 0xffuL)] ^ (ul << 8);
+                ul = (CrcTable[(int)(((ul >> 56) ^ (ulong)i) & 0xffuL)] ^ (ul << 8)) & Mask;
             RawHash = ul;
         }
 

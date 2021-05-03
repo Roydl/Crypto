@@ -17,8 +17,9 @@
         /// </summary>
         public const int HashLength = 8;
 
-        private const uint Polynomial = 0xedb88320u;
-        private const uint Seed = uint.MaxValue;
+        private const uint Mask = 0xffffffffu;
+        private const uint Poly = 0xedb88320u;
+        private const uint Seed = 0xffffffffu;
         private static volatile IReadOnlyList<uint> _crcTable;
 
         /// <summary>
@@ -37,8 +38,8 @@
                 {
                     var ui = (uint)i;
                     for (var j = 0; j < 8; j++)
-                        ui = (ui & 1) == 1 ? (ui >> 1) ^ Polynomial : ui >> 1;
-                    table[i] = ui;
+                        ui = (ui & 1) == 1 ? (ui >> 1) ^ Poly : ui >> 1;
+                    table[i] = ui & Mask;
                 }
                 Interlocked.CompareExchange(ref _crcTable, table, null);
                 return _crcTable;
@@ -127,7 +128,7 @@
             int i;
             var ui = Seed;
             while ((i = stream.ReadByte()) != -1)
-                ui = (ui >> 8) ^ CrcTable[(int)(i ^ (ui & 0xff))];
+                ui = ((ui >> 8) ^ CrcTable[(int)(i ^ (ui & 0xff))]) & Mask;
             RawHash = ~ui;
         }
 
