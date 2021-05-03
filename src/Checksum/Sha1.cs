@@ -7,7 +7,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Secure Hash Algorithm 1 (SHA-1) hashes.
+    ///     Provides functionality to compute SHA-1 hashes.
     /// </summary>
     public sealed class Sha1 : ChecksumSample, IEquatable<Sha1>
     {

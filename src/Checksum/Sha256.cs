@@ -7,7 +7,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Secure Hash Algorithm 2 (SHA-256) hashes.
+    ///     Provides functionality to compute SHA-256 hashes.
     /// </summary>
     public sealed class Sha256 : ChecksumSample, IEquatable<Sha256>
     {

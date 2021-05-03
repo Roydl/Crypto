@@ -8,7 +8,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Cyclic Redundancy Check (CRC-16) hashes.
+    ///     Provides functionality to compute CRC-16/AUG-CCITT hashes.
     /// </summary>
     public sealed class Crc16 : ChecksumSample, IEquatable<Crc16>
     {

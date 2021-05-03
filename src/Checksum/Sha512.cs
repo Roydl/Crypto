@@ -7,7 +7,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Secure Hash Algorithm 2 (SHA-512) hashes.
+    ///     Provides functionality to compute SHA-512 hashes.
     /// </summary>
     public sealed class Sha512 : ChecksumSample, IEquatable<Sha512>
     {

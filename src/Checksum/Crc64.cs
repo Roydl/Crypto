@@ -8,8 +8,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute CRC-64 (Cyclic Redundancy Check) ECMA
-    ///     hashes.
+    ///     Provides functionality to compute CRC-64/ECMA hashes.
     /// </summary>
     public sealed class Crc64 : ChecksumSample, IEquatable<Crc64>
     {

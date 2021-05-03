@@ -2,16 +2,24 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
     using AbstractSamples;
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="RadixA"/> class.
+    ///     Provides functionality for translating data into Radix-10 (decimal) text
+    ///     representations and back.
     /// </summary>
     public sealed class RadixA : BinaryToTextSample
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RadixA"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public RadixA() { }
+
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
         /// </summary>

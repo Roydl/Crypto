@@ -7,7 +7,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Secure Hash Algorithm 2 (SHA-384) hashes.
+    ///     Provides functionality to compute SHA-384 hashes.
     /// </summary>
     public sealed class Sha384 : ChecksumSample, IEquatable<Sha384>
     {

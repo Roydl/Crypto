@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
     using System.Text;
@@ -9,10 +10,17 @@
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="RadixF"/> class.
+    ///     Provides functionality for translating data into Radix-16 (hexadecimal)
+    ///     text representations and back.
     /// </summary>
     public sealed class RadixF : BinaryToTextSample
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RadixF"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public RadixF() { }
+
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
         /// </summary>

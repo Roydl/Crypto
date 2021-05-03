@@ -64,42 +64,42 @@
         Adler32,
 
         /// <summary>
-        ///     Cyclic Redundancy Check (CRC-16).
+        ///     CRC-16 (Cyclic Redundancy Check).
         /// </summary>
         Crc16,
 
         /// <summary>
-        ///     Cyclic Redundancy Check (CRC-32).
+        ///     CRC-32 (Cyclic Redundancy Check).
         /// </summary>
         Crc32,
 
         /// <summary>
-        ///     Cyclic Redundancy Check (CRC-64).
+        ///     CRC-64 (Cyclic Redundancy Check).
         /// </summary>
         Crc64,
 
         /// <summary>
-        ///     Message-Digest 5.
+        ///     MD5 (Message-Digest 5).
         /// </summary>
         Md5,
 
         /// <summary>
-        ///     Secure Hash Algorithm 1.
+        ///     SHA-1 (Secure Hash Algorithm 1).
         /// </summary>
         Sha1,
 
         /// <summary>
-        ///     Secure Hash Algorithm 2 (SHA-256).
+        ///     SHA-256 (Secure Hash Algorithm 2).
         /// </summary>
         Sha256,
 
         /// <summary>
-        ///     Secure Hash Algorithm 2 (SHA-384).
+        ///     SHA-384 (Secure Hash Algorithm 2).
         /// </summary>
         Sha384,
 
         /// <summary>
-        ///     Secure Hash Algorithm 2 (SHA-512).
+        ///     SHA-512 (Secure Hash Algorithm 2).
         /// </summary>
         Sha512
     }

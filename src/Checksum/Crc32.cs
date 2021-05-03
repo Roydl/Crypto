@@ -8,7 +8,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Cyclic Redundancy Check (CRC-32) hashes.
+    ///     Provides functionality to compute CRC-32/ISO-HDLC hashes.
     /// </summary>
     public sealed class Crc32 : ChecksumSample, IEquatable<Crc32>
     {

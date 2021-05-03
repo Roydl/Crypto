@@ -7,7 +7,7 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Message-Digest 5 (MD5) hashes.
+    ///     Provides functionality to compute MD5 hashes.
     /// </summary>
     public sealed class Md5 : ChecksumSample, IEquatable<Md5>
     {

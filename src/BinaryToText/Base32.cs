@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto.BinaryToText
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -8,7 +9,8 @@
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Base32"/> class.
+    ///     Provides functionality for translating data into the Base32 text
+    ///     representations and back.
     /// </summary>
     public sealed class Base32 : BinaryToTextSample
     {
@@ -19,6 +21,12 @@
             0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
             0x59, 0x5a, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37
         };
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Base32"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public Base32() { }
 
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.

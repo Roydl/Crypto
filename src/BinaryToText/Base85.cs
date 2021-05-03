@@ -1,13 +1,15 @@
 ﻿namespace Roydl.Crypto.BinaryToText
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
     using AbstractSamples;
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Base85"/> class.
+    ///     Provides functionality for translating data into the Base85 (also called
+    ///     Ascii85) text representation and back.
     /// </summary>
     public sealed class Base85 : BinaryToTextSample
     {
@@ -22,6 +24,12 @@
             85,
             1
         };
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Base85"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public Base85() { }
 
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.

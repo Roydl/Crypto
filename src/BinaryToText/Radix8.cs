@@ -2,16 +2,24 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
     using AbstractSamples;
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Radix8"/> class.
+    ///     Provides functionality for translating data into Radix-8 (octal) text
+    ///     representations and back.
     /// </summary>
     public sealed class Radix8 : BinaryToTextSample
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Radix8"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public Radix8() { }
+
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
         /// </summary>

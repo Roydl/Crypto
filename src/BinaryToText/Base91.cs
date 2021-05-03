@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -9,7 +10,11 @@
     using Properties;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Base91"/> class.
+    ///     Provides functionality for translating data into the Base91 (formerly
+    ///     written basE91) text representation and back.
+    ///     <para>
+    ///         See more: <see href="https://base91.sourceforge.net/"/>.
+    ///     </para>
     /// </summary>
     public sealed class Base91 : BinaryToTextSample
     {
@@ -27,6 +32,12 @@
             0x5b, 0x5d, 0x5e, 0x5f, 0x60, 0x7b, 0x7c, 0x7d, 0x7e,
             0x22
         };
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Base91"/> class.
+        /// </summary>
+        [SuppressMessage("ReSharper", "EmptyConstructor")]
+        public Base91() { }
 
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
