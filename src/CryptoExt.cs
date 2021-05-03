@@ -223,7 +223,7 @@
         /// </param>
         public static uint EncryptRaw<TSource>(this TSource source)
         {
-            var instance = CacheInvestor.GetDefault<Crc32>();
+            var instance = (Crc32)Utils.GetDefaultInstance(ChecksumAlgorithm.Crc32);
             switch (source)
             {
                 case null:
