@@ -8,7 +8,8 @@
     using AbstractSamples;
 
     /// <summary>
-    ///     Provides functionality to compute Cyclic Redundancy Check (CRC-64) hashes.
+    ///     Provides functionality to compute CRC-64 (Cyclic Redundancy Check) ECMA
+    ///     hashes.
     /// </summary>
     public sealed class Crc64 : ChecksumSample, IEquatable<Crc64>
     {
@@ -17,9 +18,9 @@
         /// </summary>
         public const int HashLength = 16;
 
-        private const ulong Polynomial = 0xd800000000000000uL;
+        private const ulong Polynomial = 0x42f0e1eba9ea3693uL;
         private const ulong Seed = ulong.MinValue;
-        private static volatile IReadOnlyList<ulong> _crcTable;
+        private static volatile ulong[] _crcTable;
 
         /// <summary>
         ///     Gets the raw data of computed hash.
@@ -32,15 +33,18 @@
             {
                 if (_crcTable != null)
                     return _crcTable;
+                const ulong top = 1uL << (64 - 1);
+                const ulong mask = 0xffffffffffffffffuL;
                 var table = new ulong[256];
-                for (var i = 0; i < 256; i++)
+                for (var i = 0; i < table.Length; i++)
                 {
                     var ul = (ulong)i;
+                    ul <<= 64 - 8;
                     for (var j = 0; j < 8; j++)
-                        ul = (ul & 1) == 1 ? (ul >> 1) ^ Polynomial : ul >> 1;
-                    table[i] = ul;
+                        ul = (ul & top) != 0 ? (ul << 1) ^ Polynomial : ul << 1;
+                    table[i] = ul & mask;
                 }
-                Interlocked.CompareExchange(ref _crcTable, table, null);
+                Interlocked.CompareExchange(ref _crcTable, table, default);
                 return _crcTable;
             }
         }
@@ -114,8 +118,8 @@
             int i;
             var ul = Seed;
             while ((i = stream.ReadByte()) != -1)
-                ul = (ul >> 8) ^ CrcTable[(int)(i ^ (long)ul) & 0xff];
-            RawHash = ~ul;
+                ul = CrcTable[(int)(((ul >> 56) ^ (ulong)i) & 0xffuL)] ^ (ul << 8);
+            RawHash = ul;
         }
 
         /// <summary>
