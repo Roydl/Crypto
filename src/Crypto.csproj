@@ -13,13 +13,18 @@
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
-    <PackageTags>encryption decryption base32 base64 base64 base85 base91 adler32 crc16 crc32 crc64 md5 sha1 sha256 sha384 sha512 aes aes128 aes192 aes256</PackageTags>
+    <PackageTags>encryption decryption encoding decoding ascii85 base32 base64 base64 base85 base91 adler32 crc crc16 crc32 crc64 md5 sha sha1 sha256 sha384 sha512 aes aes128 aes192 aes256</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>1.0.0.2</AssemblyVersion>
     <FileVersion>1.0.0.2</FileVersion>
     <Version>1.0.2</Version>
+    <PackageReleaseNotes>- CRC-16 now uses the AUG-CCITT algorithm
+- CRC-16 creates a table the first time to improve performance when used multiple times
+- CRC-64 now uses the ECMA algorithm
+- Roydl.CacheInvestor package is no longer needed
+- Improved description in some cases</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
