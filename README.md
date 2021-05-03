@@ -2,7 +2,7 @@
 
 # Roydl.Crypto
 
-The idea is to create a comfortable way to translate data. You can easily create instances of any type to translate  `Stream`, `byte[]` or `string` data. With the exception of `AES` encryption and decryption, extension methods are also provided for all types.
+The idea was to create a comfortable way to translate data. You can easily create instances of any type to translate  `Stream`, `byte[]` or `string` data. With the exception of `AES` encryption and decryption, extension methods are also provided for all types.
 
 ---
 
