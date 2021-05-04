@@ -34,7 +34,7 @@
                 if (_crcTable != null)
                     return _crcTable;
                 var table = new uint[256];
-                for (var i = 0; i < 256; i++)
+                for (var i = 0; i < table.Length; i++)
                 {
                     var ui = (uint)i;
                     for (var j = 0; j < 8; j++)
