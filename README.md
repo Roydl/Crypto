@@ -7,20 +7,20 @@ The idea was to create a comfortable way to translate data. You can easily creat
 ---
 
 
-## Included `Binary-To-Text` algorithms:
+### Binary-To-Text algorithms:
 
 | Name | Algorithm |
 | ---- | ---- |
-| Radix2 | Binary character set, such as `0` and `1` |
-| Radix8 | Octal character set, such as `0-7` |
-| RadixA | Decimal character set, such as `0-9` |
-| RadixF | Hexadecimal character set, such as `0-9` and `a-f` |
-| Base32 | Standard 32-character set, such as `A–Z`, `a–z` and `2–7` |
-| Base64 | Standard 64-character set, such as `A–Z`, `a–z`, `0–9`, `+`, `/` and `=` |
-| Base85 | Standard 85-character set, such as `A–Z`, `a–z`, `0–9` and <code>!&#35;$%&amp;()*+-;&lt;=&gt;?@^_&#96;{&#124;}~</code> |
-| Base91 | Standard 91-character set, such as `A–Z`, `a–z`, `0–9`, and <code>!&#35;$%&amp;()*+,-.:;&lt;=&gt;?@[]^_&#96;{&#124;}~&quot;</code> |
+| Radix2 | Binary character set: `0` and `1` |
+| Radix8 | Octal character set: `0-7` |
+| RadixA | Decimal character set: `0-9` |
+| RadixF | Hexadecimal character set: `0-9` and `a-f` |
+| Base32 | Standard 32-character set: `A–Z` and `2–7`; `=` for padding |
+| Base64 | Standard 64-character set: `A–Z`, `a–z`, `0–9`, `+` and `/`; `=` for padding |
+| Base85 | Standard 85-character set: `!"#$%&'()*+,-./`, `0-9`, `:;<=>?@`, `A-Z`, <code>[]^_&#96;</code> and `a-u` |
+| Base91 | Standard 91-character set: `A–Z`, `a–z`, `0–9`, and <code>!&#35;$%&amp;()*+,-.:;&lt;=&gt;?@[]^_&#96;{&#124;}~&quot;</code> |
 
-### Extension methods:
+#### Binary-To-Text extension methods:
 ```cs
 // The `value` must be type `string` or `byte[]`, if `BinaryToTextEncoding` is
 // not set, `Base64` is used by default.
@@ -38,7 +38,7 @@ byte[] original = value.DecodeFile(BinaryToTextEncoding.Base85);
 
 ---
 
-## Included `Checksum` algorithms:
+### Checksum algorithms:
 
 | Name | Algorithm |
 | ---- | ---- |
@@ -52,7 +52,7 @@ byte[] original = value.DecodeFile(BinaryToTextEncoding.Base85);
 | SHA-384 | System.Security.Cryptography.SHA384CryptoServiceProvider() |
 | SHA-512 | System.Security.Cryptography.SHA512CryptoServiceProvider() |
 
-### Extension methods:
+#### Checksum extension methods:
 ```cs
 // The `value` can be almost anything, even an entire type with many values,
 // which is then serialized into a JSON byte sequence before being computed. 
@@ -68,7 +68,7 @@ uint crc32raw = value.EncryptRaw();
 
 ---
 
-## Other included algorithm:
+### Other included algorithm:
 
 | Name | Algorithm |
 | ---- | ---- |
