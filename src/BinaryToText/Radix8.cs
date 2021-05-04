@@ -123,7 +123,7 @@
                 {
                     if (i is '\0' or '\t' or '\n' or '\r' or ' ' or ',')
                         continue;
-                    if (i is not (>= '0' and <= '9'))
+                    if (i is not (>= '0' and <= '7'))
                         throw new DecoderFallbackException(ExceptionMessages.CharsInStreamAreInvalid);
                     cl.Add((char)i);
                     if (cl.Count % 3 != 0)
