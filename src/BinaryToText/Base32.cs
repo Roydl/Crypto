@@ -14,7 +14,12 @@
     /// </summary>
     public sealed class Base32 : BinaryToTextSample
     {
-        private static readonly byte[] CharacterTable32 =
+        /// ReSharper disable CommentTypo
+        /// <summary>
+        ///     Standard 32-character set: <code>ABCDEFGHIJKLMNOPQRSTUVWXYZ234567</code>
+        /// </summary>
+        /// ReSharper restore CommentTypo
+        private static ReadOnlySpan<byte> CharacterTable32 => new byte[]
         {
             0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
             0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
@@ -47,9 +52,6 @@
         /// <exception cref="ArgumentNullException">
         ///     inputStream or outputStream is null.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     inputStream is larger than 128 MB.
-        /// </exception>
         /// <exception cref="ArgumentException">
         ///     inputStream or outputStream is invalid.
         /// </exception>
@@ -68,25 +70,24 @@
                 throw new ArgumentNullException(nameof(inputStream));
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
-            if (inputStream.Length > 0x8000000)
-                throw new ArgumentOutOfRangeException(nameof(inputStream));
             try
             {
-                int i;
-                var ba = new byte[inputStream.Length];
-                var p = 0;
+                int i, p = 0, len = 0;
+                var ba = new byte[16384];
                 while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
                 {
-                    var len = (i > ba.Length ? Math.Pow(ba.Length, Math.Max(Math.Floor((double)i / ba.Length), 1)) : i) * 8;
-                    for (var j = 0; j < len; j += 5)
+                    for (var j = 0; j < i * 8; j += 5)
                     {
-                        var c = ba[j / 8] << 8;
-                        if (j / 8 + 1 < ba.Length)
-                            c |= ba[j / 8 + 1];
-                        c = 31 & (c >> (16 - j % 8 - 5));
-                        WriteLine(outputStream, CharacterTable32[c], lineLength, ref p);
+                        len++;
+                        var b = ba[j / 8] << 8;
+                        if (j / 8 + 1 < i)
+                            b |= ba[j / 8 + 1];
+                        b = 31 & (b >> (16 - j % 8 - 5));
+                        WriteLine(outputStream, CharacterTable32[b], lineLength, ref p);
                     }
                 }
+                while (len++ % 8 != 0)
+                    WriteLine(outputStream, (byte)'=', lineLength, ref p);
             }
             finally
             {
@@ -114,9 +115,6 @@
         /// <exception cref="ArgumentNullException">
         ///     inputStream or outputStream is null.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     inputStream is larger than 128 MB.
-        /// </exception>
         /// <exception cref="ArgumentException">
         ///     inputStream or outputStream is invalid.
         /// </exception>
@@ -138,37 +136,47 @@
                 throw new ArgumentNullException(nameof(inputStream));
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
-            if (inputStream.Length > 0x8000000)
-                throw new ArgumentOutOfRangeException(nameof(inputStream));
             try
             {
-                var ba1 = new byte[inputStream.Length];
-                var a32 = Utils.Utf8NoBom.GetString(CharacterTable32);
-                while (inputStream.Read(ba1, 0, ba1.Length) > 0)
+                int i;
+                var buf = new byte[16384];
+                var c32 = Utils.Utf8NoBom.GetString(CharacterTable32);
+                while ((i = inputStream.Read(buf, 0, buf.Length)) > 0)
                 {
-                    var ba2 = ba1.Where(b => b > 0 && !Separator.Contains(b)).ToArray();
-                    if (ba2.Any(x => !CharacterTable32.Contains(x)))
-                        throw new DecoderFallbackException(ExceptionMessages.CharsInStreamAreInvalid);
-                    var len = ba2.Length * 5;
-                    for (var i = 0; i < len; i += 8)
+                    var ba = buf.Take(i).Where(b => (int)b is not ('\0' or '\t' or '\n' or '\r' or ' ')).TakeWhile(b => b != '=').ToArray();
+                    var len = ba.Length * 5;
+                    for (var j = 0; j < len; j += 8)
                     {
-                        var b = ba2[i / 5];
-                        var c = a32.IndexOf((char)b) << 10;
-                        if (i / 5 + 1 < ba2.Length)
+                        var b = (int)ba[j / 5];
+                        var c = c32.IndexOf((char)b) << 10;
+                        var n = j / 5 + 1;
+                        if (n < ba.Length)
                         {
-                            b = ba2[i / 5 + 1];
-                            c |= a32.IndexOf((char)b) << 5;
+                            b = ba[n];
+                            LocalDecoderFallbackCheck(b);
+                            var p = c32.IndexOf((char)b);
+                            c |= p << 5;
+                            c |= p << 5;
                         }
-                        if (i / 5 + 2 < ba2.Length)
+                        n++;
+                        if (n < ba.Length)
                         {
-                            b = ba2[i / 5 + 2];
-                            c |= a32.IndexOf((char)b);
+                            b = ba[n];
+                            LocalDecoderFallbackCheck(b);
+                            c |= c32.IndexOf((char)b);
                         }
-                        c = 255 & (c >> (15 - i % 5 - 8));
-                        if (i + 5 > len && c <= 0)
+                        c = 255 & (c >> (15 - j % 5 - 8));
+                        if (j + 5 > len && c < 1)
                             break;
                         outputStream.WriteByte((byte)c);
                     }
+                }
+
+                static void LocalDecoderFallbackCheck(int i)
+                {
+                    if (i is >= '2' and <= '7' or >= 'A' and <= 'Z')
+                        return;
+                    throw new DecoderFallbackException(ExceptionMessages.FollowingCharCodeIsInvalid + i);
                 }
             }
             finally
