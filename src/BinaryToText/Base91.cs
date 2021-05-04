@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using AbstractSamples;
     using Properties;
@@ -18,7 +17,18 @@
     /// </summary>
     public sealed class Base91 : BinaryToTextSample
     {
-        private static readonly byte[] CharacterTable91 =
+        /// ReSharper disable CommentTypo
+        /// <summary>
+        ///     Standard 91-character set:
+        ///     <para>
+        ///         <code>ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</code>
+        ///     </para>
+        ///     <para>
+        ///         <code>0123456789!#$%&amp;()*+,-.:;&lt;=&gt;?@[]^_`{|}~&quot;</code>
+        ///     </para>
+        /// </summary>
+        /// ReSharper restore CommentTypo
+        private static ReadOnlySpan<byte> CharacterTable91 => new byte[]
         {
             0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
             0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52,
