@@ -16,6 +16,11 @@
     public abstract class ChecksumSample : IEquatable<ChecksumSample>
     {
         /// <summary>
+        ///     Gets the required hash length.
+        /// </summary>
+        public abstract int HashLength { get; }
+
+        /// <summary>
         ///     Gets the computed hash code value.
         /// </summary>
         public virtual IReadOnlyList<byte> RawHash { get; protected set; }
@@ -116,7 +121,7 @@
                 return false;
             if (RawHash == null)
                 return other.RawHash == null;
-            return RawHash.SequenceEqual(other.RawHash);
+            return HashLength == other.HashLength && RawHash.SequenceEqual(other.RawHash);
         }
 
         /// <summary>

@@ -12,15 +12,15 @@
     /// </summary>
     public sealed class Crc32 : ChecksumSample, IEquatable<Crc32>
     {
-        /// <summary>
-        ///     Gets the required hash length.
-        /// </summary>
-        public const int HashLength = 8;
-
         private const uint Mask = 0xffffffffu;
         private const uint Poly = 0xedb88320u;
         private const uint Seed = 0xffffffffu;
         private static volatile IReadOnlyList<uint> _crcTable;
+
+        /// <summary>
+        ///     Gets the required hash length.
+        /// </summary>
+        public override int HashLength => 8;
 
         /// <summary>
         ///     Gets the raw data of computed hash.

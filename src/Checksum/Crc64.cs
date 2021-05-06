@@ -12,15 +12,15 @@
     /// </summary>
     public sealed class Crc64 : ChecksumSample, IEquatable<Crc64>
     {
-        /// <summary>
-        ///     Gets the required hash length.
-        /// </summary>
-        public const int HashLength = 16;
-
         private const ulong Mask = 0xffffffffffffffffuL;
         private const ulong Poly = 0x42f0e1eba9ea3693uL;
         private const ulong Seed = 0x0000000000000000uL;
         private static volatile ulong[] _crcTable;
+
+        /// <summary>
+        ///     Gets the required hash length.
+        /// </summary>
+        public override int HashLength => 16;
 
         /// <summary>
         ///     Gets the raw data of computed hash.

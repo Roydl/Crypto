@@ -14,7 +14,7 @@
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public const int HashLength = 128;
+        public override int HashLength => 128;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha512"/> class.

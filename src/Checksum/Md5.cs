@@ -14,7 +14,7 @@
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public const int HashLength = 32;
+        public override int HashLength => 32;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Md5"/> class.

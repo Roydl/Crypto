@@ -14,7 +14,7 @@
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public const int HashLength = 64;
+        public override int HashLength => 64;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha256"/> class.

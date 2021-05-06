@@ -10,13 +10,13 @@
     /// </summary>
     public sealed class Adler32 : ChecksumSample, IEquatable<Adler32>
     {
+        private const uint AMod = 0xfff1;
+        private const uint Mask = 0xffffffffu;
+
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public const int HashLength = 8;
-
-        private const uint AMod = 0xfff1;
-        private const uint Mask = 0xffffffffu;
+        public override int HashLength => 8;
 
         /// <summary>
         ///     Gets the computed hash code value.
