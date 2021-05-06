@@ -6,10 +6,6 @@
     using System.Security.Cryptography;
     using Properties;
 
-#if DEBUG
-    using System.Diagnostics;
-#endif
-
     /// <summary>
     ///     Represents the base class from which all implementations of symmetric key
     ///     encryption algorithms must derive.
@@ -48,7 +44,8 @@
         /// <summary>
         ///     The sequence of bytes which is used as password.
         ///     <para>
-        ///         Windows only: The stored bytes are encrypted using
+        ///         Windows only: The stored bytes are protected by
+        ///         <see cref="DataProtectionScope.CurrentUser"/> using
         ///         <see cref="ProtectedData"/> class.
         ///     </para>
         /// </summary>
@@ -58,13 +55,10 @@
             {
                 try
                 {
-                    return ProtectedData.Unprotect(_password, _entropy, DataProtectionScope.LocalMachine);
+                    return ProtectedData.Unprotect(_password, _entropy, DataProtectionScope.CurrentUser);
                 }
                 catch (PlatformNotSupportedException)
                 {
-#if DEBUG
-                    Debug.WriteLineIf(Environment.OSVersion.Platform == PlatformID.Win32NT, Environment.OSVersion.Platform);
-#endif
                     return _password;
                 }
             }
@@ -73,7 +67,8 @@
         /// <summary>
         ///     The sequence of bytes which is used as salt.
         ///     <para>
-        ///         Windows only: The stored bytes are encrypted using
+        ///         Windows only: The stored bytes are protected by
+        ///         <see cref="DataProtectionScope.CurrentUser"/> using
         ///         <see cref="ProtectedData"/> class.
         ///     </para>
         /// </summary>
@@ -83,13 +78,10 @@
             {
                 try
                 {
-                    return ProtectedData.Unprotect(_salt, _entropy, DataProtectionScope.LocalMachine);
+                    return ProtectedData.Unprotect(_salt, _entropy, DataProtectionScope.CurrentUser);
                 }
                 catch (PlatformNotSupportedException)
                 {
-#if DEBUG
-                    Debug.WriteLineIf(Environment.OSVersion.Platform == PlatformID.Win32NT, Environment.OSVersion.Platform);
-#endif
                     return _password;
                 }
             }
@@ -145,9 +137,6 @@
             }
             catch (PlatformNotSupportedException)
             {
-#if DEBUG
-                Debug.WriteLineIf(Environment.OSVersion.Platform == PlatformID.Win32NT, Environment.OSVersion.Platform);
-#endif
                 _password = password;
                 _salt = salt;
             }
