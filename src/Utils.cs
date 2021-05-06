@@ -1,8 +1,6 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Text;
     using System.Threading;
     using AbstractSamples;
@@ -16,33 +14,6 @@
     {
         private static volatile Encoding _utf8NoBom;
 
-        private static readonly ReadOnlyDictionary<BinaryToTextEncoding, Lazy<BinaryToTextSample>> LazyBinaryToTextInstances =
-            new(new Dictionary<BinaryToTextEncoding, Lazy<BinaryToTextSample>>
-            {
-                { BinaryToTextEncoding.Radix2, new Lazy<BinaryToTextSample>(() => new Radix2(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.Radix8, new Lazy<BinaryToTextSample>(() => new Radix8(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.RadixA, new Lazy<BinaryToTextSample>(() => new RadixA(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.RadixF, new Lazy<BinaryToTextSample>(() => new RadixF(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.Base32, new Lazy<BinaryToTextSample>(() => new Base32(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.Base64, new Lazy<BinaryToTextSample>(() => new Base64(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.Base85, new Lazy<BinaryToTextSample>(() => new Base85(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { BinaryToTextEncoding.Base91, new Lazy<BinaryToTextSample>(() => new Base91(), LazyThreadSafetyMode.ExecutionAndPublication) }
-            });
-
-        private static readonly ReadOnlyDictionary<ChecksumAlgorithm, Lazy<ChecksumSample>> LazyChecksumInstances =
-            new(new Dictionary<ChecksumAlgorithm, Lazy<ChecksumSample>>
-            {
-                { ChecksumAlgorithm.Adler32, new Lazy<ChecksumSample>(() => new Adler32(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Crc16, new Lazy<ChecksumSample>(() => new Crc16(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Crc32, new Lazy<ChecksumSample>(() => new Crc32(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Crc64, new Lazy<ChecksumSample>(() => new Crc64(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Md5, new Lazy<ChecksumSample>(() => new Md5(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Sha1, new Lazy<ChecksumSample>(() => new Sha1(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Sha256, new Lazy<ChecksumSample>(() => new Sha256(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Sha384, new Lazy<ChecksumSample>(() => new Sha384(), LazyThreadSafetyMode.ExecutionAndPublication) },
-                { ChecksumAlgorithm.Sha512, new Lazy<ChecksumSample>(() => new Sha512(), LazyThreadSafetyMode.ExecutionAndPublication) },
-            });
-
         internal static Encoding Utf8NoBom
         {
             get
@@ -54,6 +25,31 @@
                 return _utf8NoBom;
             }
         }
+
+        private static ReadOnlySpan<Lazy<BinaryToTextSample>> LazyBinaryToTextInstances => new Lazy<BinaryToTextSample>[]
+        {
+            new(() => new Radix2(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Radix8(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new RadixA(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new RadixF(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Base32(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Base64(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Base85(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Base91(), LazyThreadSafetyMode.ExecutionAndPublication)
+        };
+
+        private static ReadOnlySpan<Lazy<ChecksumSample>> LazyChecksumInstances => new Lazy<ChecksumSample>[]
+        {
+            new(() => new Adler32(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Crc16(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Crc32(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Crc64(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Md5(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Sha1(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Sha256(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Sha384(), LazyThreadSafetyMode.ExecutionAndPublication),
+            new(() => new Sha512(), LazyThreadSafetyMode.ExecutionAndPublication)
+        };
 
         /// <summary>
         ///     Combines the specified hash codes.
@@ -167,10 +163,10 @@
         }
 
         internal static BinaryToTextSample GetDefaultInstance(BinaryToTextEncoding algorithm) =>
-            LazyBinaryToTextInstances.TryGetValue(algorithm, out var item) ? item.Value : throw new ArgumentOutOfRangeException(nameof(algorithm));
+            LazyBinaryToTextInstances[(int)algorithm].Value;
 
         internal static ChecksumSample GetDefaultInstance(ChecksumAlgorithm algorithm) =>
-            LazyChecksumInstances.TryGetValue(algorithm, out var item) ? item.Value : throw new ArgumentOutOfRangeException(nameof(algorithm));
+            LazyChecksumInstances[(int)algorithm].Value;
 
         internal static void CombineHashes(StringBuilder builder, string hash1, string hash2, bool braces)
         {
