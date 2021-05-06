@@ -72,21 +72,26 @@
                 throw new ArgumentNullException(nameof(outputStream));
             try
             {
-                int i, p = 0, len = 0;
-                var ba = new byte[16384];
-                while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
+                int i, b = 0, p = 0, r = 5, len = 0;
+                while ((i = inputStream.ReadByte()) != -1)
                 {
-                    for (var j = 0; j < i * 8; j += 5)
+                    b = (b | (i >> (8 - r))) & 0xff;
+                    len++;
+                    WriteLine(outputStream, CharacterTable32[b], lineLength, ref p);
+                    if (r < 4)
                     {
+                        b = (i >> (3 - r)) & 0x1f;
                         len++;
-                        var b = ba[j / 8] << 8;
-                        if (j / 8 + 1 < i)
-                            b |= ba[j / 8 + 1];
-                        b = 31 & (b >> (16 - j % 8 - 5));
                         WriteLine(outputStream, CharacterTable32[b], lineLength, ref p);
+                        r += 5;
                     }
+                    r -= 3;
+                    b = (i << r) & 0x1f;
                 }
-                while (len++ % 8 != 0)
+                if (len == (int)Math.Ceiling(inputStream.Length / 5d) * 8)
+                    return;
+                WriteLine(outputStream, CharacterTable32[b], lineLength, ref p);
+                while (++len % 8 != 0)
                     WriteLine(outputStream, (byte)'=', lineLength, ref p);
             }
             finally
