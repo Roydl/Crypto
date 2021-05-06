@@ -9,7 +9,7 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Classes for data encryption and decryption</Description>
+    <Description>Provides Base2/8/10/16/32/64/85/91 encoding/decoding; AES-128/192/256 encryption/decryption; Adler32, CRC-16/32/64, MD5 and SHA-1/2(256/384/512) encryption.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
@@ -17,14 +17,15 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.0.3</AssemblyVersion>
-    <FileVersion>1.0.0.3</FileVersion>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>- Fixed issue with Radix8 decoder range that was too large
-- Removed Base32 stream size limits
-- Added Base32 encoder padding 
-- Increased default Base64 stream buffer size
-- Improved Base32 code logic</PackageReleaseNotes>
+    <AssemblyVersion>1.0.0.4</AssemblyVersion>
+    <FileVersion>1.0.0.4</FileVersion>
+    <Version>1.0.4</Version>
+    <PackageReleaseNotes>- Fixed problem with incorrect Base32 encoding for large files 
+- AES memory protection for password and salt is now protected by CurrentUser (Windows-only)
+- Default checksum for extensions has been changed to the fastest algorithm, which is SHA-256
+- Simplified internal caching of instances</PackageReleaseNotes>
+    <PackageId>Roydl.Crypto</PackageId>
+    <Product>Roydl.Crypto</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
