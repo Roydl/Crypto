@@ -130,7 +130,7 @@
         /// <param name="algorithm2">
         ///     The second algorithm to use.
         /// </param>
-        public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgorithm algorithm1 = ChecksumAlgorithm.Crc32, ChecksumAlgorithm algorithm2 = ChecksumAlgorithm.Crc64)
+        public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgorithm algorithm1 = ChecksumAlgorithm.Crc32, ChecksumAlgorithm algorithm2 = ChecksumAlgorithm.Sha256)
         {
             var sb = new StringBuilder(braces ? 38 : 36);
             Utils.CombineHashes(sb, source?.Encrypt(algorithm1), source?.Encrypt(algorithm2), braces);
@@ -164,7 +164,7 @@
             Utils.GetDefaultInstance(algorithm).EncodeString(text);
 
         /// <summary>
-        ///     Encodes this file into a sequence of bytes with the specified algorithm.
+        ///     Encodes this file with the specified algorithm.
         /// </summary>
         /// <param name="path">
         ///     The full path of the file to encode.
@@ -263,7 +263,7 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
-        public static string Encrypt<TSource>(this TSource source, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Md5)
+        public static string Encrypt<TSource>(this TSource source, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Sha256)
         {
             var instance = Utils.GetDefaultInstance(algorithm);
             switch (source)
@@ -295,7 +295,7 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
-        public static string EncryptFile(this string path, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Md5)
+        public static string EncryptFile(this string path, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Sha256)
         {
             var instance = Utils.GetDefaultInstance(algorithm);
             instance.EncryptFile(path);
