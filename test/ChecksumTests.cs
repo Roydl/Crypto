@@ -9,10 +9,10 @@
     [TestFixture]
     public class ChecksumTests
     {
-        private static void TestHelper<T>(T instance, ChecksumAlgorithm algorithm, string originalText, string excpectedHash) where T : ChecksumSample
+        private static void TestHelper<T>(T instance, ChecksumAlgorithm algorithm, string originalText, string expectedHash) where T : ChecksumSample
         {
             var str = originalText.Encrypt(algorithm);
-            Assert.AreEqual(excpectedHash, str);
+            Assert.AreEqual(expectedHash, str);
 
             var path = $".\\testFileChecksum.{algorithm}";
             var buffer = new byte[ushort.MaxValue];

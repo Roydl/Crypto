@@ -8,10 +8,10 @@
     [TestFixture]
     public class BinaryToTextTests
     {
-        private static void TestHelper(BinaryToTextEncoding algorithm, string originalText, string excpectedCode)
+        private static void TestHelper(BinaryToTextEncoding algorithm, string originalText, string expectedCode)
         {
             var str = originalText.Encode(algorithm);
-            Assert.AreEqual(excpectedCode, str);
+            Assert.AreEqual(expectedCode, str);
 
             str = str.DecodeString(algorithm);
             Assert.AreEqual(originalText, str);
