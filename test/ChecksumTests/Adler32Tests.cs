@@ -17,7 +17,6 @@
         private const string ExpectedTestHash = "03dd01a1";
         private const string ExpectedRangeHash = "7707832f";
         private const string TestFilePath = ".\\testFileChecksum.Adler32";
-        public static readonly string RangeStr = Vars.CharRangeStr;
 
         private static readonly TestCaseData[] TestData =
         {

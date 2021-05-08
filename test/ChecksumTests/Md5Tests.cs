@@ -17,7 +17,6 @@
         private const string ExpectedTestHash = "0cbc6611f5540bd0809a388dc95a615b";
         private const string ExpectedRangeHash = "bd41016a883db3f4b7aa003ec7242dc5";
         private const string TestFilePath = ".\\testFileChecksum.Md5";
-        public static readonly string RangeStr = Vars.CharRangeStr;
 
         private static readonly TestCaseData[] TestData =
         {

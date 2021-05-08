@@ -17,7 +17,6 @@
         private const string ExpectedTestHash = "784dd132";
         private const string ExpectedRangeHash = "c35ad8cc";
         private const string TestFilePath = ".\\testFileChecksum.Crc32";
-        public static readonly string RangeStr = Vars.CharRangeStr;
 
         private static readonly TestCaseData[] TestData =
         {

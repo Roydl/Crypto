@@ -17,7 +17,6 @@
         private const string ExpectedTestHash = "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa";
         private const string ExpectedRangeHash = "384e8c9505fb42291e5857023496573373ca7cd4";
         private const string TestFilePath = ".\\testFileChecksum.Sha1";
-        public static readonly string RangeStr = Vars.CharRangeStr;
 
         private static readonly TestCaseData[] TestData =
         {
