@@ -17,13 +17,8 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.0.4</AssemblyVersion>
-    <FileVersion>1.0.0.4</FileVersion>
-    <Version>1.0.4</Version>
-    <PackageReleaseNotes>- Fixed problem with incorrect Base32 encoding for large files 
-- AES memory protection for password and salt is now protected by CurrentUser (Windows-only)
-- Default checksum for extensions has been changed to the fastest algorithm, which is SHA-256
-- Simplified internal caching of instances</PackageReleaseNotes>
+    <Version>1.0.5</Version>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
   </PropertyGroup>
