@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
     using Properties;
@@ -13,7 +12,7 @@
     ///     Represents the base class from which all implementations of checksum
     ///     encryption algorithms must derive.
     /// </summary>
-    public abstract class ChecksumSample : IEquatable<ChecksumSample>
+    public abstract class ChecksumSample
     {
         /// <summary>
         ///     Gets the required hash length.
@@ -109,32 +108,6 @@
         }
 
         /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="ChecksumSample"/> instance.
-        /// </summary>
-        /// <param name="other">
-        ///     The <see cref="ChecksumSample"/> instance to compare.
-        /// </param>
-        public virtual bool Equals(ChecksumSample other)
-        {
-            if (other == null)
-                return false;
-            if (RawHash == null)
-                return other.RawHash == null;
-            return HashLength == other.HashLength && RawHash.SequenceEqual(other.RawHash);
-        }
-
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
-        public override bool Equals(object other) =>
-            other is ChecksumSample item && Equals(item);
-
-        /// <summary>
         ///     Returns the hash code for this instance.
         /// </summary>
         public override int GetHashCode() =>
@@ -147,7 +120,7 @@
         public override string ToString()
         {
             if (RawHash is not byte[] ba)
-                return string.Empty;
+                return new string('0', HashLength);
             var sb = new StringBuilder(ba.Length * 2);
             foreach (var b in ba)
                 sb.Append(b.ToString("x2", CultureInfo.CurrentCulture));
@@ -206,31 +179,5 @@
             using var csp = algorithm;
             RawHash = csp.ComputeHash(ba);
         }
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="ChecksumSample"/> instances
-        ///     have same values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="ChecksumSample"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="ChecksumSample"/> instance to compare.
-        /// </param>
-        public static bool operator ==(ChecksumSample left, ChecksumSample right) =>
-            left?.Equals(right) ?? right is null;
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="ChecksumSample"/> instances
-        ///     have different values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="ChecksumSample"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="ChecksumSample"/> instance to compare.
-        /// </param>
-        public static bool operator !=(ChecksumSample left, ChecksumSample right) =>
-            !(left == right);
     }
 }
