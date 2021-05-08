@@ -163,6 +163,10 @@
         /// <param name="bytes">
         ///     The sequence of bytes to encrypt.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of encrypting the specified
+        ///     sequence of bytes.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     bytes is null.
         /// </exception>
@@ -194,6 +198,10 @@
         ///     <see langword="true"/> to allow an existing file to be overwritten;
         ///     otherwise, <see langword="false"/>.
         /// </param>
+        /// <returns>
+        ///     <see langword="true"/> if the destination file exists; otherwise,
+        ///     <see langword="false"/>.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     srcPath or destPath is null.
         /// </exception>
@@ -226,6 +234,10 @@
         /// <param name="path">
         ///     The file to encrypt.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of encrypting the specified
+        ///     file.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     path is null.
         /// </exception>
@@ -263,6 +275,10 @@
         /// <param name="code">
         ///     The sequence of bytes to decrypt.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decrypting the specified
+        ///     sequence of bytes.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     code is null.
         /// </exception>
@@ -294,6 +310,10 @@
         ///     <see langword="true"/> to allow an existing file to be overwritten;
         ///     otherwise, <see langword="false"/>.
         /// </param>
+        /// <returns>
+        ///     <see langword="true"/> if the destination file exists; otherwise,
+        ///     <see langword="false"/>.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     srcPath or destPath is null.
         /// </exception>
@@ -323,6 +343,10 @@
         /// <param name="path">
         ///     The file to decrypt.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decrypting the specified
+        ///     file.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     path is null.
         /// </exception>

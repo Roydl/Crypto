@@ -62,6 +62,10 @@
         /// <param name="lineLength">
         ///     The length of lines.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encoding the specified sequence of
+        ///     bytes.
+        /// </returns>
         public string EncodeBytes(byte[] bytes, int lineLength = 0)
         {
             if (bytes == null)
@@ -81,6 +85,9 @@
         /// <param name="lineLength">
         ///     The length of lines.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encoding the specified string.
+        /// </returns>
         public string EncodeString(string text, int lineLength = 0)
         {
             if (text == null)
@@ -105,6 +112,10 @@
         ///     <see langword="true"/> to allow an existing file to be overwritten;
         ///     otherwise, <see langword="false"/>.
         /// </param>
+        /// <returns>
+        ///     <see langword="true"/> if the destination file exists; otherwise,
+        ///     <see langword="false"/>.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     srcPath or destPath is null.
         /// </exception>
@@ -146,6 +157,10 @@
         /// <exception cref="FileNotFoundException">
         ///     path cannot be found.
         /// </exception>
+        /// <returns>
+        ///     A string that contains the result of encoding the file in the specified
+        ///     path.
+        /// </returns>
         public string EncodeFile(string path, int lineLength = 0)
         {
             if (path == null)
@@ -179,6 +194,10 @@
         /// <param name="code">
         ///     The string to decode.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decoding the specified
+        ///     string.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     code is null.
         /// </exception>
@@ -199,6 +218,9 @@
         /// <param name="code">
         ///     The string to decode.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of decoding the specified string.
+        /// </returns>
         public string DecodeString(string code)
         {
             var ba = DecodeBytes(code);
@@ -220,6 +242,10 @@
         ///     <see langword="true"/> to allow an existing file to be overwritten;
         ///     otherwise, <see langword="false"/>.
         /// </param>
+        /// <returns>
+        ///     <see langword="true"/> if the destination file exists; otherwise,
+        ///     <see langword="false"/>.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     srcPath or destPath is null.
         /// </exception>
@@ -253,6 +279,10 @@
         /// <param name="path">
         ///     The file to decode.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decoding the file in
+        ///     specified string.
+        /// </returns>
         /// <exception cref="ArgumentNullException">
         ///     path is null.
         /// </exception>
@@ -270,6 +300,12 @@
             DecodeStream(fs, ms);
             return ms.ToArray();
         }
+
+        /// <summary>
+        ///     Returns the hash code for this instance.
+        /// </summary>
+        public override int GetHashCode() =>
+            GetType().GetHashCode();
 
         /// <summary>
         ///     Write the specified byte into the stream and add a line separator depending

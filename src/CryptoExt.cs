@@ -130,6 +130,10 @@
         /// <param name="algorithm2">
         ///     The second algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the results of encrypting the specified object by
+        ///     the specified algorithms.
+        /// </returns>
         public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgorithm algorithm1 = ChecksumAlgorithm.Crc32, ChecksumAlgorithm algorithm2 = ChecksumAlgorithm.Sha256)
         {
             var sb = new StringBuilder(braces ? 38 : 36);
@@ -148,6 +152,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encoding the specified sequence of
+        ///     bytes by the specified algorithm.
+        /// </returns>
         public static string Encode(this byte[] bytes, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).EncodeBytes(bytes);
 
@@ -160,6 +168,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encoding the specified text by the
+        ///     specified algorithm.
+        /// </returns>
         public static string Encode(this string text, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).EncodeString(text);
 
@@ -172,6 +184,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encoding the specified file by the
+        ///     specified algorithm.
+        /// </returns>
         public static string EncodeFile(this string path, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).EncodeFile(path);
 
@@ -184,6 +200,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decoding the specified
+        ///     code by the specified algorithm.
+        /// </returns>
         public static byte[] Decode(this string code, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).DecodeBytes(code);
 
@@ -196,6 +216,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of decoding the specified code by the
+        ///     specified algorithm.
+        /// </returns>
         public static string DecodeString(this string code, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).DecodeString(code);
 
@@ -208,6 +232,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A sequence of bytes that contains the results of decoding the specified
+        ///     file by the specified algorithm.
+        /// </returns>
         public static byte[] DecodeFile(this string path, BinaryToTextEncoding algorithm = BinaryToTextEncoding.Base64) =>
             Utils.GetDefaultInstance(algorithm).DecodeFile(path);
 
@@ -221,6 +249,10 @@
         /// <param name="source">
         ///     The object to encrypt.
         /// </param>
+        /// <returns>
+        ///     An unsigned integer that contains the result of encrypting the specified
+        ///     object by CRC-32 algorithm.
+        /// </returns>
         public static uint EncryptRaw<TSource>(this TSource source)
         {
             var instance = (Crc32)Utils.GetDefaultInstance(ChecksumAlgorithm.Crc32);
@@ -263,6 +295,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encrypting the specified object by the
+        ///     specified algorithm.
+        /// </returns>
         public static string Encrypt<TSource>(this TSource source, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Sha256)
         {
             var instance = Utils.GetDefaultInstance(algorithm);
@@ -295,6 +331,10 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <returns>
+        ///     A string that contains the result of encrypting the specified file by the
+        ///     specified algorithm.
+        /// </returns>
         public static string EncryptFile(this string path, ChecksumAlgorithm algorithm = ChecksumAlgorithm.Sha256)
         {
             var instance = Utils.GetDefaultInstance(algorithm);
