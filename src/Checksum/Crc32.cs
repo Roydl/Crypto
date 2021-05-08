@@ -66,7 +66,7 @@
         ///     the specified sequence of bytes.
         /// </summary>
         /// <param name="bytes">
-        ///     The sequence of bytes to encrypt
+        ///     The sequence of bytes to encrypt.
         /// </param>
         public Crc32(byte[] bytes) =>
             Encrypt(bytes);
@@ -76,11 +76,11 @@
         ///     the specified text or file.
         /// </summary>
         /// <param name="textOrFile">
-        ///     The text or file to encrypt
+        ///     The text or file to encrypt.
         /// </param>
         /// <param name="strIsFilePath">
         ///     <see langword="true"/> if the specified value is a file path; otherwise,
-        ///     <see langword="false"/>
+        ///     <see langword="false"/>.
         /// </param>
         public Crc32(string textOrFile, bool strIsFilePath)
         {
@@ -97,7 +97,7 @@
         ///     the specified text.
         /// </summary>
         /// <param name="str">
-        ///     The text to encrypt
+        ///     The text to encrypt.
         /// </param>
         public Crc32(string str) =>
             Encrypt(str);
