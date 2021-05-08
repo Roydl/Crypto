@@ -12,7 +12,7 @@
     ///     Provides functionality for translating data into the Base91 (formerly
     ///     written basE91) text representation and back.
     ///     <para>
-    ///         See more: <see href="https://base91.sourceforge.net/"/>.
+    ///         See more: <see href="http://base91.sourceforge.net/"/>.
     ///     </para>
     /// </summary>
     public sealed class Base91 : BinaryToTextSample
