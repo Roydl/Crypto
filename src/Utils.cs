@@ -12,20 +12,6 @@
     /// </summary>
     public static class Utils
     {
-        private static volatile Encoding _utf8NoBom;
-
-        internal static Encoding Utf8NoBom
-        {
-            get
-            {
-                if (_utf8NoBom != null)
-                    return _utf8NoBom;
-                var encoding = new UTF8Encoding(false);
-                Interlocked.CompareExchange(ref _utf8NoBom, encoding, null);
-                return _utf8NoBom;
-            }
-        }
-
         private static ReadOnlySpan<Lazy<BinaryToTextSample>> LazyBinaryToTextInstances => new Lazy<BinaryToTextSample>[]
         {
             new(() => new Radix2(), LazyThreadSafetyMode.ExecutionAndPublication),

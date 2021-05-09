@@ -15,7 +15,7 @@
         private const int HashLength = 8;
         private const uint DefaultRawHash = 0u;
         private const string ExpectedTestHash = "03dd01a1";
-        private const string ExpectedRangeHash = "7707832f";
+        private const string ExpectedRangeHash = "f923cf3f";
         private const string TestFilePath = ".\\testFileChecksum.Adler32";
 
         private static readonly TestCaseData[] TestData =
@@ -78,7 +78,7 @@
                     hash = Vars.QuoteStr.Encrypt(Algorithm);
                     break;
                 case TestDataVarsType.RangeString:
-                    hash = Vars.CharRangeStr.Encrypt(Algorithm);
+                    hash = Vars.RangeStr.Encrypt(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -154,7 +154,7 @@
                     _instanceDefault.Encrypt(Vars.QuoteStr);
                     break;
                 case TestDataVarsType.RangeString:
-                    _instanceDefault.Encrypt(Vars.CharRangeStr);
+                    _instanceDefault.Encrypt(Vars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

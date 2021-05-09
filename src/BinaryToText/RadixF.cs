@@ -65,7 +65,7 @@
                 while ((i = inputStream.ReadByte()) != -1)
                 {
                     var s = i.ToString("x2", CultureInfo.CurrentCulture).PadLeft(2, '0');
-                    foreach (var b in Utils.Utf8NoBom.GetBytes(s))
+                    foreach (var b in Encoding.UTF8.GetBytes(s))
                         WriteLine(outputStream, b, lineLength, ref p);
                 }
             }

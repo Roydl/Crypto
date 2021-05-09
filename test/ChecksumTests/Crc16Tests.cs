@@ -15,7 +15,7 @@
         private const int HashLength = 4;
         private const ushort DefaultRawHash = 0;
         private const string ExpectedTestHash = "a258";
-        private const string ExpectedRangeHash = "00fe";
+        private const string ExpectedRangeHash = "113b";
         private const string TestFilePath = ".\\testFileChecksum.Crc16";
 
         private static readonly TestCaseData[] TestData =
@@ -78,7 +78,7 @@
                     hash = Vars.QuoteStr.Encrypt(Algorithm);
                     break;
                 case TestDataVarsType.RangeString:
-                    hash = Vars.CharRangeStr.Encrypt(Algorithm);
+                    hash = Vars.RangeStr.Encrypt(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -154,7 +154,7 @@
                     _instanceDefault.Encrypt(Vars.QuoteStr);
                     break;
                 case TestDataVarsType.RangeString:
-                    _instanceDefault.Encrypt(Vars.CharRangeStr);
+                    _instanceDefault.Encrypt(Vars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

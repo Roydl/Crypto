@@ -77,7 +77,7 @@
                 throw new ArgumentNullException(nameof(text));
             if (text.Length < 1)
                 throw new ArgumentException(ExceptionMessages.IsEmpty, nameof(text));
-            Encrypt(Utils.Utf8NoBom.GetBytes(text));
+            Encrypt(Encoding.UTF8.GetBytes(text));
         }
 
         /// <summary>
@@ -175,7 +175,7 @@
                 throw new ArgumentNullException(nameof(text));
             if (algorithm == null)
                 throw new ArgumentNullException(nameof(algorithm));
-            var ba = Utils.Utf8NoBom.GetBytes(text);
+            var ba = Encoding.UTF8.GetBytes(text);
             using var csp = algorithm;
             RawHash = csp.ComputeHash(ba);
         }

@@ -15,7 +15,7 @@
         private const int HashLength = 128;
         private const byte[] DefaultRawHash = null;
         private const string ExpectedTestHash = "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31";
-        private const string ExpectedRangeHash = "8a2f82f0cbd5ddaf158183b13a7e45f7632156abb6c81c8e62897ed6deb9fef69731cf97b1995ebe4349102dd64929a6d17fd92d3e2fb29910e8f418c9941e0b";
+        private const string ExpectedRangeHash = "0523f0b765970e2d2b04eb14e2f797b0c4d4b348b02dc5b7d16e49a0fdff3328ab711490b02b9fb6d7c71c7ac529e2c98c2719b7cf7561b1221b33397931af74";
         private const string TestFilePath = ".\\testFileChecksum.Sha512";
 
         private static readonly TestCaseData[] TestData =
@@ -78,7 +78,7 @@
                     hash = Vars.QuoteStr.Encrypt(Algorithm);
                     break;
                 case TestDataVarsType.RangeString:
-                    hash = Vars.CharRangeStr.Encrypt(Algorithm);
+                    hash = Vars.RangeStr.Encrypt(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -154,7 +154,7 @@
                     _instanceDefault.Encrypt(Vars.QuoteStr);
                     break;
                 case TestDataVarsType.RangeString:
-                    _instanceDefault.Encrypt(Vars.CharRangeStr);
+                    _instanceDefault.Encrypt(Vars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

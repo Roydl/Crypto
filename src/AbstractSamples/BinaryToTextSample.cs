@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Text;
     using Properties;
 
     /// <summary>
@@ -13,7 +14,7 @@
         /// <summary>
         ///     Gets the separator.
         /// </summary>
-        protected static readonly byte[] Separator = Utils.Utf8NoBom.GetBytes(Environment.NewLine);
+        protected static readonly byte[] Separator = Encoding.UTF8.GetBytes(Environment.NewLine);
 
         /// <summary>
         ///     Encodes the specified input stream into the specified output stream.
@@ -73,7 +74,7 @@
             using var msi = new MemoryStream(bytes);
             using var mso = new MemoryStream();
             EncodeStream(msi, mso, lineLength);
-            return Utils.Utf8NoBom.GetString(mso.ToArray());
+            return Encoding.UTF8.GetString(mso.ToArray());
         }
 
         /// <summary>
@@ -92,7 +93,7 @@
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
-            var ba = Utils.Utf8NoBom.GetBytes(text);
+            var ba = Encoding.UTF8.GetBytes(text);
             return EncodeBytes(ba, lineLength);
         }
 
@@ -170,7 +171,7 @@
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             using var ms = new MemoryStream();
             EncodeStream(fs, ms, lineLength);
-            return Utils.Utf8NoBom.GetString(ms.ToArray());
+            return Encoding.UTF8.GetString(ms.ToArray());
         }
 
         /// <summary>
@@ -205,7 +206,7 @@
         {
             if (code == null)
                 throw new ArgumentNullException(nameof(code));
-            var ba = Utils.Utf8NoBom.GetBytes(code);
+            var ba = Encoding.UTF8.GetBytes(code);
             using var msi = new MemoryStream(ba);
             using var mso = new MemoryStream();
             DecodeStream(msi, mso);
@@ -226,7 +227,7 @@
             var ba = DecodeBytes(code);
             if (ba == null)
                 throw new NullReferenceException();
-            return Utils.Utf8NoBom.GetString(ba);
+            return Encoding.UTF8.GetString(ba);
         }
 
         /// <summary>

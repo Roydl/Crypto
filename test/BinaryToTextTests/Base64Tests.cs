@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Text;
     using AbstractSamples;
     using BinaryToText;
     using NUnit.Framework;
@@ -82,7 +83,7 @@
                     decoded = encoded.DecodeString();
                     break;
                 case TestDataVarsType.RangeString:
-                    original = Vars.ByteRangeStr;
+                    original = Vars.RangeStr;
                     encoded = ((string)original).Encode();
                     decoded = encoded.DecodeString();
                     break;
@@ -143,11 +144,11 @@
                     {
                         using var mso = new MemoryStream();
                         _instance.EncodeStream(msi, mso);
-                        encoded = Vars.Utf8NoBom.GetString(mso.ToArray());
+                        encoded = Encoding.UTF8.GetString(mso.ToArray());
                     }
 
                     // decode
-                    using (var msi = new MemoryStream(Vars.Utf8NoBom.GetBytes(encoded)))
+                    using (var msi = new MemoryStream(Encoding.UTF8.GetBytes(encoded)))
                     {
                         using var mso = new MemoryStream();
                         _instance.DecodeStream(msi, mso);
@@ -176,7 +177,7 @@
                     decoded = _instance.DecodeString(encoded);
                     break;
                 case TestDataVarsType.RangeString:
-                    original = Vars.ByteRangeStr;
+                    original = Vars.RangeStr;
                     encoded = _instance.EncodeString((string)original);
                     decoded = _instance.DecodeString(encoded);
                     break;

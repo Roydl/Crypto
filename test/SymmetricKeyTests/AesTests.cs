@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Security.Cryptography;
+    using System.Text;
     using AbstractSamples;
     using NUnit.Framework;
     using SymmetricKey;
@@ -15,7 +16,7 @@
     {
         private const string TestFileSrcPath = ".\\testSymmetricKey.Src.Aes";
         private const string TestFileDestPath = ".\\testSymmetricKey.Dest.Aes";
-        public static readonly string RangeStr = Vars.CharRangeStr;
+        public static readonly string RangeStr = Vars.RangeStr;
 
         private static readonly TestCaseData[] TestData =
         {
@@ -125,7 +126,7 @@
                         decrypted = instance.DecryptBytes(encrypted);
                         break;
                     case TestDataVarsType.TestString:
-                        original = Vars.Utf8NoBom.GetBytes(Vars.TestStr);
+                        original = Encoding.UTF8.GetBytes(Vars.TestStr);
                         encrypted = instance.EncryptBytes((byte[])original);
                         decrypted = instance.DecryptBytes(encrypted);
                         break;
@@ -137,12 +138,12 @@
                         decrypted = instance.DecryptFile(TestFileDestPath);
                         break;
                     case TestDataVarsType.QuoteString:
-                        original = Vars.Utf8NoBom.GetBytes(Vars.QuoteStr);
+                        original = Encoding.UTF8.GetBytes(Vars.QuoteStr);
                         encrypted = instance.EncryptBytes((byte[])original);
                         decrypted = instance.DecryptBytes(encrypted);
                         break;
                     case TestDataVarsType.RangeString:
-                        original = Vars.Utf8NoBom.GetBytes(Vars.ByteRangeStr);
+                        original = Encoding.UTF8.GetBytes(Vars.RangeStr);
                         encrypted = instance.EncryptBytes((byte[])original);
                         decrypted = instance.DecryptBytes(encrypted);
                         break;

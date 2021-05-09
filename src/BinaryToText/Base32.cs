@@ -145,7 +145,7 @@
             {
                 int i;
                 var buf = new byte[16384];
-                var c32 = Utils.Utf8NoBom.GetString(CharacterTable32);
+                var c32 = Encoding.UTF8.GetString(CharacterTable32);
                 while ((i = inputStream.Read(buf, 0, buf.Length)) > 0)
                 {
                     var ba = buf.Take(i).Where(b => (int)b is not ('\0' or '\t' or '\n' or '\r' or ' ')).TakeWhile(b => b != '=').ToArray();

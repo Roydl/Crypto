@@ -15,7 +15,7 @@
         private const int HashLength = 16;
         private const ulong DefaultRawHash = 0uL;
         private const string ExpectedTestHash = "02f6563f4a3751ff";
-        private const string ExpectedRangeHash = "3a0a607fe6fade7a";
+        private const string ExpectedRangeHash = "59d3e35dccce4de9";
         private const string TestFilePath = ".\\testFileChecksum.Crc64";
 
         private static readonly TestCaseData[] TestData =
@@ -78,7 +78,7 @@
                     hash = Vars.QuoteStr.Encrypt(Algorithm);
                     break;
                 case TestDataVarsType.RangeString:
-                    hash = Vars.CharRangeStr.Encrypt(Algorithm);
+                    hash = Vars.RangeStr.Encrypt(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -154,7 +154,7 @@
                     _instanceDefault.Encrypt(Vars.QuoteStr);
                     break;
                 case TestDataVarsType.RangeString:
-                    _instanceDefault.Encrypt(Vars.CharRangeStr);
+                    _instanceDefault.Encrypt(Vars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

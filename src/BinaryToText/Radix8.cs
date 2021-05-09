@@ -64,7 +64,7 @@
                 while ((i = inputStream.ReadByte()) != -1)
                 {
                     var s = Convert.ToString(i, 8).PadLeft(3, '0');
-                    foreach (var b in Utils.Utf8NoBom.GetBytes(s))
+                    foreach (var b in Encoding.UTF8.GetBytes(s))
                         WriteLine(outputStream, b, lineLength, ref p);
                 }
             }
