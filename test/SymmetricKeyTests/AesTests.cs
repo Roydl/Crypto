@@ -14,8 +14,8 @@
     [Platform(Include = Vars.PlatformInclude)]
     public class AesTests
     {
-        private const string TestFileSrcPath = ".\\testSymmetricKey.Src.Aes";
-        private const string TestFileDestPath = ".\\testSymmetricKey.Dest.Aes";
+        private static readonly string TestFileSrcPath = Path.GetTempFileName();
+        private static readonly string TestFileDestPath = Path.GetTempFileName();
         public static readonly string RangeStr = Vars.RangeStr;
 
         private static readonly TestCaseData[] TestData =

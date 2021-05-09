@@ -16,7 +16,7 @@
         private const byte[] DefaultRawHash = null;
         private const string ExpectedTestHash = "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa";
         private const string ExpectedRangeHash = "60dd4bf59289437e8f18bfbadb6613072d5c6f2c";
-        private const string TestFilePath = ".\\testFileChecksum.Sha1";
+        private static readonly string TestFilePath = Path.GetTempFileName();
 
         private static readonly TestCaseData[] TestData =
         {

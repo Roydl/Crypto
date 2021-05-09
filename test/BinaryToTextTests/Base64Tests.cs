@@ -14,8 +14,8 @@
     {
         private const string ExpectedTestEncoded = "VGVzdA==";
         private const string ExpectedRangeEncoded = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn/CgMKBwoLCg8KEwoXChsKHwojCicKKwovCjMKNwo7Cj8KQwpHCksKTwpTClcKWwpfCmMKZwprCm8Kcwp3CnsKfwqDCocKiwqPCpMKlwqbCp8KowqnCqsKrwqzCrcKuwq/CsMKxwrLCs8K0wrXCtsK3wrjCucK6wrvCvMK9wr7Cv8OAw4HDgsODw4TDhcOGw4fDiMOJw4rDi8OMw43DjsOPw5DDkcOSw5PDlMOVw5bDl8OYw5nDmsObw5zDncOew5/DoMOhw6LDo8Okw6XDpsOnw6jDqcOqw6vDrMOtw67Dr8Oww7HDssOzw7TDtcO2w7fDuMO5w7rDu8O8w73Dvg==";
-        private const string TestFileSrcPath = ".\\testBinToText.Src.Base64";
-        private const string TestFileDestPath = ".\\testBinToText.Dest.Base64";
+        private static readonly string TestFileSrcPath = Path.GetTempFileName();
+        private static readonly string TestFileDestPath = Path.GetTempFileName();
 
         private static readonly TestCaseData[] TestData =
         {

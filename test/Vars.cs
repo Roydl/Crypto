@@ -24,11 +24,11 @@
         public static string RangeStr { get; } = new(Enumerable.Range(byte.MinValue, byte.MaxValue).Select(i => (char)i).ToArray());
 
         public static int GetRandomInt() =>
-            Randomizer.Next(1, 1048575);
+            Randomizer.Next(1, short.MaxValue);
 
         public static byte[] GetRandomBytes()
         {
-            var bytes = new byte[Randomizer.Next(ushort.MaxValue, 1048575)];
+            var bytes = new byte[Randomizer.Next(short.MaxValue, ushort.MaxValue)];
             Randomizer.NextBytes(bytes);
             return bytes;
         }

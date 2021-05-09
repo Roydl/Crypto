@@ -15,8 +15,8 @@
         private const BinaryToTextEncoding Algorithm = BinaryToTextEncoding.Base85;
         private const string ExpectedTestEncoded = "<+U,m";
         private const string ExpectedRangeEncoded = "!!*-'\"9eu7#RLhG$k3[W&.oNg'GVB\"(`=52*$$(B+<_pR,UFcb-n-Vr/1iJ-0JP==1c70M3&s#]4?Ykm5X@_(6q'R884cEH9MJ8X:f1+h<)lt#=BSg3>[:ZC?t!MSA7]@cBPD3sCi+'.E,fo>FEMbNG^4U^I!pHn_LTLS_LfXW_M#d[_M5p__MH'c_MZ3g_Ml?k_N)Ko_N;Ws_NMd\"_N_p&_Nr'*_O/3._OA?2_OSK6_OeW:_P\"c>_P4oB_PG&F_PY2J_Pk>N_Q(JR_Q:VV_QLbZ_Q^n^_Qq%b_R.1f_R@=j_RRIn_RdUr_S!b!_S3n%_goXU_h,dY_h>p]_hQ'a_hc3e_hu?i_i2Km_iDWq_iVcu_ihp$_j&'(_j83,_jJ?0_j\\K4_jnW8_k+c<_k=o@_kP&D_kb2H_kt>L_l1JP_lCVT_lUbX_lgn\\_m%%`_m71d_mI=h_m[Il_mmUp_n*at_n<n#_nH";
-        private const string TestFileSrcPath = ".\\testBinToText.Src.Base85";
-        private const string TestFileDestPath = ".\\testBinToText.Dest.Base85";
+        private static readonly string TestFileSrcPath = Path.GetTempFileName();
+        private static readonly string TestFileDestPath = Path.GetTempFileName();
 
         private static readonly TestCaseData[] TestData =
         {
