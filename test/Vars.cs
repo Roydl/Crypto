@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto.Test
 {
     using System;
+    using System.IO;
     using System.Linq;
 
     public enum TestDataVarsType
@@ -31,6 +32,22 @@
             var bytes = new byte[Randomizer.Next(short.MaxValue, ushort.MaxValue)];
             Randomizer.NextBytes(bytes);
             return bytes;
+        }
+
+        public static string GetTempFilePath()
+        {
+            var dir = Environment.CurrentDirectory;
+            try
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+            catch
+            {
+                dir = AppDomain.CurrentDomain.BaseDirectory;
+            }
+            var name = $"test-{Guid.NewGuid()}";
+            return Path.Combine(dir, name);
         }
     }
 }

@@ -16,7 +16,7 @@
         private const uint DefaultRawHash = 0u;
         private const string ExpectedTestHash = "03dd01a1";
         private const string ExpectedRangeHash = "f923cf3f";
-        private static readonly string TestFilePath = Path.GetTempFileName();
+        private static readonly string TestFilePath = Vars.GetTempFilePath();
 
         private static readonly TestCaseData[] TestData =
         {

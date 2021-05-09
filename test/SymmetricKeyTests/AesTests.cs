@@ -14,8 +14,8 @@
     [Platform(Include = Vars.PlatformInclude)]
     public class AesTests
     {
-        private static readonly string TestFileSrcPath = Path.GetTempFileName();
-        private static readonly string TestFileDestPath = Path.GetTempFileName();
+        private static readonly string TestFileSrcPath = Vars.GetTempFilePath();
+        private static readonly string TestFileDestPath = Vars.GetTempFilePath();
         public static readonly string RangeStr = Vars.RangeStr;
 
         private static readonly TestCaseData[] TestData =

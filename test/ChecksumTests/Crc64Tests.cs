@@ -16,7 +16,7 @@
         private const ulong DefaultRawHash = 0uL;
         private const string ExpectedTestHash = "02f6563f4a3751ff";
         private const string ExpectedRangeHash = "59d3e35dccce4de9";
-        private static readonly string TestFilePath = Path.GetTempFileName();
+        private static readonly string TestFilePath = Vars.GetTempFilePath();
 
         private static readonly TestCaseData[] TestData =
         {
