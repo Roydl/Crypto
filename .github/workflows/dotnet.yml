@@ -1,4 +1,4 @@
-name: .NET Core 5.0.x
+name: build+test
 
 on:
   push:
