@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>Roydl.Crypto</AssemblyName>
     <RootNamespace>Roydl.Crypto</RootNamespace>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -9,18 +10,21 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Provides Base2/8/10/16/32/64/85/91 encoding/decoding; AES-128/192/256 encryption/decryption; Adler32, CRC-16/32/64, MD5 and SHA-1/2(256/384/512) encryption.</Description>
+    <Description>Provides AES-128/192/256 encryption/decryption; Adler32, CRC-16/32/64, MD5 and SHA-1/2(256/384/512) encryption.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
-    <PackageTags>encryption decryption encoding decoding ascii85 base32 base64 base64 base85 base91 adler32 crc crc16 crc32 crc64 md5 sha sha1 sha256 sha384 sha512 aes aes128 aes192 aes256</PackageTags>
+    <PackageTags>encryption decryption adler32 crc16 crc32 crc64 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.5</Version>
-    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
+    <PackageReleaseNotes>- Removed binary-to-text encoding
+  - Can be found here: https://github.com/Roydl/Text
+- Restruced some classes to avoid name conflicts
+- Minor fixes</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -44,10 +48,6 @@
       <PackagePath></PackagePath>
       <Visible>false</Visible>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
