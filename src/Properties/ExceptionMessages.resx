@@ -117,24 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CharsInStreamAreInvalid" xml:space="preserve">
-    <value>The input stream contains invalid characters.</value>
-  </data>
   <data name="DestPathNotValid" xml:space="preserve">
     <value>The destination path is invalid.</value>
   </data>
   <data name="FileNotFound" xml:space="preserve">
     <value>Could not find file.</value>
   </data>
-  <data name="FollowingCharCodeIsInvalid" xml:space="preserve">
-    <value>The following character code is invalid: </value>
-    <comment>+</comment>
-  </data>
   <data name="IsEmpty" xml:space="preserve">
     <value>Parameter is empty.</value>
-  </data>
-  <data name="LastBlockIsSingleByte" xml:space="preserve">
-    <value>The last block cannot be a single byte.</value>
   </data>
   <data name="SizeTooSmall" xml:space="preserve">
     <value>Parameter size is too small.</value>

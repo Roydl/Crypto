@@ -61,15 +61,6 @@ namespace Roydl.Crypto.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The input stream contains invalid characters..
-        /// </summary>
-        internal static string CharsInStreamAreInvalid {
-            get {
-                return ResourceManager.GetString("CharsInStreamAreInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The destination path is invalid..
         /// </summary>
         internal static string DestPathNotValid {
@@ -88,29 +79,11 @@ namespace Roydl.Crypto.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following character code is invalid: .
-        /// </summary>
-        internal static string FollowingCharCodeIsInvalid {
-            get {
-                return ResourceManager.GetString("FollowingCharCodeIsInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Parameter is empty..
         /// </summary>
         internal static string IsEmpty {
             get {
                 return ResourceManager.GetString("IsEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The last block cannot be a single byte..
-        /// </summary>
-        internal static string LastBlockIsSingleByte {
-            get {
-                return ResourceManager.GetString("LastBlockIsSingleByte", resourceCulture);
             }
         }
         
