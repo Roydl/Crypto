@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute SHA-384 hashes.
     /// </summary>
-    public sealed class Sha384 : ChecksumSample, IEquatable<Sha384>
+    public sealed class Sha384 : ChecksumAlgorithm, IEquatable<Sha384>
     {
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 96;
+        public override int HashSize => 96;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha384"/> class.

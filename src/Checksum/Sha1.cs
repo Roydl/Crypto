@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute SHA-1 hashes.
     /// </summary>
-    public sealed class Sha1 : ChecksumSample, IEquatable<Sha1>
+    public sealed class Sha1 : ChecksumAlgorithm, IEquatable<Sha1>
     {
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 40;
+        public override int HashSize => 40;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha1"/> class.

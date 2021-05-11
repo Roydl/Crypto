@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute MD5 hashes.
     /// </summary>
-    public sealed class Md5 : ChecksumSample, IEquatable<Md5>
+    public sealed class Md5 : ChecksumAlgorithm, IEquatable<Md5>
     {
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 32;
+        public override int HashSize => 32;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Md5"/> class.

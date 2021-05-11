@@ -2,53 +2,37 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute CRC-16/AUG-CCITT hashes.
     /// </summary>
-    public sealed class Crc16 : ChecksumSample, IEquatable<Crc16>
+    public sealed class Crc16 : ChecksumAlgorithm, IEquatable<Crc16>
     {
-        private const ushort Mask = 0xffff;
-        private const ushort Poly = 0x1021;
-        private const ushort Seed = 0x1d0f;
-        private static volatile IReadOnlyList<ushort> _crcTable;
+        private const int Bits = 16;
+
+        private const ushort Mask = 0xffff,
+                             Poly = 0x1021,
+                             Seed = 0x1d0f;
+
+        private const bool Swapped = false,
+                           Reversed = false;
+
+        private static volatile ushort[] _crcTable;
 
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 4;
+        public override int HashSize => 4;
 
-        /// <summary>
-        ///     Gets the raw data of computed hash.
-        /// </summary>
-        public new ushort RawHash { get; private set; }
-
-        private static IReadOnlyList<ushort> CrcTable
+        private static ReadOnlySpan<ushort> CrcTable
         {
             get
             {
-                if (_crcTable != null)
-                    return _crcTable;
-                var table = new ushort[256];
-                for (var i = 0; i < table.Length; ++i)
-                {
-                    var us = ushort.MinValue;
-                    var x = (ushort)(i << 8);
-                    for (var j = 0; j < 8; ++j)
-                    {
-                        if (((us ^ x) & 0x8000) != 0)
-                            us = (ushort)((us << 1) ^ Poly);
-                        else
-                            us <<= 1;
-                        x <<= 1;
-                    }
-                    table[i] = (ushort)(us & Mask);
-                }
-                Interlocked.CompareExchange(ref _crcTable, table, null);
+                if (_crcTable == null)
+                    Interlocked.CompareExchange(ref _crcTable, CreateTable(Poly, Swapped).ToArray(), null);
                 return _crcTable;
             }
         }
@@ -122,8 +106,10 @@
             int i;
             var us = Seed;
             while ((i = stream.ReadByte()) != -1)
-                us = (ushort)(((us << 8) ^ CrcTable[(us >> 8) ^ (0xff & i)]) & Mask);
-            RawHash = us;
+                ComputeHash(ref us, i, Swapped);
+            FinalizeHash(ref us, Reversed);
+            HashNumber = us;
+            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
         }
 
         /// <summary>
@@ -134,14 +120,14 @@
         ///     The <see cref="Crc16"/> instance to compare.
         /// </param>
         public bool Equals(Crc16 other) =>
-            other != null && RawHash == other.RawHash;
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
         ///     <see cref="object"/>.
         /// </summary>
         /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
+        ///     The <see cref="object"/> to compare.
         /// </param>
         public override bool Equals(object other) =>
             other is Crc16 item && Equals(item);
@@ -152,12 +138,41 @@
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
-        public override string ToString() =>
-            RawHash.ToString("x2", CultureInfo.CurrentCulture).PadLeft(HashLength, '0');
+        private static IEnumerable<ushort> CreateTable(ushort poly, bool swapped)
+        {
+            const ushort top = unchecked(1 << (Bits - 1));
+            for (var i = 0; i < 256; i++)
+            {
+                var x = (ushort)i;
+                if (swapped)
+                {
+                    for (var j = 0; j < 8; j++)
+                        x = (ushort)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
+                    yield return (ushort)(x & Mask);
+                    continue;
+                }
+                x <<= Bits - 8;
+                for (var j = 0; j < 8; j++)
+                    x = (ushort)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
+                yield return (ushort)(x & Mask);
+            }
+        }
+
+        private static void ComputeHash(ref ushort crc, int value, bool swapped)
+        {
+            if (swapped)
+            {
+                crc = (ushort)((crc >> 8) ^ (CrcTable[value ^ (crc & 0xff)] & Mask));
+                return;
+            }
+            crc = (ushort)(((crc << (Bits - 8)) ^ CrcTable[(crc >> 8) ^ (0xff & value)]) & Mask);
+        }
+
+        private static void FinalizeHash(ref ushort crc, bool reversed)
+        {
+            if (reversed)
+                crc = (ushort)~crc;
+        }
 
         /// <summary>
         ///     Determines whether two specified <see cref="Crc16"/> instances have same

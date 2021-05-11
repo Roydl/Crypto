@@ -2,48 +2,37 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute CRC-64/ECMA hashes.
     /// </summary>
-    public sealed class Crc64 : ChecksumSample, IEquatable<Crc64>
+    public sealed class Crc64 : ChecksumAlgorithm, IEquatable<Crc64>
     {
-        private const ulong Mask = 0xffffffffffffffffuL;
-        private const ulong Poly = 0x42f0e1eba9ea3693uL;
-        private const ulong Seed = 0x0000000000000000uL;
+        private const int Bits = 64;
+
+        private const ulong Mask = 0xffffffffffffffffuL,
+                            Poly = 0x42f0e1eba9ea3693uL,
+                            Seed = 0x0000000000000000uL;
+
+        private const bool Swapped = false,
+                           Reversed = false;
+
         private static volatile ulong[] _crcTable;
 
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 16;
+        public override int HashSize => 16;
 
-        /// <summary>
-        ///     Gets the raw data of computed hash.
-        /// </summary>
-        public new ulong RawHash { get; private set; }
-
-        private static IReadOnlyList<ulong> CrcTable
+        private static ReadOnlySpan<ulong> CrcTable
         {
             get
             {
-                if (_crcTable != null)
-                    return _crcTable;
-                const ulong top = 1uL << (64 - 1);
-                var table = new ulong[256];
-                for (var i = 0; i < table.Length; i++)
-                {
-                    var ul = (ulong)i;
-                    ul <<= 64 - 8;
-                    for (var j = 0; j < 8; j++)
-                        ul = (ul & top) != 0 ? (ul << 1) ^ Poly : ul << 1;
-                    table[i] = ul & Mask;
-                }
-                Interlocked.CompareExchange(ref _crcTable, table, default);
+                if (_crcTable == null)
+                    Interlocked.CompareExchange(ref _crcTable, CreateTable(Poly, Swapped).ToArray(), null);
                 return _crcTable;
             }
         }
@@ -117,8 +106,10 @@
             int i;
             var ul = Seed;
             while ((i = stream.ReadByte()) != -1)
-                ul = (CrcTable[(int)(((ul >> 56) ^ (ulong)i) & 0xffuL)] ^ (ul << 8)) & Mask;
-            RawHash = ul;
+                ComputeHash(ref ul, i, Swapped);
+            FinalizeHash(ref ul, Reversed);
+            HashNumber = ul;
+            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
         }
 
         /// <summary>
@@ -129,7 +120,7 @@
         ///     The <see cref="Crc64"/> instance to compare.
         /// </param>
         public bool Equals(Crc64 other) =>
-            other != null && RawHash == other.RawHash;
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
@@ -147,12 +138,41 @@
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
-        public override string ToString() =>
-            RawHash.ToString("x2", CultureInfo.CurrentCulture).PadLeft(HashLength, '0');
+        private static IEnumerable<ulong> CreateTable(ulong poly, bool swapped)
+        {
+            const ulong top = unchecked((ulong)1 << (Bits - 1));
+            for (var i = 0; i < 256; i++)
+            {
+                var x = (ulong)i;
+                if (swapped)
+                {
+                    for (var j = 0; j < 8; j++)
+                        x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                    yield return x & Mask;
+                    continue;
+                }
+                x <<= Bits - 8;
+                for (var j = 0; j < 8; j++)
+                    x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                yield return x & Mask;
+            }
+        }
+
+        private static void ComputeHash(ref ulong crc, int value, bool swapped)
+        {
+            if (swapped)
+            {
+                crc = ((crc >> 8) ^ CrcTable[(int)((ulong)value ^ (crc & 0xff))]) & Mask;
+                return;
+            }
+            crc = (CrcTable[(int)(((crc >> (Bits - 8)) ^ (ulong)value) & 0xffuL)] ^ (crc << 8)) & Mask;
+        }
+
+        private static void FinalizeHash(ref ulong crc, bool reversed)
+        {
+            if (reversed)
+                crc = ~crc;
+        }
 
         /// <summary>
         ///     Determines whether two specified <see cref="Crc64"/> instances have same

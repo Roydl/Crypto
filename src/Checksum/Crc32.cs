@@ -2,46 +2,37 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Threading;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute CRC-32/ISO-HDLC hashes.
     /// </summary>
-    public sealed class Crc32 : ChecksumSample, IEquatable<Crc32>
+    public sealed class Crc32 : ChecksumAlgorithm, IEquatable<Crc32>
     {
-        private const uint Mask = 0xffffffffu;
-        private const uint Poly = 0xedb88320u;
-        private const uint Seed = 0xffffffffu;
-        private static volatile IReadOnlyList<uint> _crcTable;
+        private const int Bits = 32;
+
+        private const uint Mask = 0xffffffffu,
+                           Poly = 0xedb88320u,
+                           Seed = 0xffffffffu;
+
+        private const bool Swapped = true,
+                           Reversed = true;
+
+        private static volatile uint[] _crcTable;
 
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 8;
+        public override int HashSize => 8;
 
-        /// <summary>
-        ///     Gets the raw data of computed hash.
-        /// </summary>
-        public new uint RawHash { get; private set; }
-
-        private static IReadOnlyList<uint> CrcTable
+        private static ReadOnlySpan<uint> CrcTable
         {
             get
             {
-                if (_crcTable != null)
-                    return _crcTable;
-                var table = new uint[256];
-                for (var i = 0; i < table.Length; i++)
-                {
-                    var ui = (uint)i;
-                    for (var j = 0; j < 8; j++)
-                        ui = (ui & 1) == 1 ? (ui >> 1) ^ Poly : ui >> 1;
-                    table[i] = ui & Mask;
-                }
-                Interlocked.CompareExchange(ref _crcTable, table, null);
+                if (_crcTable == null)
+                    Interlocked.CompareExchange(ref _crcTable, CreateTable(Poly, Swapped).ToArray(), null);
                 return _crcTable;
             }
         }
@@ -112,24 +103,13 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-
-            /* old code without table
             int i;
             var ui = Seed;
             while ((i = stream.ReadByte()) != -1)
-            {
-                ui ^= (uint)i;
-                for (var j = 0; j < 8; j++)
-                    ui = (uint)((ui >> 1) ^ (Polynomial & -(ui & 1)));
-            }
-            RawHash = ~ui;
-            */
-
-            int i;
-            var ui = Seed;
-            while ((i = stream.ReadByte()) != -1)
-                ui = ((ui >> 8) ^ CrcTable[(int)(i ^ (ui & 0xff))]) & Mask;
-            RawHash = ~ui;
+                ComputeHash(ref ui, i, Swapped);
+            FinalizeHash(ref ui, Reversed);
+            HashNumber = ui;
+            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
         }
 
         /// <summary>
@@ -140,7 +120,7 @@
         ///     The <see cref="Crc32"/> instance to compare.
         /// </param>
         public bool Equals(Crc32 other) =>
-            other != null && RawHash == other.RawHash;
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
@@ -158,12 +138,41 @@
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
-        public override string ToString() =>
-            RawHash.ToString("x2", CultureInfo.CurrentCulture).PadLeft(HashLength, '0');
+        private static IEnumerable<uint> CreateTable(uint poly, bool swapped)
+        {
+            const uint top = unchecked((uint)(1 << (Bits - 1)));
+            for (var i = 0; i < 256; i++)
+            {
+                var x = (uint)i;
+                if (swapped)
+                {
+                    for (var j = 0; j < 8; j++)
+                        x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                    yield return x & Mask;
+                    continue;
+                }
+                x <<= Bits - 8;
+                for (var j = 0; j < 8; j++)
+                    x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                yield return x & Mask;
+            }
+        }
+
+        private static void ComputeHash(ref uint crc, int value, bool swapped)
+        {
+            if (swapped)
+            {
+                crc = ((crc >> 8) ^ CrcTable[(int)(value ^ (crc & 0xff))]) & Mask;
+                return;
+            }
+            crc = (CrcTable[(int)(((crc >> (Bits - 8)) ^ (uint)value) & 0xffu)] ^ (crc << 8)) & Mask;
+        }
+
+        private static void FinalizeHash(ref uint crc, bool reversed)
+        {
+            if (reversed)
+                crc = ~crc;
+        }
 
         /// <summary>
         ///     Determines whether two specified <see cref="Crc32"/> instances have same

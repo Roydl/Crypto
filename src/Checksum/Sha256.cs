@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute SHA-256 hashes.
     /// </summary>
-    public sealed class Sha256 : ChecksumSample, IEquatable<Sha256>
+    public sealed class Sha256 : ChecksumAlgorithm, IEquatable<Sha256>
     {
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 64;
+        public override int HashSize => 64;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha256"/> class.

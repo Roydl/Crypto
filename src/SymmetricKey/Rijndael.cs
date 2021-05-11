@@ -3,12 +3,11 @@
     using System;
     using System.IO;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides enumerated bits of the key size.
     /// </summary>
-    public enum AesKeySize
+    public enum RijndaelKeySize
     {
         /// <summary>
         ///     128 bits.
@@ -30,10 +29,10 @@
     ///     Provides functionality to encrypt and decrypt data using Advanced
     ///     Encryption Standard algorithm.
     /// </summary>
-    public sealed class Aes : SymmetricKeySample
+    public sealed class Rijndael : SymmetricKeyAlgorithm
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Aes"/> class.
+        ///     Initializes a new instance of the <see cref="Rijndael"/> class.
         /// </summary>
         /// <param name="password">
         ///     The sequence of bytes which is used as password.
@@ -56,7 +55,7 @@
         /// <exception cref="ArgumentException">
         ///     salt size is smaller than 8 bytes.
         /// </exception>
-        public Aes(byte[] password, byte[] salt, int iterations = 1000, AesKeySize keySize = AesKeySize.Aes256) : base(password, salt, iterations, 128, (int)keySize) { }
+        public Rijndael(byte[] password, byte[] salt, int iterations = 1000, RijndaelKeySize keySize = RijndaelKeySize.Aes256) : base(password, salt, iterations, 128, (int)keySize) { }
 
         /// <summary>
         ///     Encrypts the specified input stream into the specified output stream.

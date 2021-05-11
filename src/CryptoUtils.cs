@@ -1,42 +1,16 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
-    using System.Threading;
-    using AbstractSamples;
-    using BinaryToText;
-    using Checksum;
 
     /// <summary>
     ///     Provides some basic utilities.
     /// </summary>
-    public static class Utils
+    public static class CryptoUtils
     {
-        private static ReadOnlySpan<Lazy<BinaryToTextSample>> LazyBinaryToTextInstances => new Lazy<BinaryToTextSample>[]
-        {
-            new(() => new Radix2(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Radix8(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new RadixA(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new RadixF(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Base32(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Base64(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Base85(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Base91(), LazyThreadSafetyMode.ExecutionAndPublication)
-        };
-
-        private static ReadOnlySpan<Lazy<ChecksumSample>> LazyChecksumInstances => new Lazy<ChecksumSample>[]
-        {
-            new(() => new Adler32(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Crc16(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Crc32(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Crc64(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Md5(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Sha1(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Sha256(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Sha384(), LazyThreadSafetyMode.ExecutionAndPublication),
-            new(() => new Sha512(), LazyThreadSafetyMode.ExecutionAndPublication)
-        };
-
         /// <summary>
         ///     Combines the specified hash codes.
         /// </summary>
@@ -148,12 +122,6 @@
             }
         }
 
-        internal static BinaryToTextSample GetDefaultInstance(BinaryToTextEncoding algorithm) =>
-            LazyBinaryToTextInstances[(int)algorithm].Value;
-
-        internal static ChecksumSample GetDefaultInstance(ChecksumAlgorithm algorithm) =>
-            LazyChecksumInstances[(int)algorithm].Value;
-
         internal static void CombineHashes(StringBuilder builder, string hash1, string hash2, bool braces)
         {
             if (braces)
@@ -177,5 +145,36 @@
             if (braces)
                 builder.Append('}');
         }
+
+        internal static void DestroyElement<TElement>(ref TElement element) where TElement : class
+        {
+            if (element == null)
+                return;
+            var isCollection = false;
+            switch (element)
+            {
+                case ICollection:
+                    isCollection = element is not Array;
+                    break;
+                case IDisposable disposable:
+                    disposable.Dispose();
+                    break;
+            }
+            var generation = GC.GetGeneration(element);
+            element = null;
+            GC.Collect(generation, GCCollectionMode.Forced);
+            if (isCollection)
+                GC.Collect();
+        }
+
+        internal static IEnumerable<byte> EnumerableBytes(ulong value, int length)
+        {
+            for (var i = --length; i > 0; i--)
+                yield return (byte)((value >> (8 * i)) & 0xff);
+            yield return (byte)(value & 0xff);
+        }
+
+        internal static byte[] GetBytes(ulong value, int length) =>
+            EnumerableBytes(value, length).ToArray();
     }
 }

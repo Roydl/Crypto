@@ -1,14 +1,12 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Globalization;
     using System.IO;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute Adler-32 hashes.
     /// </summary>
-    public sealed class Adler32 : ChecksumSample, IEquatable<Adler32>
+    public sealed class Adler32 : ChecksumAlgorithm, IEquatable<Adler32>
     {
         private const uint AMod = 0xfff1;
         private const uint Mask = 0xffffffffu;
@@ -16,12 +14,7 @@
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 8;
-
-        /// <summary>
-        ///     Gets the computed hash code value.
-        /// </summary>
-        public new uint RawHash { get; private set; }
+        public override int HashSize => 8;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Adler32"/> class.
@@ -103,7 +96,8 @@
                 uia[0] = (uia[0] + (uint)i) % AMod;
                 uia[1] = (uia[1] + uia[0]) % AMod;
             }
-            RawHash = ((uia[1] << 16) | uia[0]) & Mask;
+            HashNumber = ((uia[1] << 16) | uia[0]) & Mask;
+            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
         }
 
         /// <summary>
@@ -114,7 +108,7 @@
         ///     The <see cref="Adler32"/> instance to compare.
         /// </param>
         public bool Equals(Adler32 other) =>
-            other != null && RawHash == other.RawHash;
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
@@ -131,13 +125,6 @@
         /// </summary>
         public override int GetHashCode() =>
             GetType().GetHashCode();
-
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
-        public override string ToString() =>
-            RawHash.ToString("x2", CultureInfo.CurrentCulture).PadLeft(HashLength, '0');
 
         /// <summary>
         ///     Determines whether two specified <see cref="Adler32"/> instances have same

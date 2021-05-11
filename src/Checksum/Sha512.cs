@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
     using System.Security.Cryptography;
-    using AbstractSamples;
 
     /// <summary>
     ///     Provides functionality to compute SHA-512 hashes.
     /// </summary>
-    public sealed class Sha512 : ChecksumSample, IEquatable<Sha512>
+    public sealed class Sha512 : ChecksumAlgorithm, IEquatable<Sha512>
     {
         /// <summary>
         ///     Gets the required hash length.
         /// </summary>
-        public override int HashLength => 128;
+        public override int HashSize => 128;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha512"/> class.
