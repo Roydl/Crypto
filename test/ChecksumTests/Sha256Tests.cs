@@ -2,28 +2,26 @@
 {
     using System;
     using System.IO;
-    using AbstractSamples;
     using Checksum;
     using NUnit.Framework;
 
     [TestFixture]
-    [Parallelizable]
-    [Platform(Include = Vars.PlatformInclude)]
+    [NonParallelizable]
+    [Platform(Include = TestVars.PlatformInclude)]
     public class Sha256Tests
     {
         private const int HashLength = 64;
-        private const byte[] DefaultRawHash = null;
         private const string ExpectedTestHash = "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25";
         private const string ExpectedRangeHash = "7fb98786c16c175d232ab161b5e604c5792e6befd4e1e8d4ecac9d568a6db524";
-        private static readonly string TestFilePath = Vars.GetTempFilePath();
+        private static readonly string TestFilePath = TestVars.GetTempFilePath();
 
         private static readonly TestCaseData[] TestData =
         {
-            new(TestDataVarsType.TestStream, ExpectedTestHash),
-            new(TestDataVarsType.TestBytes, ExpectedTestHash),
-            new(TestDataVarsType.TestString, ExpectedTestHash),
-            new(TestDataVarsType.TestFile, ExpectedTestHash),
-            new(TestDataVarsType.RangeString, ExpectedRangeHash)
+            new(TestVarsType.TestStream, ExpectedTestHash),
+            new(TestVarsType.TestBytes, ExpectedTestHash),
+            new(TestVarsType.TestString, ExpectedTestHash),
+            new(TestVarsType.TestFile, ExpectedTestHash),
+            new(TestVarsType.RangeString, ExpectedRangeHash)
         };
 
         private static Sha256 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
@@ -32,11 +30,11 @@
         public void CreateInstances()
         {
             _instanceDefault = new Sha256();
-            using (var ms = new MemoryStream(Vars.TestBytes))
+            using (var ms = new MemoryStream(TestVars.TestBytes))
                 _instanceStream = new Sha256(ms);
-            _instanceByteArray = new Sha256(Vars.TestBytes);
-            _instanceString = new Sha256(Vars.TestStr);
-            File.WriteAllBytes(TestFilePath, Vars.TestBytes);
+            _instanceByteArray = new Sha256(TestVars.TestBytes);
+            _instanceString = new Sha256(TestVars.TestStr);
+            File.WriteAllBytes(TestFilePath, TestVars.TestBytes);
             _instanceFilePath = new Sha256(TestFilePath, true);
         }
 
@@ -55,29 +53,26 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void ExtensionEncrypt(TestDataVarsType varsType, string expectedHash)
+        public void ExtensionEncrypt(TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
             {
-                case TestDataVarsType.TestStream:
-                    using (var ms = new MemoryStream(Vars.TestBytes))
+                case TestVarsType.TestStream:
+                    using (var ms = new MemoryStream(TestVars.TestBytes))
                         hash = ms.Encrypt();
                     break;
-                case TestDataVarsType.TestBytes:
-                    hash = Vars.TestBytes.Encrypt();
+                case TestVarsType.TestBytes:
+                    hash = TestVars.TestBytes.Encrypt();
                     break;
-                case TestDataVarsType.TestString:
-                    hash = Vars.TestStr.Encrypt();
+                case TestVarsType.TestString:
+                    hash = TestVars.TestStr.Encrypt();
                     break;
-                case TestDataVarsType.TestFile:
+                case TestVarsType.TestFile:
                     hash = TestFilePath.EncryptFile();
                     break;
-                case TestDataVarsType.QuoteString:
-                    hash = Vars.QuoteStr.Encrypt();
-                    break;
-                case TestDataVarsType.RangeString:
-                    hash = Vars.RangeStr.Encrypt();
+                case TestVarsType.RangeString:
+                    hash = TestVars.RangeStr.Encrypt();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -86,74 +81,66 @@
         }
 
         [Test]
-        [TestCase(HashLength, DefaultRawHash)]
+        [TestCase(HashLength)]
         [Category("New")]
-        public void InstanceCtor(int hashLength, byte[] defaultRawHash)
+        public void InstanceCtor(int hashLength)
         {
             var instanceDefault = new Sha256();
             Assert.IsInstanceOf(typeof(Sha256), instanceDefault);
-            Assert.IsInstanceOf(typeof(ChecksumSample), instanceDefault);
+            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashLength, instanceDefault.HashLength);
-            Assert.AreEqual(hashLength, instanceDefault.Hash.Length);
-            Assert.AreEqual(defaultRawHash, instanceDefault.RawHash);
+            Assert.AreEqual(hashLength, instanceDefault.HashSize);
+            Assert.AreEqual(null, instanceDefault.RawHash);
 
             Sha256 instanceStream;
-            using (var ms = new MemoryStream(Vars.TestBytes))
+            using (var ms = new MemoryStream(TestVars.TestBytes))
                 instanceStream = new Sha256(ms);
             Assert.IsInstanceOf(typeof(Sha256), instanceStream);
-            Assert.IsInstanceOf(typeof(ChecksumSample), instanceStream);
+            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceStream);
             Assert.AreNotSame(instanceDefault, instanceStream);
             Assert.AreEqual(hashLength, instanceStream.Hash.Length);
-            Assert.AreNotEqual(defaultRawHash, instanceStream.RawHash);
 
-            var instanceByteArray = new Sha256(Vars.TestBytes);
+            var instanceByteArray = new Sha256(TestVars.TestBytes);
             Assert.IsInstanceOf(typeof(Sha256), instanceByteArray);
-            Assert.IsInstanceOf(typeof(ChecksumSample), instanceByteArray);
+            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceByteArray);
             Assert.AreNotSame(instanceStream, instanceByteArray);
             Assert.AreEqual(hashLength, instanceByteArray.Hash.Length);
-            Assert.AreNotEqual(defaultRawHash, instanceByteArray.RawHash);
 
-            var instanceString = new Sha256(Vars.TestStr);
+            var instanceString = new Sha256(TestVars.TestStr);
             Assert.IsInstanceOf(typeof(Sha256), instanceString);
-            Assert.IsInstanceOf(typeof(ChecksumSample), instanceString);
+            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceString);
             Assert.AreNotSame(instanceByteArray, instanceString);
             Assert.AreEqual(hashLength, instanceString.Hash.Length);
-            Assert.AreNotEqual(defaultRawHash, instanceString.RawHash);
 
             var instanceFilePath = new Sha256(TestFilePath, true);
             Assert.IsInstanceOf(typeof(Sha256), instanceFilePath);
-            Assert.IsInstanceOf(typeof(ChecksumSample), instanceFilePath);
+            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceFilePath);
             Assert.AreNotSame(instanceString, instanceFilePath);
             Assert.AreEqual(hashLength, instanceFilePath.Hash.Length);
-            Assert.AreNotEqual(defaultRawHash, instanceFilePath.RawHash);
         }
 
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Method")]
-        public void InstanceEncrypt(TestDataVarsType varsType, string expectedHash)
+        public void InstanceEncrypt(TestVarsType varsType, string expectedHash)
         {
             switch (varsType)
             {
-                case TestDataVarsType.TestStream:
-                    using (var ms = new MemoryStream(Vars.TestBytes))
+                case TestVarsType.TestStream:
+                    using (var ms = new MemoryStream(TestVars.TestBytes))
                         _instanceDefault.Encrypt(ms);
                     break;
-                case TestDataVarsType.TestBytes:
-                    _instanceDefault.Encrypt(Vars.TestBytes);
+                case TestVarsType.TestBytes:
+                    _instanceDefault.Encrypt(TestVars.TestBytes);
                     break;
-                case TestDataVarsType.TestString:
-                    _instanceDefault.Encrypt(Vars.TestStr);
+                case TestVarsType.TestString:
+                    _instanceDefault.Encrypt(TestVars.TestStr);
                     break;
-                case TestDataVarsType.TestFile:
+                case TestVarsType.TestFile:
                     _instanceDefault.EncryptFile(TestFilePath);
                     break;
-                case TestDataVarsType.QuoteString:
-                    _instanceDefault.Encrypt(Vars.QuoteStr);
-                    break;
-                case TestDataVarsType.RangeString:
-                    _instanceDefault.Encrypt(Vars.RangeStr);
+                case TestVarsType.RangeString:
+                    _instanceDefault.Encrypt(TestVars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

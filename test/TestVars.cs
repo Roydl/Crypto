@@ -4,17 +4,16 @@
     using System.IO;
     using System.Linq;
 
-    public enum TestDataVarsType
+    public enum TestVarsType
     {
         TestStream,
         TestBytes,
         TestString,
         TestFile,
-        QuoteString,
         RangeString
     }
 
-    public static class Vars
+    public static class TestVars
     {
         public const string PlatformInclude = "Win32NT,Linux";
         public const string QuoteStr = "We know what we are, but know not what we may be.";
