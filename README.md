@@ -44,8 +44,9 @@ string md5hash = value.Encrypt(ChecksumAlgo.Md5);
 // SHA-256 is used by default if `ChecksumAlgo` is not set.
 string sha256hash = value.Encrypt();
 
-// The `EncryptRaw` extension method is CRC-32 only.
-uint crc32raw = value.EncryptRaw();
+// The `EncryptRaw` extension method retrieves an unsigned 64-bit integer
+// representation of the computed hash.
+ulong sha256raw = value.EncryptRaw();
 ```
 
 ---
