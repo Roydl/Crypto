@@ -33,20 +33,12 @@
             return bytes;
         }
 
-        public static string GetTempFilePath()
+        public static string GetTempFilePath(string name)
         {
             var dir = Environment.CurrentDirectory;
-            try
-            {
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-            }
-            catch
-            {
+            if (!Directory.Exists(dir)) // broken dir on some test platforms 
                 dir = AppDomain.CurrentDomain.BaseDirectory;
-            }
-            var name = $"test-{Guid.NewGuid()}";
-            return Path.Combine(dir, name);
+            return Path.Combine(dir, $"test-{name}-{Guid.NewGuid()}.tmp");
         }
     }
 }

@@ -14,7 +14,7 @@
         private const int HashLength = 16;
         private const string ExpectedTestHash = "02f6563f4a3751ff";
         private const string ExpectedRangeHash = "59d3e35dccce4de9";
-        private static readonly string TestFilePath = TestVars.GetTempFilePath();
+        private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
         {
@@ -39,16 +39,14 @@
             _instanceFilePath = new Crc64(TestFilePath, true);
         }
 
-        [OneTimeSetUp]
-        public void ProcessExit()
+        [OneTimeTearDown]
+        public void CleanUpTestFiles()
         {
-            AppDomain.CurrentDomain.ProcessExit += RemoveTestFile;
-
-            static void RemoveTestFile(object sender, EventArgs args)
-            {
-                if (File.Exists(TestFilePath))
-                    File.Delete(TestFilePath);
-            }
+            var dir = Path.GetDirectoryName(TestFilePath);
+            if (dir == null)
+                return;
+            foreach (var file in Directory.GetFiles(dir, $"test-{Algorithm}-*.tmp"))
+                File.Delete(file);
         }
 
         [Test]

@@ -14,7 +14,7 @@
         private const int HashLength = 32;
         private const string ExpectedTestHash = "0cbc6611f5540bd0809a388dc95a615b";
         private const string ExpectedRangeHash = "5a0c0409012b80574187d68e43857c5f";
-        private static readonly string TestFilePath = TestVars.GetTempFilePath();
+        private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
         {
@@ -39,16 +39,14 @@
             _instanceFilePath = new Md5(TestFilePath, true);
         }
 
-        [OneTimeSetUp]
-        public void ProcessExit()
+        [OneTimeTearDown]
+        public void CleanUpTestFiles()
         {
-            AppDomain.CurrentDomain.ProcessExit += RemoveTestFile;
-
-            static void RemoveTestFile(object sender, EventArgs args)
-            {
-                if (File.Exists(TestFilePath))
-                    File.Delete(TestFilePath);
-            }
+            var dir = Path.GetDirectoryName(TestFilePath);
+            if (dir == null)
+                return;
+            foreach (var file in Directory.GetFiles(dir, $"test-{Algorithm}-*.tmp"))
+                File.Delete(file);
         }
 
         [Test]

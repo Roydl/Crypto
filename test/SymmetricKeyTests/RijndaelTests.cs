@@ -13,8 +13,8 @@
     [Platform(Include = TestVars.PlatformInclude)]
     public class RijndaelTests
     {
-        private static readonly string TestFileSrcPath = TestVars.GetTempFilePath();
-        private static readonly string TestFileDestPath = TestVars.GetTempFilePath();
+        private static readonly string TestFileSrcPath = TestVars.GetTempFilePath(nameof(Rijndael));
+        private static readonly string TestFileDestPath = TestVars.GetTempFilePath(nameof(Rijndael));
 
         private static readonly TestCaseData[] TestData =
         {
@@ -36,18 +36,14 @@
             File.WriteAllText(TestFileSrcPath, TestVars.TestStr);
         }
 
-        [OneTimeSetUp]
-        public void ProcessExit()
+        [OneTimeTearDown]
+        public void CleanUpTestFiles()
         {
-            AppDomain.CurrentDomain.ProcessExit += RemoveTestFile;
-
-            static void RemoveTestFile(object sender, EventArgs args)
-            {
-                if (File.Exists(TestFileSrcPath))
-                    File.Delete(TestFileSrcPath);
-                if (File.Exists(TestFileDestPath))
-                    File.Delete(TestFileDestPath);
-            }
+            var dir = Path.GetDirectoryName(TestFileSrcPath);
+            if (dir == null)
+                return;
+            foreach (var file in Directory.GetFiles(dir, $"test-{nameof(Rijndael)}-*.tmp"))
+                File.Delete(file);
         }
 
         [Test]

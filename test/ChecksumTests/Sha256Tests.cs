@@ -10,10 +10,11 @@
     [Platform(Include = TestVars.PlatformInclude)]
     public class Sha256Tests
     {
+        private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha256;
         private const int HashLength = 64;
         private const string ExpectedTestHash = "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25";
         private const string ExpectedRangeHash = "7fb98786c16c175d232ab161b5e604c5792e6befd4e1e8d4ecac9d568a6db524";
-        private static readonly string TestFilePath = TestVars.GetTempFilePath();
+        private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
         {
@@ -38,16 +39,14 @@
             _instanceFilePath = new Sha256(TestFilePath, true);
         }
 
-        [OneTimeSetUp]
-        public void ProcessExit()
+        [OneTimeTearDown]
+        public void CleanUpTestFiles()
         {
-            AppDomain.CurrentDomain.ProcessExit += RemoveTestFile;
-
-            static void RemoveTestFile(object sender, EventArgs args)
-            {
-                if (File.Exists(TestFilePath))
-                    File.Delete(TestFilePath);
-            }
+            var dir = Path.GetDirectoryName(TestFilePath);
+            if (dir == null)
+                return;
+            foreach (var file in Directory.GetFiles(dir, $"test-{Algorithm}-*.tmp"))
+                File.Delete(file);
         }
 
         [Test]
