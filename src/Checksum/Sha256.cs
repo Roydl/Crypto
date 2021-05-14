@@ -106,8 +106,8 @@
         /// <param name="other">
         ///     The <see cref="Sha256"/> instance to compare.
         /// </param>
-        public bool Equals(Sha256 other)
-            => base.Equals(other);
+        public bool Equals(Sha256 other) =>
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
