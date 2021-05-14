@@ -119,7 +119,8 @@
             Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
             Assert.AreEqual(hashLength, instanceDefault.HashSize);
-            Assert.AreEqual(null, instanceDefault.RawHash);
+            Assert.AreEqual(hashLength / 2, instanceDefault.RawHashSize);
+            Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
 
             Crc16 instanceStream;
             using (var ms = new MemoryStream(TestVars.TestBytes))
@@ -226,6 +227,7 @@
             Assert.AreEqual(ExpectedTestHash, _instanceByteArray.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceString.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceFilePath.ToString());
+            Assert.AreEqual(ExpectedTestHash.ToUpper(), _instanceStream.ToString(true));
         }
     }
 }
