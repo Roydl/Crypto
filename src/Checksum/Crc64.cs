@@ -103,13 +103,13 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            int i;
             var ul = Seed;
+            int i;
             while ((i = stream.ReadByte()) != -1)
                 ComputeHash(ref ul, i, Swapped);
             FinalizeHash(ref ul, Reversed);
             HashNumber = ul;
-            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
+            RawHash = CryptoUtils.GetBytesInverted(HashNumber, RawHashSize);
         }
 
         /// <summary>

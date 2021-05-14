@@ -85,19 +85,19 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            int i;
             var uia = new[]
             {
                 1u,
                 0u
             };
+            int i;
             while ((i = stream.ReadByte()) != -1)
             {
                 uia[0] = (uia[0] + (uint)i) % AMod;
                 uia[1] = (uia[1] + uia[0]) % AMod;
             }
             HashNumber = ((uia[1] << 16) | uia[0]) & Mask;
-            RawHash = CryptoUtils.GetBytes(HashNumber, RawHashSize);
+            RawHash = CryptoUtils.GetBytesInverted(HashNumber, RawHashSize);
         }
 
         /// <summary>

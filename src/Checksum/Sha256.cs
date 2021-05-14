@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Security.Cryptography;
 
     /// <summary>
@@ -108,13 +107,7 @@
         ///     The <see cref="Sha256"/> instance to compare.
         /// </param>
         public bool Equals(Sha256 other)
-        {
-            if (other == null)
-                return false;
-            if (RawHash == null)
-                return other.RawHash == null;
-            return RawHash.SequenceEqual(other.RawHash);
-        }
+            => base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified

@@ -1,10 +1,8 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
     using Properties;
@@ -28,7 +26,7 @@
         /// <summary>
         ///     Gets the sequence of bytes of the computed hash code.
         /// </summary>
-        public virtual IReadOnlyList<byte> RawHash { get; protected set; }
+        public virtual ReadOnlyMemory<byte> RawHash { get; protected set; }
 
         /// <summary>
         ///     Gets the 64-bit unsigned integer representation of the computed hash code.
@@ -127,13 +125,11 @@
         /// </param>
         public bool Equals(ChecksumAlgorithm other)
         {
-            if (other == null)
+            if (other == null || HashSize != other.HashSize)
                 return false;
-            if (HashSize != other.HashSize)
-                return false;
-            if (RawHash == null)
-                return other.RawHash == null;
-            return HashNumber == other.HashNumber && RawHash.SequenceEqual(other.RawHash);
+            if (RawHash.IsEmpty)
+                return other.RawHash.IsEmpty;
+            return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
         }
 
         /// <summary>
@@ -152,10 +148,10 @@
         /// </param>
         public string ToString(bool uppercase)
         {
-            if (RawHash is not byte[] ba)
+            if (RawHash.IsEmpty)
                 return string.Empty;
             var sb = new StringBuilder(HashSize);
-            foreach (var b in ba)
+            foreach (var b in RawHash.Span)
                 sb.Append(b.ToString(uppercase ? "X2" : "x2", CultureInfo.CurrentCulture));
             var s = sb.ToString();
             sb.Clear();
@@ -166,7 +162,7 @@
         ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
         ///     string representation.
         /// </summary>
-        public override string ToString() =>
+        public sealed override string ToString() =>
             ToString(false);
 
         /// <summary>

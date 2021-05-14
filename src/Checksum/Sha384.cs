@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using System.Security.Cryptography;
 
     /// <summary>
@@ -107,14 +106,8 @@
         /// <param name="other">
         ///     The <see cref="Sha384"/> instance to compare.
         /// </param>
-        public bool Equals(Sha384 other)
-        {
-            if (other == null)
-                return false;
-            if (RawHash == null)
-                return other.RawHash == null;
-            return RawHash.SequenceEqual(other.RawHash);
-        }
+        public bool Equals(Sha384 other) =>
+            base.Equals(other);
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified
