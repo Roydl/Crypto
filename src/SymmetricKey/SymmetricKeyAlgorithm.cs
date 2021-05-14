@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Security.Cryptography;
     using Properties;
 
@@ -11,7 +10,7 @@
     ///     Represents the base class from which all implementations of symmetric key
     ///     encryption algorithms must derive.
     /// </summary>
-    public abstract class SymmetricKeyAlgorithm
+    public abstract class SymmetricKeyAlgorithm : IDisposable
     {
         private byte[] _password, _salt;
 
@@ -45,28 +44,12 @@
         /// <summary>
         ///     The sequence of bytes which is used as password.
         /// </summary>
-        public IReadOnlyList<byte> Password
-        {
-            get => _password;
-            set
-            {
-                CryptoUtils.DestroyElement(ref _password);
-                _password = value.ToArray();
-            }
-        }
+        public IReadOnlyList<byte> Password => _password;
 
         /// <summary>
         ///     The sequence of bytes which is used as salt.
         /// </summary>
-        public IReadOnlyList<byte> Salt
-        {
-            get => _salt;
-            set
-            {
-                CryptoUtils.DestroyElement(ref _password);
-                _salt = value.ToArray();
-            }
-        }
+        public IReadOnlyList<byte> Salt => _salt;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymmetricKeyAlgorithm"/>
@@ -235,6 +218,8 @@
         ///     The output stream for decryption.
         /// </param>
         /// <param name="dispose">
+        ///     <see langword="true"/> to release all resources used by the input and
+        ///     output <see cref="Stream"/>; otherwise, <see langword="false"/>.
         /// </param>
         public abstract void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false);
 
@@ -332,6 +317,26 @@
             using var ms = new MemoryStream();
             DecryptStream(fs, ms);
             return ms.ToArray();
+        }
+
+        /// <summary>
+        ///     Releases all resources used by this class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Releases all resources used by this class.
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+            CryptoUtils.DestroyElement(ref _password);
+            CryptoUtils.DestroyElement(ref _salt);
         }
     }
 }
