@@ -41,36 +41,6 @@
         /// <summary>
         ///     Combines the specified hash codes.
         /// </summary>
-        /// <param name="hash1">
-        ///     The first hash code.
-        /// </param>
-        /// <param name="hash2">
-        ///     The second hash code.
-        /// </param>
-        /// <param name="hash3">
-        ///     The third hash code.
-        /// </param>
-        public static int CombineHashCodes(int hash1, int hash2, int hash3) =>
-            CombineHashCodes(CombineHashCodes(hash1, hash2), hash3);
-
-        /// <summary>
-        ///     Combines the hash codes of the specified objects.
-        /// </summary>
-        /// <param name="obj1">
-        ///     The first object.
-        /// </param>
-        /// <param name="obj2">
-        ///     The second object.
-        /// </param>
-        /// <param name="obj3">
-        ///     The third object.
-        /// </param>
-        public static int CombineHashCodes(object obj1, object obj2, object obj3) =>
-            CombineHashCodes(CombineHashCodes(obj1, obj2), obj3);
-
-        /// <summary>
-        ///     Combines the specified hash codes.
-        /// </summary>
         /// <param name="hashes">
         ///     A sequence of hash codes.
         /// </param>
@@ -85,8 +55,6 @@
                     return hashes[0];
                 case 2:
                     return CombineHashCodes(hashes[0], hashes[1]);
-                case 3:
-                    return CombineHashCodes(hashes[0], hashes[1], hashes[2]);
                 default:
                     var hash = hashes[0];
                     for (var i = 1; i < hashes.Length; i++)
@@ -112,8 +80,6 @@
                     return CombineHashCodes(objects[0], null);
                 case 2:
                     return CombineHashCodes(objects[0], objects[1]);
-                case 3:
-                    return CombineHashCodes(objects[0], objects[1], objects[2]);
                 default:
                     var hash = objects[0]?.GetHashCode() ?? 17011;
                     for (var i = 1; i < objects.Length; i++)
@@ -167,14 +133,14 @@
                 GC.Collect();
         }
 
-        internal static IEnumerable<byte> EnumerableBytes(ulong value, int length)
+        internal static IEnumerable<byte> EnumerableBytesInverted(ulong value, int size)
         {
-            for (var i = --length; i > 0; i--)
+            var i = Math.Abs(size);
+            while (--i >= 0)
                 yield return (byte)((value >> (8 * i)) & 0xff);
-            yield return (byte)(value & 0xff);
         }
 
-        internal static byte[] GetBytes(ulong value, int length) =>
-            EnumerableBytes(value, length).ToArray();
+        internal static byte[] GetBytesInverted(ulong value, int bits) =>
+            EnumerableBytesInverted(value, bits)?.ToArray();
     }
 }
