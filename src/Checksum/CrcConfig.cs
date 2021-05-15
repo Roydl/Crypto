@@ -5,22 +5,76 @@
     using System.IO;
     using System.Linq;
 
-    internal readonly struct CrcConfig<TValue> where TValue : IConvertible
+    /// <summary>
+    ///     Represents a CRC configuration structure.
+    /// </summary>
+    /// <typeparam name="TValue">
+    ///     The integral type of the hash code.
+    /// </typeparam>
+    public readonly struct CrcConfig<TValue> where TValue : IConvertible
     {
-        internal int Bits { get; }
+        /// <summary>
+        ///     Gets the hash size in bits.
+        /// </summary>
+        public int Bits { get; }
 
-        internal TValue Mask { get; }
+        /// <summary>
+        ///     Gets the mask of <typeparamref name="TValue"/>.
+        /// </summary>
+        public TValue Mask { get; }
 
-        internal TValue Poly { get; }
+        /// <summary>
+        ///     Gets the polynomial.
+        /// </summary>
+        public TValue Poly { get; }
 
-        internal TValue Seed { get; }
+        /// <summary>
+        ///     Gets the seed.
+        /// </summary>
+        public TValue Seed { get; }
 
-        internal bool Swapped { get; }
+        /// <summary>
+        ///     Gets the value that determines whether the calculation is swapped.
+        /// </summary>
+        public bool Swapped { get; }
 
-        internal bool Reversed { get; }
+        /// <summary>
+        ///     Gets the value that determines whether the bits of the calculated hash code
+        ///     are reversed.
+        /// </summary>
+        public bool Reversed { get; }
 
-        internal ReadOnlyMemory<TValue> Table { get; }
+        /// <summary>
+        ///     Gets the generated hash table of the configured CRC algorithm.
+        /// </summary>
+        public ReadOnlyMemory<TValue> Table { get; }
 
+        /// <summary>
+        ///     Creates a new configuration of the <see cref="CrcConfig{TValue}"/> struct.
+        /// </summary>
+        /// <param name="bits">
+        ///     The size in bits.
+        /// </param>
+        /// <param name="poly">
+        ///     The polynomial used to generate CRC hash table.
+        /// </param>
+        /// <param name="seed">
+        ///     The seed from which to start the calculation.
+        /// </param>
+        /// <param name="swapped">
+        ///     <see langword="true"/> to swap the calculation; otherwise,
+        ///     <see langword="false"/>.
+        /// </param>
+        /// <param name="reversed">
+        ///     <see langword="true"/> to reverse the bits of the final hash code;
+        ///     otherwise, <see langword="false"/>.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     bits is less than 8 or greater than 512.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     TValue type is invalid.
+        /// </exception>
         public CrcConfig(int bits, TValue poly, TValue seed, bool swapped, bool reversed)
         {
             var type = typeof(TValue);
@@ -39,7 +93,7 @@
             if (bits is < 8 or > 64)
                 throw new ArgumentOutOfRangeException(nameof(bits));
 
-            var mask = (TValue)typeof(TValue).GetField("MaxValue")?.GetValue(null);
+            var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
             var table = CreateTable(bits, poly, mask, swapped).ToArray();
 
             Bits = bits;
@@ -51,7 +105,16 @@
             Table = new ReadOnlyMemory<TValue>(table, 0, table.Length);
         }
 
-        internal void ComputeHash(Stream stream, out TValue hash)
+        /// <summary>
+        ///     Computes the hash of stream data using the configured CRC algorithm.
+        /// </summary>
+        /// <param name="stream">
+        ///     The stream with the data to encrypt.
+        /// </param>
+        /// <param name="hash">
+        ///     The computed hash code.
+        /// </param>
+        public void ComputeHash(Stream stream, out TValue hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -61,22 +124,37 @@
             while ((len = stream.Read(ba, 0, ba.Length)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(ref hash, ba[i]);
+                    ComputeHash(ba[i], ref hash);
             }
             FinalizeHash(ref hash);
         }
 
-        private void ComputeHash(ref TValue current, int value)
+        /// <summary>
+        ///     Computes the hash of the byte value using the CRC algorithm.
+        /// </summary>
+        /// <param name="value">
+        ///     The value to encrypt.
+        /// </param>
+        /// <param name="hash">
+        ///     The computed hash code.
+        /// </param>
+        public void ComputeHash(byte value, ref TValue hash)
         {
             if (Swapped)
             {
-                current = (TValue)((((dynamic)current >> 8) ^ Table.Span[(int)((uint)value ^ ((dynamic)current & (TValue)(dynamic)0xff))]) & Mask);
+                hash = (TValue)((((dynamic)hash >> 8) ^ Table.Span[(int)(value ^ ((dynamic)hash & (TValue)(dynamic)0xff))]) & Mask);
                 return;
             }
-            current = (TValue)((Table.Span[(int)((((dynamic)current >> (Bits - 8)) ^ (uint)value) & (TValue)(dynamic)0xff)] ^ ((dynamic)current << 8)) & Mask);
+            hash = (TValue)((Table.Span[(int)((((dynamic)hash >> (Bits - 8)) ^ value) & (TValue)(dynamic)0xff)] ^ ((dynamic)hash << 8)) & Mask);
         }
 
-        private void FinalizeHash(ref TValue hash)
+        /// <summary>
+        ///     Finalizes the computed hash code.
+        /// </summary>
+        /// <param name="hash">
+        ///     The computed hash code.
+        /// </param>
+        public void FinalizeHash(ref TValue hash)
         {
             if (Reversed)
                 hash = (TValue)~(dynamic)hash;
