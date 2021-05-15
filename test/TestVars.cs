@@ -10,6 +10,7 @@
         TestBytes,
         TestString,
         TestFile,
+        QuoteString,
         RangeString
     }
 
