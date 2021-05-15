@@ -11,32 +11,32 @@
         /// <summary>
         ///     Gets the hash size in bits.
         /// </summary>
-        public int HashBits { get; }
+        int HashBits { get; }
 
         /// <summary>
         ///     Gets the string hash size.
         /// </summary>
-        public int HashSize { get; }
+        int HashSize { get; }
 
         /// <summary>
         ///     Gets the raw hash size.
         /// </summary>
-        public int RawHashSize { get; }
+        int RawHashSize { get; }
 
         /// <summary>
         ///     Gets the string representation of the computed hash code.
         /// </summary>
-        public string Hash { get; }
+        string Hash { get; }
 
         /// <summary>
         ///     Gets the sequence of bytes of the computed hash code.
         /// </summary>
-        public ReadOnlyMemory<byte> RawHash { get; }
+        ReadOnlyMemory<byte> RawHash { get; }
 
         /// <summary>
         ///     Gets the 64-bit unsigned integer representation of the computed hash code.
         /// </summary>
-        public ulong HashNumber { get; }
+        ulong HashNumber { get; }
 
         /// <summary>
         ///     Encrypts the specified stream.
@@ -44,7 +44,7 @@
         /// <param name="stream">
         ///     The stream to encrypt.
         /// </param>
-        public void Encrypt(Stream stream);
+        void Encrypt(Stream stream);
 
         /// <summary>
         ///     Encrypts the specified sequence of bytes.
@@ -58,7 +58,7 @@
         /// <exception cref="ArgumentException">
         ///     bytes is empty.
         /// </exception>
-        public void Encrypt(byte[] bytes);
+        void Encrypt(byte[] bytes);
 
         /// <summary>
         ///     Encrypts the specified string.
@@ -72,7 +72,7 @@
         /// <exception cref="ArgumentException">
         ///     text is empty.
         /// </exception>
-        public void Encrypt(string text);
+        void Encrypt(string text);
 
         /// <summary>
         ///     Encrypts the specified file.
@@ -89,7 +89,7 @@
         /// <exception cref="FileNotFoundException">
         ///     path cannot be found.
         /// </exception>
-        public void EncryptFile(string path);
+        void EncryptFile(string path);
 
         /// <summary>
         ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
@@ -99,12 +99,12 @@
         ///     <see langword="true"/> to convert letters to uppercase; otherwise,
         ///     <see langword="false"/>.
         /// </param>
-        public string ToString(bool uppercase);
+        string ToString(bool uppercase);
 
         /// <summary>
         ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
         ///     string representation.
         /// </summary>
-        public string ToString();
+        string ToString();
     }
 }
