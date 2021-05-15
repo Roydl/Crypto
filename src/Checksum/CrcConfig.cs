@@ -24,12 +24,16 @@
         public TValue Mask { get; }
 
         /// <summary>
-        ///     Gets the polynomial.
+        ///     Gets the polynomial that was used to generate the CRC hash table.
         /// </summary>
         public TValue Poly { get; }
 
         /// <summary>
-        ///     Gets the seed.
+        ///     Gets the seed from which to start the calculation.
+        ///     <para>
+        ///         Is only used by default in
+        ///         <see cref="ComputeHash(Stream, out TValue)"/>.
+        ///     </para>
         /// </summary>
         public TValue Seed { get; }
 
@@ -112,7 +116,7 @@
         ///     The stream with the data to encrypt.
         /// </param>
         /// <param name="hash">
-        ///     The computed hash code.
+        ///     The fully computed hash code.
         /// </param>
         public void ComputeHash(Stream stream, out TValue hash)
         {
@@ -131,12 +135,15 @@
 
         /// <summary>
         ///     Computes the hash of the byte value using the CRC algorithm.
+        ///     <para>
+        ///         <see cref="Seed"/> is not used here.
+        ///     </para>
         /// </summary>
         /// <param name="value">
-        ///     The value to encrypt.
+        ///     The byte value to encrypt.
         /// </param>
         /// <param name="hash">
-        ///     The computed hash code.
+        ///     The hash code to be computed or its computation that will be continued.
         /// </param>
         public void ComputeHash(byte value, ref TValue hash)
         {
@@ -152,7 +159,7 @@
         ///     Finalizes the computed hash code.
         /// </summary>
         /// <param name="hash">
-        ///     The computed hash code.
+        ///     The computed hash code to be finalized.
         /// </param>
         public void FinalizeHash(ref TValue hash)
         {
