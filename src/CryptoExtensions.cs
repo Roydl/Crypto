@@ -64,29 +64,7 @@
     /// </summary>
     public static class CryptoExtensions
     {
-        private static ChecksumAlgorithm[] _defaultInstances;
-
-        private static ReadOnlySpan<ChecksumAlgorithm> DefaultInstances
-        {
-            get
-            {
-                if (_defaultInstances != null)
-                    return _defaultInstances;
-                _defaultInstances = new ChecksumAlgorithm[]
-                {
-                    new Adler32(),
-                    new Crc16(),
-                    new Crc32(),
-                    new Crc64(),
-                    new Md5(),
-                    new Sha1(),
-                    new Sha256(),
-                    new Sha384(),
-                    new Sha512()
-                };
-                return _defaultInstances;
-            }
-        }
+        private static IChecksumAlgorithm[] _cachedInstances;
 
         /// <summary>
         ///     Encrypts this <typeparamref name="TSource"/> object with the specified
@@ -188,22 +166,34 @@
         }
 
         /// <summary>
-        ///     Retrieves a static default instance of the specified encoder.
+        ///     Retrieves a cached instance of the specified algorithm.
         /// </summary>
-        /// <param name="encoder">
+        /// <param name="algorithm">
         /// </param>
         /// <returns>
-        ///     A static default instance of the specified encoder.
+        ///     A cached instance of the specified algorithm.
         /// </returns>
-        public static ChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo encoder)
+        public static IChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo algorithm)
         {
-            var i = (int)encoder;
-            if (i > DefaultInstances.Length)
-                throw new ArgumentOutOfRangeException(nameof(encoder));
-            return DefaultInstances[i];
+            var i = (int)algorithm;
+            _cachedInstances ??= new IChecksumAlgorithm[Enum.GetValues(typeof(ChecksumAlgo)).Length];
+            _cachedInstances[i] ??= algorithm switch
+            {
+                ChecksumAlgo.Adler32 => new Adler32(),
+                ChecksumAlgo.Crc16 => new Crc16(),
+                ChecksumAlgo.Crc32 => new Crc32(),
+                ChecksumAlgo.Crc64 => new Crc64(),
+                ChecksumAlgo.Md5 => new Md5(),
+                ChecksumAlgo.Sha1 => new Sha1(),
+                ChecksumAlgo.Sha256 => new Sha256(),
+                ChecksumAlgo.Sha384 => new Sha384(),
+                ChecksumAlgo.Sha512 => new Sha512(),
+                _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
+            };
+            return _cachedInstances[i];
         }
 
-        private static void InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, out ChecksumAlgorithm instance)
+        private static void InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, out IChecksumAlgorithm instance)
         {
             instance = algorithm.GetDefaultInstance();
             switch (source)
