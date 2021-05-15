@@ -11,22 +11,32 @@
     ///     Represents the base class from which all implementations of checksum
     ///     encryption algorithms must derive.
     /// </summary>
-    public abstract class ChecksumAlgorithm
+    public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
         /// <summary>
-        ///     Gets the required hash length.
+        ///     Gets the hash size in bits.
         /// </summary>
-        public abstract int HashSize { get; }
+        public int HashBits { get; }
 
         /// <summary>
-        ///     Gets the required raw hash length.
+        ///     Gets the string hash size.
         /// </summary>
-        public int RawHashSize => HashSize / 2;
+        public int HashSize { get; }
+
+        /// <summary>
+        ///     Gets the raw hash size.
+        /// </summary>
+        public int RawHashSize { get; }
+
+        /// <summary>
+        ///     Gets the string representation of the computed hash code.
+        /// </summary>
+        public string Hash => ToString();
 
         /// <summary>
         ///     Gets the sequence of bytes of the computed hash code.
         /// </summary>
-        public virtual ReadOnlyMemory<byte> RawHash { get; protected set; }
+        public ReadOnlyMemory<byte> RawHash { get; protected set; }
 
         /// <summary>
         ///     Gets the 64-bit unsigned integer representation of the computed hash code.
@@ -34,9 +44,23 @@
         public ulong HashNumber { get; protected set; }
 
         /// <summary>
-        ///     Gets the string representation of the computed hash code.
+        ///     Initializes a new instance of the
+        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
         /// </summary>
-        public string Hash => ToString();
+        /// <param name="bits">
+        ///     The hash size in bits.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     bits is less than 8, greater than 512, or odd.
+        /// </exception>
+        protected ChecksumAlgorithm(int bits)
+        {
+            if (bits is < 8 or > 512 || bits % 2 != 0)
+                throw new ArgumentOutOfRangeException(nameof(bits));
+            HashBits = bits;
+            HashSize = bits / 4;
+            RawHashSize = bits / 8;
+        }
 
         /// <summary>
         ///     Encrypts the specified stream.
@@ -133,6 +157,16 @@
         }
 
         /// <summary>
+        ///     Determines whether this instance have same values as the specified
+        ///     <see cref="object"/>.
+        /// </summary>
+        /// <param name="other">
+        ///     The  <see cref="object"/> to compare.
+        /// </param>
+        public override bool Equals(object other) =>
+            other is ChecksumAlgorithm item && Equals(item);
+
+        /// <summary>
         ///     Returns the hash code for this instance.
         /// </summary>
         public override int GetHashCode() =>
@@ -217,5 +251,111 @@
             RawHash = csp.ComputeHash(ba);
             HashNumber = BitConverter.ToUInt64(csp.Hash);
         }
+
+        /// <summary>
+        ///     Determines whether two specified <see cref="ChecksumAlgorithm"/> instances
+        ///     have same values.
+        /// </summary>
+        /// <param name="left">
+        ///     The first <see cref="ChecksumAlgorithm"/> instance to compare.
+        /// </param>
+        /// <param name="right">
+        ///     The second <see cref="ChecksumAlgorithm"/> instance to compare.
+        /// </param>
+        public static bool operator ==(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
+            left?.Equals(right) ?? right is null;
+
+        /// <summary>
+        ///     Determines whether two specified <see cref="ChecksumAlgorithm"/> instances
+        ///     have different values.
+        /// </summary>
+        /// <param name="left">
+        ///     The first <see cref="ChecksumAlgorithm"/> instance to compare.
+        /// </param>
+        /// <param name="right">
+        ///     The second <see cref="ChecksumAlgorithm"/> instance to compare.
+        /// </param>
+        public static bool operator !=(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
+            !(left == right);
+    }
+
+    /// <summary>
+    ///     Represents the base class from which all implementations of checksum
+    ///     encryption algorithms must derive.
+    /// </summary>
+    /// <typeparam name="THashAlgo">
+    ///     The hash algorithm type.
+    /// </typeparam>
+    public abstract class ChecksumAlgorithm<THashAlgo> : ChecksumAlgorithm, IEquatable<THashAlgo> where THashAlgo : IChecksumAlgorithm
+    {
+        /// <summary>
+        ///     Initializes a new instance of the
+        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
+        /// </summary>
+        /// <param name="bits">
+        ///     The hash size in bits.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     bits is less than 8, greater than 512, or odd.
+        /// </exception>
+        protected ChecksumAlgorithm(int bits) : base(bits) { }
+
+        /// <summary>
+        ///     Determines whether this instance have same values as the specified
+        ///     <typeparamref name="THashAlgo"/> instance.
+        /// </summary>
+        /// <param name="other">
+        ///     The <typeparamref name="THashAlgo"/> instance to compare.
+        /// </param>
+        public bool Equals(THashAlgo other)
+        {
+            if (other == null || HashSize != other.HashSize)
+                return false;
+            if (RawHash.IsEmpty)
+                return other.RawHash.IsEmpty;
+            return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
+        }
+
+        /// <summary>
+        ///     Determines whether this instance have same values as the specified
+        ///     <see cref="object"/>.
+        /// </summary>
+        /// <param name="other">
+        ///     The  <see cref="object"/> to compare.
+        /// </param>
+        public override bool Equals(object other) =>
+            other is THashAlgo item && Equals(item);
+
+        /// <summary>
+        ///     Returns the hash code for this instance.
+        /// </summary>
+        public override int GetHashCode() =>
+            GetType().GetHashCode();
+
+        /// <summary>
+        ///     Determines whether two specified <typeparamref name="THashAlgo"/> instances
+        ///     have same values.
+        /// </summary>
+        /// <param name="left">
+        ///     The first <typeparamref name="THashAlgo"/> instance to compare.
+        /// </param>
+        /// <param name="right">
+        ///     The second <typeparamref name="THashAlgo"/> instance to compare.
+        /// </param>
+        public static bool operator ==(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
+            left?.Equals(right) ?? right is null;
+
+        /// <summary>
+        ///     Determines whether two specified <typeparamref name="THashAlgo"/> instances
+        ///     have different values.
+        /// </summary>
+        /// <param name="left">
+        ///     The first <typeparamref name="THashAlgo"/> instance to compare.
+        /// </param>
+        /// <param name="right">
+        ///     The second <typeparamref name="THashAlgo"/> instance to compare.
+        /// </param>
+        public static bool operator !=(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
+            !(left == right);
     }
 }

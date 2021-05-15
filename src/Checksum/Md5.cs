@@ -1,23 +1,17 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
-    using System;
     using System.IO;
     using System.Security.Cryptography;
 
     /// <summary>
     ///     Provides functionality to compute MD5 hashes.
     /// </summary>
-    public sealed class Md5 : ChecksumAlgorithm, IEquatable<Md5>
+    public sealed class Md5 : ChecksumAlgorithm<Md5>
     {
-        /// <summary>
-        ///     Gets the required hash length.
-        /// </summary>
-        public override int HashSize => 32;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="Md5"/> class.
         /// </summary>
-        public Md5() { }
+        public Md5() : base(128) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Md5"/> class and encrypts the
@@ -26,7 +20,7 @@
         /// <param name="stream">
         ///     The stream to encrypt.
         /// </param>
-        public Md5(Stream stream) =>
+        public Md5(Stream stream) : this() =>
             Encrypt(stream);
 
         /// <summary>
@@ -36,7 +30,7 @@
         /// <param name="bytes">
         ///     The sequence of bytes to encrypt.
         /// </param>
-        public Md5(byte[] bytes) =>
+        public Md5(byte[] bytes) : this() =>
             Encrypt(bytes);
 
         /// <summary>
@@ -50,7 +44,7 @@
         ///     <see langword="true"/> if the specified value is a file path; otherwise,
         ///     <see langword="false"/>.
         /// </param>
-        public Md5(string textOrFile, bool strIsFilePath)
+        public Md5(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
             {
@@ -67,7 +61,7 @@
         /// <param name="str">
         ///     The text to encrypt.
         /// </param>
-        public Md5(string str) =>
+        public Md5(string str) : this() =>
             Encrypt(str);
 
         /// <summary>
@@ -98,57 +92,5 @@
                 algo?.Dispose();
             }
         }
-
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="Md5"/> instance.
-        /// </summary>
-        /// <param name="other">
-        ///     The <see cref="Md5"/> instance to compare.
-        /// </param>
-        public bool Equals(Md5 other) =>
-            base.Equals(other);
-
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
-        public override bool Equals(object other) =>
-            other is Md5 item && Equals(item);
-
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
-        public override int GetHashCode() =>
-            GetType().GetHashCode();
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="Md5"/> instances have same
-        ///     values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="Md5"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="Md5"/> instance to compare.
-        /// </param>
-        public static bool operator ==(Md5 left, Md5 right) =>
-            left?.Equals(right) ?? right is null;
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="Md5"/> instances have different
-        ///     values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="Md5"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="Md5"/> instance to compare.
-        /// </param>
-        public static bool operator !=(Md5 left, Md5 right) =>
-            !(left == right);
     }
 }

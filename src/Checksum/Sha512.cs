@@ -1,23 +1,17 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
-    using System;
     using System.IO;
     using System.Security.Cryptography;
 
     /// <summary>
     ///     Provides functionality to compute SHA-512 hashes.
     /// </summary>
-    public sealed class Sha512 : ChecksumAlgorithm, IEquatable<Sha512>
+    public sealed class Sha512 : ChecksumAlgorithm<Sha512>
     {
-        /// <summary>
-        ///     Gets the required hash length.
-        /// </summary>
-        public override int HashSize => 128;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha512"/> class.
         /// </summary>
-        public Sha512() { }
+        public Sha512() : base(512) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha512"/> class and encrypts
@@ -26,7 +20,7 @@
         /// <param name="stream">
         ///     The stream to encrypt.
         /// </param>
-        public Sha512(Stream stream) =>
+        public Sha512(Stream stream) : this() =>
             Encrypt(stream);
 
         /// <summary>
@@ -36,7 +30,7 @@
         /// <param name="bytes">
         ///     The sequence of bytes to encrypt.
         /// </param>
-        public Sha512(byte[] bytes) =>
+        public Sha512(byte[] bytes) : this() =>
             Encrypt(bytes);
 
         /// <summary>
@@ -50,7 +44,7 @@
         ///     <see langword="true"/> if the specified value is a file path; otherwise,
         ///     <see langword="false"/>.
         /// </param>
-        public Sha512(string textOrFile, bool strIsFilePath)
+        public Sha512(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
             {
@@ -67,7 +61,7 @@
         /// <param name="str">
         ///     The text to encrypt.
         /// </param>
-        public Sha512(string str) =>
+        public Sha512(string str) : this() =>
             Encrypt(str);
 
         /// <summary>
@@ -98,57 +92,5 @@
                 algo?.Dispose();
             }
         }
-
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="Sha512"/> instance.
-        /// </summary>
-        /// <param name="other">
-        ///     The <see cref="Sha512"/> instance to compare.
-        /// </param>
-        public bool Equals(Sha512 other) =>
-            base.Equals(other);
-
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
-        public override bool Equals(object other) =>
-            other is Sha512 item && Equals(item);
-
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
-        public override int GetHashCode() =>
-            GetType().GetHashCode();
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="Sha512"/> instances have same
-        ///     values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="Sha512"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="Sha512"/> instance to compare.
-        /// </param>
-        public static bool operator ==(Sha512 left, Sha512 right) =>
-            left?.Equals(right) ?? right is null;
-
-        /// <summary>
-        ///     Determines whether two specified <see cref="Sha512"/> instances have
-        ///     different values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="Sha512"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="Sha512"/> instance to compare.
-        /// </param>
-        public static bool operator !=(Sha512 left, Sha512 right) =>
-            !(left == right);
     }
 }
