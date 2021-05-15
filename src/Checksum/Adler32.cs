@@ -94,7 +94,7 @@
             }
             var num = ((uia[1] << 16) | uia[0]) & uint.MaxValue;
             HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize);
+            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, true);
         }
     }
 }

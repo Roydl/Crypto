@@ -133,14 +133,15 @@
                 GC.Collect();
         }
 
-        internal static IEnumerable<byte> EnumerableBytesInverted(ulong value, int size)
+        internal static IEnumerable<byte> GetBytes(ulong value, int size, bool inverted)
         {
-            var i = Math.Abs(size);
-            while (--i >= 0)
-                yield return (byte)((value >> (8 * i)) & 0xff);
+            var i = 0;
+            size = Math.Abs(size);
+            while (inverted ? --size >= 0 : i++ < size)
+                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
         }
 
-        internal static byte[] GetBytesInverted(ulong value, int bits) =>
-            EnumerableBytesInverted(value, bits)?.ToArray();
+        internal static byte[] GetByteArray(ulong value, int bits, bool inverted) =>
+            GetBytes(value, bits, inverted)?.ToArray();
     }
 }
