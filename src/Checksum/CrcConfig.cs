@@ -24,7 +24,7 @@
         public TValue Mask { get; }
 
         /// <summary>
-        ///     Gets the polynomial that was used to generate the CRC hash table.
+        ///     Gets the polynomial used to generate the CRC hash table once.
         /// </summary>
         public TValue Poly { get; }
 
@@ -74,7 +74,7 @@
         ///     otherwise, <see langword="false"/>.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8 or greater than 512.
+        ///     bits is less than 8 or greater than 64.
         /// </exception>
         /// <exception cref="InvalidOperationException">
         ///     TValue type is invalid.
