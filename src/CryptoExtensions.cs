@@ -95,12 +95,15 @@
             var sb = new StringBuilder(braces ? 38 : 36);
             if (braces)
                 sb.Append('{');
+            var pos = (source as Stream)?.Position ?? -1L;
             var first = source?.Encrypt(algorithm1) ?? new string('0', 8);
             if (first.Length < 8)
                 first = first.PadLeft(8, '0');
             if (first.Length > 8)
                 first = first[..8];
             sb.Append(first);
+            if (pos >= 0L && source is Stream stream)
+                stream.Position = pos;
             var second = source?.Encrypt(algorithm2) ?? new string('0', 12);
             if (second.Length < 12)
                 second = first.PadRight(12, '0');
