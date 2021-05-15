@@ -7,7 +7,7 @@
 
     internal sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
     {
-        private static readonly CrcConfig<uint> Current = new(32, 0x04c11db7, uint.MinValue, false, true);
+        private static readonly CrcConfig<uint> Current = new(32, 0x04c11db7u, uint.MinValue, false, true);
 
         public Crc32Posix() : base(32) { }
 
