@@ -88,6 +88,56 @@
             }
         }
 
+        /// <summary>
+        ///     Returns the specified 64-bit unsigned integer value as a sequence of bytes.
+        /// </summary>
+        /// <param name="value">
+        ///     The number to convert.
+        /// </param>
+        /// <param name="size">
+        ///     The size of the sequence. Must be between 1 and 64.
+        /// </param>
+        /// <param name="inverted">
+        ///     <see langword="true"/> to invert the order; otherwise,
+        ///     <see langword="false"/>.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     size is less 1 or greater 64.
+        /// </exception>
+        /// <returns>
+        ///     A sequence of bytes with length of size.
+        /// </returns>
+        public static IEnumerable<byte> GetBytes(ulong value, int size, bool inverted)
+        {
+            if (size is < 1 or > 64)
+                throw new ArgumentOutOfRangeException(nameof(size), size, null);
+            var i = 0;
+            while (inverted ? --size >= 0 : i++ < size)
+                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
+        }
+
+        /// <summary>
+        ///     Returns the specified 64-bit unsigned integer value as an array of bytes.
+        /// </summary>
+        /// <param name="value">
+        ///     The number to convert.
+        /// </param>
+        /// <param name="size">
+        ///     The size of the sequence. Must be between 1 and 64.
+        /// </param>
+        /// <param name="inverted">
+        ///     <see langword="true"/> to invert the order; otherwise,
+        ///     <see langword="false"/>.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     size is less 1 or greater 64.
+        /// </exception>
+        /// <returns>
+        ///     An array of bytes with length of size.
+        /// </returns>
+        public static byte[] GetByteArray(ulong value, int size, bool inverted) =>
+            GetBytes(value, size, inverted)?.ToArray();
+
         internal static void CombineHashes(StringBuilder builder, string hash1, string hash2, bool braces)
         {
             if (braces)
@@ -132,16 +182,5 @@
             if (isCollection)
                 GC.Collect();
         }
-
-        internal static IEnumerable<byte> GetBytes(ulong value, int size, bool inverted)
-        {
-            var i = 0;
-            size = Math.Abs(size);
-            while (inverted ? --size >= 0 : i++ < size)
-                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
-        }
-
-        internal static byte[] GetByteArray(ulong value, int bits, bool inverted) =>
-            GetBytes(value, bits, inverted)?.ToArray();
     }
 }
