@@ -33,20 +33,85 @@ You can easily create instances of any type to translate `Stream`, `byte[]` or `
 | SHA384 | 384 | SHA-2 Standard |
 | SHA512 | 512 | SHA-2 Standard |
 
-#### Checksum extension methods:
+#### Usage:
 ```cs
-using Roydl.Crypto;
-
 // The `value` can be almost anything, even an entire type with many values,
-// which is then serialized into a JSON byte sequence before being computed. 
-string md5hash = value.Encrypt(ChecksumAlgo.Md5);
+// which is then serialized into a JSON byte sequence before being hashed.
+string hash1 = value.Encrypt(ChecksumAlgo.Md5);
 
 // SHA-256 is used by default if `ChecksumAlgo` is not set.
-string sha256hash = value.Encrypt();
+string hash2 = value.Encrypt();
+
+// The file encryption has an additional method, where `value` must be a
+// `string` with a valid file path.
+string hash3 = value.EncryptFile();
 
 // The `EncryptRaw` extension method retrieves an unsigned 64-bit integer
-// representation of the computed hash.
-ulong sha256raw = value.EncryptRaw();
+// representation of the computed hash. It follows the same rules outlined
+// earlier.
+// It can be helpful to compare types that are normally not comparable.
+ulong hash3 = value.EncryptRaw(ChecksumAlgo.Crc64);
+
+// Instances are also supported. However, the `value` must be a stream,
+// byte sequence, or string.
+Sha1 instance1 = new Sha1(value);
+
+// Files can be encrypted with an extra boolean when `value` is a string,
+Crc32 instance2 = new Crc32(value, true);
+
+// You can also initialize an instance without parameters.
+Sha512 instance3 = new Sha512();
+
+// And use the encryption methods later as described earlier.
+instance3.Encrypt(value);
+instance3.EncryptFile(value);
+
+// The last encrypted data will be stored in some fields.
+string hash = instance3.Hash;
+byte[] raw = instance3.RawHash;
+
+// This corresponds to the `EncryptRaw` extension method. This field came
+// later, so the name is different. `EncryptRaw` was first created
+// exclusively for CRC. Only the CRC `RawHash` was an integral value, but
+// it is now always a sequence of bytes and this field was added to support
+// all other types as well.
+long num = instance3.HashNumber;
+
+// The last thing you need to know is that instances have equality operators.
+bool equ = (instance1 == instance3);
+bool neq = (instance1 != instance3);
+```
+
+#### CRC customization:
+
+If you need a different CRC algorithm, you can easily create your own variations. This is an example for `CRC-32/POSIX`, but it should support many others between 8 and 64 bits.
+
+```cs
+public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
+{
+    // Sets a new `CrcConfig` with bits, polynomial, seed, normal compution,
+    // and reversed bits of final hash.
+    private static readonly CrcConfig<uint> Current = new(32, 0x4c11db7u, 0u, false, true);
+
+    // At least one constructor is required because `base (bits)` has to
+    // be called.
+    public Crc32Posix() : base(32) { }
+
+    // All other constructors require the call to `this()`.
+    public Crc32(Stream stream) : this() =>
+        Encrypt(stream);
+
+    // Lets `CrcConfig` struct do the job. This method is the only one
+    // that needs to be overwritten.
+    public override void Encrypt(Stream stream)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+        Current.ComputeHash(stream, out var num);
+        HashNumber = num;
+        RawHash = CryptoUtils.GetByteArray(num, RawHashSize, true);
+    }
+}
 ```
 
 ---
