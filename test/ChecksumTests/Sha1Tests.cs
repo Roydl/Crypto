@@ -11,7 +11,9 @@
     public class Sha1Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha1;
-        private const int HashLength = 40;
+        private const int HashBits = 160;
+        private const int HashSize = 40;
+        private const int RawHashSize = 20;
         private const string ExpectedTestHash = "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa";
         private const string ExpectedRangeHash = "60dd4bf59289437e8f18bfbadb6613072d5c6f2c";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
@@ -80,43 +82,44 @@
         }
 
         [Test]
-        [TestCase(HashLength)]
+        [TestCase(HashBits, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashLength)
+        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha1();
             Assert.IsInstanceOf(typeof(Sha1), instanceDefault);
-            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceDefault);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashLength, instanceDefault.HashSize);
-            Assert.AreEqual(hashLength / 2, instanceDefault.RawHashSize);
+            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(hashSize, instanceDefault.HashSize);
+            Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
 
             Sha1 instanceStream;
             using (var ms = new MemoryStream(TestVars.TestBytes))
                 instanceStream = new Sha1(ms);
             Assert.IsInstanceOf(typeof(Sha1), instanceStream);
-            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceStream);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceStream);
             Assert.AreNotSame(instanceDefault, instanceStream);
-            Assert.AreEqual(hashLength, instanceStream.Hash.Length);
+            Assert.AreEqual(hashSize, instanceStream.Hash.Length);
 
             var instanceByteArray = new Sha1(TestVars.TestBytes);
             Assert.IsInstanceOf(typeof(Sha1), instanceByteArray);
-            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceByteArray);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceByteArray);
             Assert.AreNotSame(instanceStream, instanceByteArray);
-            Assert.AreEqual(hashLength, instanceByteArray.Hash.Length);
+            Assert.AreEqual(hashSize, instanceByteArray.Hash.Length);
 
             var instanceString = new Sha1(TestVars.TestStr);
             Assert.IsInstanceOf(typeof(Sha1), instanceString);
-            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceString);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceString);
             Assert.AreNotSame(instanceByteArray, instanceString);
-            Assert.AreEqual(hashLength, instanceString.Hash.Length);
+            Assert.AreEqual(hashSize, instanceString.Hash.Length);
 
             var instanceFilePath = new Sha1(TestFilePath, true);
             Assert.IsInstanceOf(typeof(Sha1), instanceFilePath);
-            Assert.IsInstanceOf(typeof(ChecksumAlgorithm), instanceFilePath);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFilePath);
             Assert.AreNotSame(instanceString, instanceFilePath);
-            Assert.AreEqual(hashLength, instanceFilePath.Hash.Length);
+            Assert.AreEqual(hashSize, instanceFilePath.Hash.Length);
         }
 
         [Test]
@@ -168,10 +171,15 @@
         [Category("Method")]
         public void InstanceGetHashCode()
         {
-            Assert.AreEqual(_instanceDefault.GetHashCode(), _instanceStream.GetHashCode());
-            Assert.AreEqual(_instanceDefault.GetHashCode(), _instanceByteArray.GetHashCode());
-            Assert.AreEqual(_instanceDefault.GetHashCode(), _instanceString.GetHashCode());
-            Assert.AreEqual(_instanceDefault.GetHashCode(), _instanceFilePath.GetHashCode());
+            Assert.AreEqual(_instanceDefault.GetHashCode(), new Sha1().GetHashCode());
+            Assert.AreNotEqual(new Adler32().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc16().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc32().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc64().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Md5().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha256().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha512().GetHashCode(), _instanceDefault.GetHashCode());
         }
 
         [Test]
