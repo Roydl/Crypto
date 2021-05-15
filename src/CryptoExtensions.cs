@@ -93,7 +93,26 @@
         public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
         {
             var sb = new StringBuilder(braces ? 38 : 36);
-            CryptoUtils.CombineHashes(sb, source?.Encrypt(algorithm1), source?.Encrypt(algorithm2), braces);
+            if (braces)
+                sb.Append('{');
+            var first = source?.Encrypt(algorithm1) ?? new string('0', 8);
+            if (first.Length < 8)
+                first = first.PadLeft(8, '0');
+            if (first.Length > 8)
+                first = first[..8];
+            sb.Append(first);
+            var second = source?.Encrypt(algorithm2) ?? new string('0', 12);
+            if (second.Length < 12)
+                second = first.PadRight(12, '0');
+            for (var i = 0; i < 3; i++)
+            {
+                sb.Append('-');
+                sb.Append(second.Substring(i * 4, 4));
+            }
+            sb.Append('-');
+            sb.Append(second[^12..]);
+            if (braces)
+                sb.Append('}');
             var s = sb.ToString();
             sb.Clear();
             return s;

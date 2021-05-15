@@ -4,7 +4,6 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
 
     /// <summary>
     ///     Provides some basic utilities.
@@ -137,30 +136,6 @@
         /// </returns>
         public static byte[] GetByteArray(ulong value, int size, bool inverted) =>
             GetBytes(value, size, inverted)?.ToArray();
-
-        internal static void CombineHashes(StringBuilder builder, string hash1, string hash2, bool braces)
-        {
-            if (braces)
-                builder.Append('{');
-            var first = hash1 ?? new string('0', 8);
-            if (first.Length < 8)
-                first = first.PadLeft(8, '0');
-            if (first.Length > 8)
-                first = first[..8];
-            builder.Append(first);
-            var second = hash2 ?? new string('0', 12);
-            if (second.Length < 12)
-                second = first.PadRight(12, '0');
-            for (var i = 0; i < 3; i++)
-            {
-                builder.Append('-');
-                builder.Append(second.Substring(i * 4, 4));
-            }
-            builder.Append('-');
-            builder.Append(second[^12..]);
-            if (braces)
-                builder.Append('}');
-        }
 
         internal static void DestroyElement<TElement>(ref TElement element) where TElement : class
         {
