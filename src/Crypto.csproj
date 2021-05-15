@@ -10,7 +10,7 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Provides AES-128/192/256 encryption/decryption; Adler32, CRC-16/32/64, MD5 and SHA-1/2(256/384/512) encryption.</Description>
+    <Description>Provides a handy way to hash data using Adler32, CRC-16/32/64/customizable, MD5, SHA-1, SHA-2-256/384/512; or to encrypt and decrypt data using Rijndael-128/192/256.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
@@ -18,13 +18,15 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Removed binary-to-text encoding
-  - Can be found here: https://github.com/Roydl/Text
-- Restruced some classes to avoid name conflicts
-- Minor fixes</PackageReleaseNotes>
+    <PackageReleaseNotes>- `SymmetricKeyAlgorithm` classes are now `IDisposable`
+  - `Dispose()` will try to completely remove the password and salt from memory. This will only work if there are no other references to these data outside
+- Added interface and abstract generic class of `ChecksumAlgorithm`
+- Added `CrcConfig` structure to quickly create custom CRC classes according to other standards
+- Improved caching so that only used types are cached instead of all
+- Minor fixes, improvements and code cleanups</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
