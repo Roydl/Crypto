@@ -118,6 +118,9 @@
         /// <param name="hash">
         ///     The fully computed hash code.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     stream is null.
+        /// </exception>
         public void ComputeHash(Stream stream, out TValue hash)
         {
             if (stream == null)
