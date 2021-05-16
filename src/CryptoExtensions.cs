@@ -106,7 +106,7 @@
                 stream.Position = pos;
             var second = source?.Encrypt(algorithm2) ?? new string('0', 12);
             if (second.Length < 12)
-                second = first.PadRight(12, '0');
+                second = second.PadRight(12, '0');
             for (var i = 0; i < 3; i++)
             {
                 sb.Append('-');
