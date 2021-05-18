@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Text;
     using System.Text.Json;
+    using System.Threading;
     using Checksum;
 
     /// <summary>
@@ -64,7 +65,7 @@
     /// </summary>
     public static class CryptoExtensions
     {
-        private static IChecksumAlgorithm[] _cachedInstances;
+        private static volatile IChecksumAlgorithm[] _cachedInstances;
 
         /// <summary>
         ///     Encrypts this <typeparamref name="TSource"/> object with the specified
@@ -199,20 +200,22 @@
         public static IChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo algorithm)
         {
             var i = (int)algorithm;
-            _cachedInstances ??= new IChecksumAlgorithm[Enum.GetValues(typeof(ChecksumAlgo)).Length];
-            _cachedInstances[i] ??= algorithm switch
-            {
-                ChecksumAlgo.Adler32 => new Adler32(),
-                ChecksumAlgo.Crc16 => new Crc16(),
-                ChecksumAlgo.Crc32 => new Crc32(),
-                ChecksumAlgo.Crc64 => new Crc64(),
-                ChecksumAlgo.Md5 => new Md5(),
-                ChecksumAlgo.Sha1 => new Sha1(),
-                ChecksumAlgo.Sha256 => new Sha256(),
-                ChecksumAlgo.Sha384 => new Sha384(),
-                ChecksumAlgo.Sha512 => new Sha512(),
-                _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
-            };
+            while (_cachedInstances == null)
+                Interlocked.CompareExchange(ref _cachedInstances, new IChecksumAlgorithm[Enum.GetValues(typeof(ChecksumAlgo)).Length], null);
+            while (_cachedInstances[i] == null)
+                Interlocked.CompareExchange(ref _cachedInstances[i], algorithm switch
+                {
+                    ChecksumAlgo.Adler32 => new Adler32(),
+                    ChecksumAlgo.Crc16 => new Crc16(),
+                    ChecksumAlgo.Crc32 => new Crc32(),
+                    ChecksumAlgo.Crc64 => new Crc64(),
+                    ChecksumAlgo.Md5 => new Md5(),
+                    ChecksumAlgo.Sha1 => new Sha1(),
+                    ChecksumAlgo.Sha256 => new Sha256(),
+                    ChecksumAlgo.Sha384 => new Sha384(),
+                    ChecksumAlgo.Sha512 => new Sha512(),
+                    _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
+                }, null);
             return _cachedInstances[i];
         }
 
