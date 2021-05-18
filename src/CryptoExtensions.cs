@@ -191,6 +191,7 @@
         ///     Retrieves a cached instance of the specified algorithm.
         /// </summary>
         /// <param name="algorithm">
+        ///     The algorithm to use.
         /// </param>
         /// <returns>
         ///     A cached instance of the specified algorithm.
