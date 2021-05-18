@@ -9,7 +9,7 @@
     using Rijndael = SymmetricKey.Rijndael;
 
     [TestFixture]
-    [NonParallelizable]
+    [Parallelizable]
     [Platform(Include = TestVars.PlatformInclude)]
     public class RijndaelTests
     {
