@@ -61,7 +61,7 @@
         }
 
         /// <param name="objects">
-        ///     A sequence of hash codes.
+        ///     A sequence of objects.
         /// </param>
         /// <inheritdoc cref="CombineHashCodes(object, object)"/>
         public static int CombineHashCodes(params object[] objects)
