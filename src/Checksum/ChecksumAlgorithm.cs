@@ -94,6 +94,7 @@
         /// <param name="other">
         ///     The <see cref="ChecksumAlgorithm"/> instance to compare.
         /// </param>
+        /// <inheritdoc/>
         public bool Equals(ChecksumAlgorithm other)
         {
             if (other == null || HashSize != other.HashSize)
@@ -142,10 +143,12 @@
         ///     The algorithm to encrypt.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        ///     algorithm is null.
+        ///     stream or algorithm is null.
         /// </exception>
         protected void Encrypt<THashAlgorithm>(Stream stream, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
         {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
             if (algorithm == null)
                 throw new ArgumentNullException(nameof(algorithm));
             using var csp = algorithm;
@@ -218,7 +221,7 @@
         ///     Initializes a new instance of the
         ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
         /// </summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int)"/>
+        /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits) : base(bits) { }
 
         /// <summary>
@@ -228,6 +231,7 @@
         /// <param name="other">
         ///     The <typeparamref name="THashAlgo"/> instance to compare.
         /// </param>
+        /// <inheritdoc/>
         public bool Equals(THashAlgo other)
         {
             if (other == null || HashSize != other.HashSize)

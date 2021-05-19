@@ -136,9 +136,12 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     source is null.
+        /// </exception>
         /// <returns>
-        ///     An unsigned integer that contains the result of encrypting the specified
-        ///     object by CRC-32 algorithm.
+        ///     A 64-bit unsigned that contains the result of encrypting the specified
+        ///     object by the specified algorithm.
         /// </returns>
         public static ulong EncryptRaw<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
@@ -159,6 +162,9 @@
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     source is null.
+        /// </exception>
         /// <returns>
         ///     A string that contains the result of encrypting the specified object by the
         ///     specified algorithm.
@@ -182,6 +188,7 @@
         ///     A string that contains the result of encrypting the specified file by the
         ///     specified algorithm.
         /// </returns>
+        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
         public static string EncryptFile(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
             var instance = algorithm.GetDefaultInstance();
@@ -222,6 +229,8 @@
 
         private static void InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, out IChecksumAlgorithm instance)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
             instance = algorithm.GetDefaultInstance();
             switch (source)
             {
