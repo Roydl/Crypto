@@ -34,7 +34,7 @@
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified stream.
         /// </summary>
-        /// <inheritdoc cref="Adler32(Stream)"/>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public Sha1(Stream stream) : this() =>
             Encrypt(stream);
 
@@ -42,7 +42,7 @@
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="Adler32(byte[])"/>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
         public Sha1(byte[] bytes) : this() =>
             Encrypt(bytes);
 
@@ -65,9 +65,9 @@
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified text.
         /// </summary>
-        /// <inheritdoc cref="Adler32(string)"/>
-        public Sha1(string str) : this() =>
-            Encrypt(str);
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        public Sha1(string text) : this() =>
+            Encrypt(text);
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>

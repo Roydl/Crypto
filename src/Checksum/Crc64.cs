@@ -19,7 +19,7 @@
         ///     Initializes a new instance of the <see cref="Crc64"/> class and encrypts
         ///     the specified stream.
         /// </summary>
-        /// <inheritdoc cref="Adler32(Stream)"/>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public Crc64(Stream stream) : this() =>
             Encrypt(stream);
 
@@ -27,7 +27,7 @@
         ///     Initializes a new instance of the <see cref="Crc64"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="Adler32(byte[])"/>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
         public Crc64(byte[] bytes) : this() =>
             Encrypt(bytes);
 
@@ -50,9 +50,9 @@
         ///     Initializes a new instance of the <see cref="Crc64"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <inheritdoc cref="Adler32(string)"/>
-        public Crc64(string str) : this() =>
-            Encrypt(str);
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        public Crc64(string text) : this() =>
+            Encrypt(text);
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)

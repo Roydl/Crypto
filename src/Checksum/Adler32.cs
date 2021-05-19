@@ -17,9 +17,7 @@
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified stream.
         /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public Adler32(Stream stream) : this() =>
             Encrypt(stream);
 
@@ -27,9 +25,7 @@
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <param name="bytes">
-        ///     The sequence of bytes to encrypt.
-        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
         public Adler32(byte[] bytes) : this() =>
             Encrypt(bytes);
 
@@ -44,6 +40,7 @@
         ///     <see langword="true"/> if the specified value is a file path; otherwise,
         ///     <see langword="false"/>.
         /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
         public Adler32(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
@@ -58,11 +55,9 @@
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <param name="str">
-        ///     The text to encrypt.
-        /// </param>
-        public Adler32(string str) : this() =>
-            Encrypt(str);
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        public Adler32(string text) : this() =>
+            Encrypt(text);
 
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
         public override void Encrypt(Stream stream)

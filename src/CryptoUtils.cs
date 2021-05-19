@@ -37,10 +37,10 @@
         public static int CombineHashCodes(object obj1, object obj2) =>
             CombineHashCodes(obj1?.GetHashCode() ?? 17011, obj2?.GetHashCode() ?? 23011);
 
-        /// <inheritdoc cref="CombineHashCodes(int, int)"/>
         /// <param name="hashes">
         ///     A sequence of hash codes.
         /// </param>
+        /// <inheritdoc cref="CombineHashCodes(int, int)"/>
         public static int CombineHashCodes(params int[] hashes)
         {
             switch (hashes?.Length)
@@ -60,10 +60,10 @@
             }
         }
 
-        /// <inheritdoc cref="CombineHashCodes(object, object)"/>
         /// <param name="objects">
         ///     A sequence of hash codes.
         /// </param>
+        /// <inheritdoc cref="CombineHashCodes(object, object)"/>
         public static int CombineHashCodes(params object[] objects)
         {
             switch (objects?.Length)

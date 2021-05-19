@@ -208,10 +208,10 @@
             !(left == right);
     }
 
-    /// <inheritdoc cref="ChecksumAlgorithm"/>
     /// <typeparam name="THashAlgo">
     ///     The hash algorithm type.
     /// </typeparam>
+    /// <inheritdoc cref="ChecksumAlgorithm"/>
     public abstract class ChecksumAlgorithm<THashAlgo> : ChecksumAlgorithm, IEquatable<THashAlgo> where THashAlgo : IChecksumAlgorithm
     {
         /// <summary>
