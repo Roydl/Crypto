@@ -320,23 +320,47 @@
         }
 
         /// <summary>
-        ///     Releases all resources used by this class.
+        ///     Removes the specified <see cref="Password"/> from current process memory.
+        ///     <para>
+        ///         Note that the element cannot be removed if there are references outside
+        ///         of this instance.
+        ///     </para>
+        ///     <para>
+        ///         This function is called automatically with the <see cref="Dispose()"/>
+        ///         method.
+        ///     </para>
         /// </summary>
+        public void DestroyPassword() =>
+            CryptoUtils.DestroyElement(ref _password);
+
+        /// <summary>
+        ///     Removes the specified <see cref="Salt"/> from current process memory.
+        ///     <para>
+        ///         Note that the element cannot be removed if there are references outside
+        ///         of this instance.
+        ///     </para>
+        ///     <para>
+        ///         This function is called automatically with the <see cref="Dispose()"/>
+        ///         method.
+        ///     </para>
+        /// </summary>
+        public void DestroySalt() =>
+            CryptoUtils.DestroyElement(ref _salt);
+
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        ///     Releases all resources used by this class.
-        /// </summary>
+        /// <inheritdoc cref="Dispose()"/>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing)
                 return;
-            CryptoUtils.DestroyElement(ref _password);
-            CryptoUtils.DestroyElement(ref _salt);
+            DestroyPassword();
+            DestroySalt();
         }
     }
 }
