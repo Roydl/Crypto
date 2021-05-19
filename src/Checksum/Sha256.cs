@@ -8,6 +8,23 @@
     /// </summary>
     public sealed class Sha256 : ChecksumAlgorithm<Sha256>
     {
+        private byte[] _secretKey;
+
+        /// <summary>
+        ///     The secret key for <see cref="HMAC"/> encryption. The key can be any
+        ///     length. However, the recommended size is 64 bytes. If the key is more than
+        ///     64 bytes long, it is hashed (SHA-1) to derive a 64-byte key. If it is less
+        ///     than 64 bytes long, it is padded to 64 bytes.
+        ///     <para>
+        ///         Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
+        ///     </para>
+        /// </summary>
+        public byte[] SecretKey
+        {
+            get => _secretKey;
+            set => _secretKey = value;
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha256"/> class.
         /// </summary>
@@ -17,9 +34,7 @@
         ///     Initializes a new instance of the <see cref="Sha256"/> class and encrypts
         ///     the specified stream.
         /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(Stream)"/>
         public Sha256(Stream stream) : this() =>
             Encrypt(stream);
 
@@ -27,9 +42,7 @@
         ///     Initializes a new instance of the <see cref="Sha256"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <param name="bytes">
-        ///     The sequence of bytes to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(byte[])"/>
         public Sha256(byte[] bytes) : this() =>
             Encrypt(bytes);
 
@@ -37,13 +50,7 @@
         ///     Initializes a new instance of the <see cref="Sha256"/> class and encrypts
         ///     the specified text or file.
         /// </summary>
-        /// <param name="textOrFile">
-        ///     The text or file to encrypt.
-        /// </param>
-        /// <param name="strIsFilePath">
-        ///     <see langword="true"/> if the specified value is a file path; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <inheritdoc cref="Adler32(string, bool)"/>
         public Sha256(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
@@ -58,39 +65,26 @@
         ///     Initializes a new instance of the <see cref="Sha256"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <param name="str">
-        ///     The text to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(string)"/>
         public Sha256(string str) : this() =>
             Encrypt(str);
 
-        /// <summary>
-        ///     Encrypts the specified stream.
-        /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
-            Encrypt(stream, new SHA256CryptoServiceProvider());
+            Encrypt(stream, (HashAlgorithm)(SecretKey == null ? SHA256.Create() : new HMACSHA256(SecretKey)));
+
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        public new void Encrypt(string text) =>
+            Encrypt(text, (HashAlgorithm)(SecretKey == null ? SHA256.Create() : new HMACSHA256(SecretKey)));
 
         /// <summary>
-        ///     Encrypts the specified string.
+        ///     Removes the specified <see cref="SecretKey"/> from current process memory.
+        ///     <para>
+        ///         Note that the element cannot be removed if there are references outside
+        ///         of this instance.
+        ///     </para>
         /// </summary>
-        /// <param name="text">
-        ///     The string to encrypt.
-        /// </param>
-        public new void Encrypt(string text)
-        {
-            var algo = default(SHA256);
-            try
-            {
-                algo = SHA256.Create();
-                Encrypt(text, algo);
-            }
-            finally
-            {
-                algo?.Dispose();
-            }
-        }
+        public void DestroySecretKey() =>
+            CryptoUtils.DestroyElement(ref _secretKey);
     }
 }
