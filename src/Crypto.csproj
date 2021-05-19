@@ -27,6 +27,7 @@
 - Added `CrcConfig` structure to quickly create custom CRC classes according to other standards
 - Improved caching so that only used types are cached instead of all
 - Minor fixes, improvements and code cleanups</PackageReleaseNotes>
+    <AppDesignerFolder>Resources</AppDesignerFolder>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -53,7 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\ExceptionMessages.Designer.cs">
+    <Compile Update="Resources\ExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
@@ -61,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Properties\ExceptionMessages.resx">
+    <EmbeddedResource Update="Resources\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

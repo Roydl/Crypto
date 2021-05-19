@@ -5,7 +5,7 @@
     using System.IO;
     using System.Security.Cryptography;
     using System.Text;
-    using Properties;
+    using Resources;
 
     /// <summary>
     ///     Represents the base class from which all implementations of checksum

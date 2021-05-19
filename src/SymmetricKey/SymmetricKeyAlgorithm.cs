@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Security.Cryptography;
-    using Properties;
+    using Resources;
 
     /// <summary>
     ///     Represents the base class from which all implementations of symmetric key
