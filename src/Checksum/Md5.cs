@@ -13,8 +13,8 @@
         /// <summary>
         ///     The secret key for <see cref="HMAC"/> encryption. The key can be any
         ///     length. However, the recommended size is 64 bytes. If the key is more than
-        ///     64 bytes long, it is hashed (SHA-1) to derive a 64-byte key. If it is less
-        ///     than 64 bytes long, it is padded to 64 bytes.
+        ///     64 bytes long, it is hashed (using SHA-1) to derive a 64-byte key. If it is
+        ///     less than 64 bytes long, it is padded to 64 bytes.
         ///     <para>
         ///         Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
         ///     </para>
