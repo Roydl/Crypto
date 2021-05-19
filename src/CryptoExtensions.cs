@@ -10,7 +10,8 @@
     using Checksum;
 
     /// <summary>
-    ///     Specifies enumerated constants used to encrypt data.
+    ///     Specifies enumerated constants used to define an algorithm for encrypting
+    ///     data.
     /// </summary>
     public enum ChecksumAlgo
     {

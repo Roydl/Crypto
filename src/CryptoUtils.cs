@@ -37,9 +37,7 @@
         public static int CombineHashCodes(object obj1, object obj2) =>
             CombineHashCodes(obj1?.GetHashCode() ?? 17011, obj2?.GetHashCode() ?? 23011);
 
-        /// <summary>
-        ///     Combines the specified hash codes.
-        /// </summary>
+        /// <inheritdoc cref="CombineHashCodes(int, int)"/>
         /// <param name="hashes">
         ///     A sequence of hash codes.
         /// </param>
@@ -62,9 +60,7 @@
             }
         }
 
-        /// <summary>
-        ///     Combines the hash codes of the specified objects.
-        /// </summary>
+        /// <inheritdoc cref="CombineHashCodes(object, object)"/>
         /// <param name="objects">
         ///     A sequence of hash codes.
         /// </param>
@@ -118,22 +114,10 @@
         /// <summary>
         ///     Returns the specified 64-bit unsigned integer value as an array of bytes.
         /// </summary>
-        /// <param name="value">
-        ///     The number to convert.
-        /// </param>
-        /// <param name="size">
-        ///     The size of the sequence. Must be between 1 and 64.
-        /// </param>
-        /// <param name="inverted">
-        ///     <see langword="true"/> to invert the order; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     size is less 1 or greater 64.
-        /// </exception>
         /// <returns>
         ///     An array of bytes with length of size.
         /// </returns>
+        /// <inheritdoc cref="GetBytes(ulong, int, bool)"/>
         public static byte[] GetByteArray(ulong value, int size, bool inverted) =>
             GetBytes(value, size, inverted)?.ToArray();
 

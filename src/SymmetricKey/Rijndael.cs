@@ -57,22 +57,7 @@
         /// </exception>
         public Rijndael(byte[] password, byte[] salt, int iterations = 1000, RijndaelKeySize keySize = RijndaelKeySize.Aes256) : base(password, salt, iterations, 128, (int)keySize) { }
 
-        /// <summary>
-        ///     Encrypts the specified input stream into the specified output stream.
-        /// </summary>
-        /// <param name="inputStream">
-        ///     The input stream to encrypt.
-        /// </param>
-        /// <param name="outputStream">
-        ///     The output stream for encryption.
-        /// </param>
-        /// <param name="dispose">
-        ///     <see langword="true"/> to release all resources used by the input and
-        ///     output <see cref="Stream"/>; otherwise, <see langword="false"/>.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     inputStream or outputStream is null.
-        /// </exception>
+        /// <inheritdoc/>
         public override void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false)
         {
             if (inputStream == null)
@@ -109,20 +94,7 @@
             }
         }
 
-        /// <summary>
-        ///     Decrypts the specified input stream into the specified output stream.
-        /// </summary>
-        /// <param name="inputStream">
-        ///     The input stream to decrypt.
-        /// </param>
-        /// <param name="outputStream">
-        ///     The output stream for decryption.
-        /// </param>
-        /// <param name="dispose">
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     inputStream or outputStream is null.
-        /// </exception>
+        /// <inheritdoc/>
         public override void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false)
         {
             if (inputStream == null)

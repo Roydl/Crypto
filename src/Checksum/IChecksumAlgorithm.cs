@@ -44,6 +44,9 @@
         /// <param name="stream">
         ///     The stream to encrypt.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     bytes is null.
+        /// </exception>
         void Encrypt(Stream stream);
 
         /// <summary>

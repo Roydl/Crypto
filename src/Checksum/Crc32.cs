@@ -19,9 +19,7 @@
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified stream.
         /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(Stream)"/>
         public Crc32(Stream stream) : this() =>
             Encrypt(stream);
 
@@ -29,9 +27,7 @@
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <param name="bytes">
-        ///     The sequence of bytes to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(byte[])"/>
         public Crc32(byte[] bytes) : this() =>
             Encrypt(bytes);
 
@@ -39,13 +35,7 @@
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified text or file.
         /// </summary>
-        /// <param name="textOrFile">
-        ///     The text or file to encrypt.
-        /// </param>
-        /// <param name="strIsFilePath">
-        ///     <see langword="true"/> if the specified value is a file path; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <inheritdoc cref="Adler32(string, bool)"/>
         public Crc32(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
@@ -60,18 +50,11 @@
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <param name="str">
-        ///     The text to encrypt.
-        /// </param>
+        /// <inheritdoc cref="Adler32(string)"/>
         public Crc32(string str) : this() =>
             Encrypt(str);
 
-        /// <summary>
-        ///     Encrypts the specified stream.
-        /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
             if (stream == null)

@@ -64,15 +64,7 @@
         public Adler32(string str) : this() =>
             Encrypt(str);
 
-        /// <summary>
-        ///     Encrypts the specified stream.
-        /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     stream is null.
-        /// </exception>
+        /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
         public override void Encrypt(Stream stream)
         {
             if (stream == null)

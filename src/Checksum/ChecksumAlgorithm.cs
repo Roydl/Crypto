@@ -13,34 +13,22 @@
     /// </summary>
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
-        /// <summary>
-        ///     Gets the hash size in bits.
-        /// </summary>
+        /// <inheritdoc/>
         public int HashBits { get; }
 
-        /// <summary>
-        ///     Gets the string hash size.
-        /// </summary>
+        /// <inheritdoc/>
         public int HashSize { get; }
 
-        /// <summary>
-        ///     Gets the raw hash size.
-        /// </summary>
+        /// <inheritdoc/>
         public int RawHashSize { get; }
 
-        /// <summary>
-        ///     Gets the string representation of the computed hash code.
-        /// </summary>
+        /// <inheritdoc/>
         public string Hash => ToString();
 
-        /// <summary>
-        ///     Gets the sequence of bytes of the computed hash code.
-        /// </summary>
+        /// <inheritdoc/>
         public ReadOnlyMemory<byte> RawHash { get; protected set; }
 
-        /// <summary>
-        ///     Gets the 64-bit unsigned integer representation of the computed hash code.
-        /// </summary>
+        /// <inheritdoc/>
         public ulong HashNumber { get; protected set; }
 
         /// <summary>
@@ -62,26 +50,10 @@
             RawHashSize = bits / 8;
         }
 
-        /// <summary>
-        ///     Encrypts the specified stream.
-        /// </summary>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public abstract void Encrypt(Stream stream);
 
-        /// <summary>
-        ///     Encrypts the specified sequence of bytes.
-        /// </summary>
-        /// <param name="bytes">
-        ///     The sequence of bytes to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     bytes is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     bytes is empty.
-        /// </exception>
+        /// <inheritdoc/>
         public void Encrypt(byte[] bytes)
         {
             if (bytes == null)
@@ -92,18 +64,7 @@
             Encrypt(ms);
         }
 
-        /// <summary>
-        ///     Encrypts the specified string.
-        /// </summary>
-        /// <param name="text">
-        ///     The string to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     text is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     text is empty.
-        /// </exception>
+        /// <inheritdoc/>
         public void Encrypt(string text)
         {
             if (text == null)
@@ -113,21 +74,7 @@
             Encrypt(Encoding.UTF8.GetBytes(text));
         }
 
-        /// <summary>
-        ///     Encrypts the specified file.
-        /// </summary>
-        /// <param name="path">
-        ///     The full path of the file to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     path is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     path is empty.
-        /// </exception>
-        /// <exception cref="FileNotFoundException">
-        ///     path cannot be found.
-        /// </exception>
+        /// <inheritdoc/>
         public void EncryptFile(string path)
         {
             if (path == null)
@@ -156,30 +103,15 @@
             return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
         }
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
+        /// <inheritdoc/>
         public override bool Equals(object other) =>
             other is ChecksumAlgorithm item && Equals(item);
 
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
+        /// <inheritdoc cref="Type.GetHashCode()"/>
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
-        /// <param name="uppercase">
-        ///     <see langword="true"/> to convert letters to uppercase; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <inheritdoc/>
         public string ToString(bool uppercase)
         {
             if (RawHash.IsEmpty)
@@ -192,10 +124,7 @@
             return s.PadLeft(HashSize, '0');
         }
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
+        /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
         public sealed override string ToString() =>
             ToString(false);
 
@@ -279,10 +208,7 @@
             !(left == right);
     }
 
-    /// <summary>
-    ///     Represents the base class from which all implementations of checksum
-    ///     encryption algorithms must derive.
-    /// </summary>
+    /// <inheritdoc cref="ChecksumAlgorithm"/>
     /// <typeparam name="THashAlgo">
     ///     The hash algorithm type.
     /// </typeparam>
@@ -292,12 +218,7 @@
         ///     Initializes a new instance of the
         ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
         /// </summary>
-        /// <param name="bits">
-        ///     The hash size in bits.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8, greater than 512, or odd.
-        /// </exception>
+        /// <inheritdoc cref="ChecksumAlgorithm(int)"/>
         protected ChecksumAlgorithm(int bits) : base(bits) { }
 
         /// <summary>
@@ -316,19 +237,11 @@
             return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
         }
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="object"/>.
-        /// </summary>
-        /// <param name="other">
-        ///     The  <see cref="object"/> to compare.
-        /// </param>
+        /// <inheritdoc/>
         public override bool Equals(object other) =>
             other is THashAlgo item && Equals(item);
 
-        /// <summary>
-        ///     Returns the hash code for this instance.
-        /// </summary>
+        /// <inheritdoc cref="Type.GetHashCode()"/>
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
