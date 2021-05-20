@@ -44,11 +44,25 @@
         /// <summary>
         ///     The sequence of bytes which is used as password.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="DestroySecretData">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         public IReadOnlyList<byte> Password => _password;
 
         /// <summary>
         ///     The sequence of bytes which is used as salt.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="DestroySecretData">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         public IReadOnlyList<byte> Salt => _salt;
 
         /// <summary>
@@ -57,9 +71,23 @@
         /// </summary>
         /// <param name="password">
         ///     The sequence of bytes which is used as password.
+        ///     <para>
+        ///         For more information, see
+        ///         <see cref="DestroySecretData()">
+        ///             here
+        ///         </see>
+        ///         .
+        ///     </para>
         /// </param>
         /// <param name="salt">
         ///     The sequence of bytes which is used as salt.
+        ///     <para>
+        ///         For more information, see
+        ///         <see cref="DestroySecretData()">
+        ///             here
+        ///         </see>
+        ///         .
+        ///     </para>
         /// </param>
         /// <param name="iterations">
         ///     The number of iterations for the operation.

@@ -36,9 +36,23 @@
         /// </summary>
         /// <param name="password">
         ///     The sequence of bytes which is used as password.
+        ///     <para>
+        ///         For more information, see
+        ///         <see cref="SymmetricKeyAlgorithm.DestroySecretData()">
+        ///             here
+        ///         </see>
+        ///         .
+        ///     </para>
         /// </param>
         /// <param name="salt">
         ///     The sequence of bytes which is used as salt.
+        ///     <para>
+        ///         For more information, see
+        ///         <see cref="SymmetricKeyAlgorithm.DestroySecretData()">
+        ///             here
+        ///         </see>
+        ///         .
+        ///     </para>
         /// </param>
         /// <param name="iterations">
         ///     The number of iterations for the operation.
@@ -46,15 +60,7 @@
         /// <param name="keySize">
         ///     The size of the secret key.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     inputStream, outputStream, password or salt is null.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     iterations is less than 1.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     salt size is smaller than 8 bytes.
-        /// </exception>
+        /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, int)"/>
         public Rijndael(byte[] password, byte[] salt, int iterations = 1000, RijndaelKeySize keySize = RijndaelKeySize.Aes256) : base(password, salt, iterations, 128, (int)keySize) { }
 
         /// <inheritdoc/>
