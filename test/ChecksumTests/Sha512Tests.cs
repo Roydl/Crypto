@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Threading.Tasks;
     using Checksum;
     using NUnit.Framework;
 
@@ -208,6 +209,30 @@
             Assert.IsFalse(_instanceStream != _instanceByteArray);
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
+        }
+
+        [Test]
+        [Category("Security")]
+        [NonParallelizable]
+        public void InstanceSecretKeyDestroy()
+        {
+            var secretKey = new WeakReference(TestVars.GetRandomBytes(128));
+            var instance = new Sha512
+            {
+                SecretKey = (byte[])secretKey.Target
+            };
+            Assert.AreEqual(secretKey.Target, instance.SecretKey);
+            Assert.AreSame(secretKey.Target, instance.SecretKey);
+
+            instance.DestroySecretKey();
+            Assert.IsNull(instance.SecretKey);
+
+            // `GC.WaitForPendingFinalizers()` is useless here
+            for (var i = 0; i < 0xfffff; i++)
+                Task.Delay(1);
+
+            Assert.IsNull(secretKey.Target);
+            Assert.IsFalse(secretKey.IsAlive);
         }
 
         [Test]

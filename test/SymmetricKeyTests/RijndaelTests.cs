@@ -4,6 +4,7 @@
     using System.IO;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Threading.Tasks;
     using NUnit.Framework;
     using SymmetricKey;
     using Rijndael = SymmetricKey.Rijndael;
@@ -142,6 +143,36 @@
                 Assert.NotNull(encrypted);
                 Assert.AreEqual(original, decrypted);
             }
+        }
+
+        [Test]
+        [Category("Security")]
+        [NonParallelizable]
+        public void InstanceSecretDataDestroy()
+        {
+            var pass = new WeakReference(TestVars.GetRandomBytes());
+            var salt = new WeakReference(TestVars.GetRandomBytes());
+            var instance = new Rijndael((byte[])pass.Target, (byte[])salt.Target, TestVars.GetRandomInt());
+            Assert.AreEqual(pass.Target, instance.Password);
+            Assert.AreSame(pass.Target, instance.Password);
+            Assert.AreEqual(salt.Target, instance.Salt);
+            Assert.AreSame(salt.Target, instance.Salt);
+
+            instance.DestroyPassword();
+            Assert.IsNull(instance.Password);
+
+            instance.DestroySalt();
+            Assert.IsNull(instance.Salt);
+
+            // `GC.WaitForPendingFinalizers()` is useless here
+            for (var i = 0; i < 0xfffff; i++)
+                Task.Delay(1);
+
+            Assert.IsNull(pass.Target);
+            Assert.IsFalse(pass.IsAlive);
+
+            Assert.IsNull(salt.Target);
+            Assert.IsFalse(salt.IsAlive);
         }
     }
 }

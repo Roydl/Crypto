@@ -46,9 +46,9 @@
         public static int GetRandomInt() =>
             Randomizer.Next(1, short.MaxValue);
 
-        public static byte[] GetRandomBytes()
+        public static byte[] GetRandomBytes(int size = 0)
         {
-            var bytes = new byte[Randomizer.Next(short.MaxValue, ushort.MaxValue)];
+            var bytes = new byte[size > 0 ? size : Randomizer.Next(short.MaxValue, ushort.MaxValue)];
             Randomizer.NextBytes(bytes);
             return bytes;
         }
