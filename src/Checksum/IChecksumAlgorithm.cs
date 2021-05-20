@@ -16,26 +16,57 @@
         /// <summary>
         ///     Gets the string hash size.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="Hash">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         int HashSize { get; }
 
         /// <summary>
         ///     Gets the raw hash size.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="RawHash">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         int RawHashSize { get; }
 
         /// <summary>
         ///     Gets the string representation of the computed hash code.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="HashSize">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         string Hash { get; }
 
         /// <summary>
         ///     Gets the sequence of bytes of the computed hash code.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see
+        ///     <see cref="RawHashSize">
+        ///         here
+        ///     </see>
+        ///     .
+        /// </remarks>
         ReadOnlyMemory<byte> RawHash { get; }
 
         /// <summary>
         ///     Gets the 64-bit unsigned integer representation of the computed hash code.
         /// </summary>
+        /// <remarks>
+        ///     For algorithms with less than 64 bits, this field holds the real raw hash.
+        /// </remarks>
         ulong HashNumber { get; }
 
         /// <summary>

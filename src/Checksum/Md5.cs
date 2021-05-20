@@ -15,10 +15,10 @@
         ///     length. However, the recommended size is 64 bytes. If the key is more than
         ///     64 bytes long, it is hashed (using SHA-1) to derive a 64-byte key. If it is
         ///     less than 64 bytes long, it is padded to 64 bytes.
-        ///     <para>
-        ///         Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
-        ///     </para>
         /// </summary>
+        /// <remarks>
+        ///     Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
+        /// </remarks>
         public byte[] SecretKey
         {
             get => _secretKey;
@@ -79,11 +79,24 @@
 
         /// <summary>
         ///     Removes the specified <see cref="SecretKey"/> from current process memory.
-        ///     <para>
-        ///         Note that the element cannot be removed if there are references outside
-        ///         of this instance.
-        ///     </para>
         /// </summary>
+        /// <remarks>
+        ///     Additional information:
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <description>
+        ///                 The data cannot be removed if referenced outside of this
+        ///                 instance.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <description>
+        ///                 Depending on the system, removing the data can take several
+        ///                 seconds.
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
         public void DestroySecretKey() =>
             CryptoUtils.DestroyElement(ref _secretKey);
     }

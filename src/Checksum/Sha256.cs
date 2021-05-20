@@ -15,10 +15,10 @@
         ///     length. However, the recommended size is 64 bytes. If the key is more than
         ///     64 bytes long, it is hashed (using SHA-256) to derive a 64-byte key. If it
         ///     is less than 64 bytes long, it is padded to 64 bytes.
-        ///     <para>
-        ///         Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
-        ///     </para>
         /// </summary>
+        /// <remarks>
+        ///     Before overwriting an old key, see <see cref="DestroySecretKey()"/>.
+        /// </remarks>
         public byte[] SecretKey
         {
             get => _secretKey;
@@ -79,11 +79,8 @@
 
         /// <summary>
         ///     Removes the specified <see cref="SecretKey"/> from current process memory.
-        ///     <para>
-        ///         Note that the element cannot be removed if there are references outside
-        ///         of this instance.
-        ///     </para>
         /// </summary>
+        /// <inheritdoc cref="Md5.DestroySecretKey()"/>
         public void DestroySecretKey() =>
             CryptoUtils.DestroyElement(ref _secretKey);
     }

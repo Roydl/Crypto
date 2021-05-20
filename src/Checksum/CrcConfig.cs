@@ -9,7 +9,9 @@
     ///     Represents a CRC configuration structure.
     /// </summary>
     /// <typeparam name="TValue">
-    ///     The integral type of the hash code.
+    ///     The integral type of the hash code. Must be <see cref="short"/>,
+    ///     <see cref="ushort"/>, <see cref="int"/>, <see cref="uint"/>,
+    ///     <see cref="long"/>, or <see cref="ulong"/>.
     /// </typeparam>
     public readonly struct CrcConfig<TValue> where TValue : IConvertible
     {
@@ -26,31 +28,43 @@
         /// <summary>
         ///     Gets the polynomial used to generate the CRC hash table once.
         /// </summary>
+        /// <remarks>
+        ///     Used to create the <see cref="Table"/> once.
+        /// </remarks>
         public TValue Poly { get; }
 
         /// <summary>
         ///     Gets the seed from which to start the calculation.
-        ///     <para>
-        ///         Is only used by default in
-        ///         <see cref="ComputeHash(Stream, out TValue)"/>.
-        ///     </para>
         /// </summary>
+        /// <remarks>
+        ///     Only automatically used in <see cref="ComputeHash(Stream, out TValue)"/>.
+        /// </remarks>
         public TValue Seed { get; }
 
         /// <summary>
         ///     Gets the value that determines whether the calculation is swapped.
         /// </summary>
+        /// <remarks>
+        ///     Used in <see cref="ComputeHash(Stream, out TValue)"/> and
+        ///     <see cref="ComputeHash(byte, ref TValue)"/>.
+        /// </remarks>
         public bool Swapped { get; }
 
         /// <summary>
         ///     Gets the value that determines whether the bits of the calculated hash code
         ///     are reversed.
         /// </summary>
+        /// <remarks>
+        ///     Used in <see cref="FinalizeHash(ref TValue)"/>.
+        /// </remarks>
         public bool Reversed { get; }
 
         /// <summary>
         ///     Gets the generated hash table of the configured CRC algorithm.
         /// </summary>
+        /// <remarks>
+        ///     For more information, see <see cref="Poly"/>.
+        /// </remarks>
         public ReadOnlyMemory<TValue> Table { get; }
 
         /// <summary>
@@ -74,10 +88,10 @@
         ///     otherwise, <see langword="false"/>.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8 or greater than 64.
+        ///     bits is less than 8, greater than 64, or odd.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        ///     TValue type is invalid.
+        ///     TValue type is invalid, i.e. not supported.
         /// </exception>
         public CrcConfig(int bits, TValue poly, TValue seed, bool swapped, bool reversed)
         {
@@ -94,7 +108,7 @@
                 default:
                     throw new InvalidOperationException();
             }
-            if (bits is < 8 or > 64)
+            if (bits is < 8 or > 64 || bits % 2 != 0)
                 throw new ArgumentOutOfRangeException(nameof(bits));
 
             var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
@@ -121,6 +135,9 @@
         /// <exception cref="ArgumentNullException">
         ///     stream is null.
         /// </exception>
+        /// <remarks>
+        ///     For more information, see <see cref="Seed"/> and <see cref="Reversed"/>.
+        /// </remarks>
         public void ComputeHash(Stream stream, out TValue hash)
         {
             if (stream == null)
@@ -138,9 +155,6 @@
 
         /// <summary>
         ///     Computes the hash of the byte value using the CRC algorithm.
-        ///     <para>
-        ///         <see cref="Seed"/> is not used here.
-        ///     </para>
         /// </summary>
         /// <param name="value">
         ///     The byte value to encrypt.
@@ -148,6 +162,9 @@
         /// <param name="hash">
         ///     The hash code to be computed or its computation that will be continued.
         /// </param>
+        /// <remarks>
+        ///     <see cref="Seed"/> is not used.
+        /// </remarks>
         public void ComputeHash(byte value, ref TValue hash)
         {
             if (Swapped)
@@ -164,6 +181,9 @@
         /// <param name="hash">
         ///     The computed hash code to be finalized.
         /// </param>
+        /// <remarks>
+        ///     For more information, see <see cref="Reversed"/>.
+        /// </remarks>
         public void FinalizeHash(ref TValue hash)
         {
             if (Reversed)
