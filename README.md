@@ -21,17 +21,19 @@ You can easily create instances of any type to translate `Stream`, `byte[]` or `
 
 ### Checksum Encryption:
 
-| Name | Hash Size | Algorithm |
-| ---- | ---- | ---- |
-| Adler32 | 32 | Standard |
-| CRC16 | 16 | AUG-CCITT |
-| CRC32 | 32 | Standard |
-| CRC64 | 64 | ECMA |
-| MD5 | 128 | Standard |
-| SHA1 | 160 | Standard |
-| SHA256 | 256 | SHA-2 Standard |
-| SHA384 | 384 | SHA-2 Standard |
-| SHA512 | 512 | SHA-2 Standard |
+| Name | Hash Size | Algorithm | HMAC |
+| ---- | ---- | ---- | ---- |
+| Adler32 | 32 | Standard | unsupported |
+| CRC16 | 16 | AUG-CCITT | unsupported |
+| CRC32 | 32 | Standard | unsupported |
+| CRC64 | 64 | ECMA | unsupported |
+| MD5 | 128 | Standard | optional |
+| SHA1 | 160 | Standard | optional |
+| SHA256 | 256 | SHA-2 Standard | optional |
+| SHA384 | 384 | SHA-2 Standard | optional |
+| SHA512 | 512 | SHA-2 Standard | optional |
+
+_I hope I don't have to say that checksums shouldn't be used to verify sensitive data!_
 
 #### Usage:
 ```cs
@@ -93,7 +95,7 @@ public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
     // and reversed bits of final hash.
     private static readonly CrcConfig<uint> Current = new(32, 0x4c11db7u, 0u, false, true);
 
-    // At least one constructor is required because `base (bits)` has to
+    // At least one constructor is required because `base(bits)` has to
     // be called.
     public Crc32Posix() : base(32) { }
 
