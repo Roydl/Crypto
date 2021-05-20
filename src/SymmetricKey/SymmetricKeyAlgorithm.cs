@@ -320,8 +320,7 @@
         }
 
         /// <summary>
-        ///     Removes the password and salt of the this instance from current process
-        ///     memory.
+        ///     Removes the password and salt of this instance from current process memory.
         /// </summary>
         /// <remarks>
         ///     Additional information:
