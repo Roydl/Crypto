@@ -61,7 +61,7 @@
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);
             HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, true);
+            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, BitConverter.IsLittleEndian);
         }
     }
 }
