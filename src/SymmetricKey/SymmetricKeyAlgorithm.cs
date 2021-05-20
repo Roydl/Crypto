@@ -320,32 +320,37 @@
         }
 
         /// <summary>
-        ///     Removes the specified <see cref="Password"/> from current process memory.
-        ///     <para>
-        ///         Note that the element cannot be removed if there are references outside
-        ///         of this instance.
-        ///     </para>
-        ///     <para>
-        ///         This function is called automatically with the <see cref="Dispose()"/>
-        ///         method.
-        ///     </para>
+        ///     Removes the password and salt of the this instance from current process
+        ///     memory.
         /// </summary>
-        public void DestroyPassword() =>
+        /// <remarks>
+        ///     Additional information:
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <description>
+        ///                 The data cannot be removed if they are referenced outside of
+        ///                 this instance.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <description>
+        ///                 Depending on the system, removing the data can take several
+        ///                 seconds.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <description>
+        ///                 This function is called automatically when disposing this
+        ///                 instance.
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
+        public void DestroySecretData()
+        {
             CryptoUtils.DestroyElement(ref _password);
-
-        /// <summary>
-        ///     Removes the specified <see cref="Salt"/> from current process memory.
-        ///     <para>
-        ///         Note that the element cannot be removed if there are references outside
-        ///         of this instance.
-        ///     </para>
-        ///     <para>
-        ///         This function is called automatically with the <see cref="Dispose()"/>
-        ///         method.
-        ///     </para>
-        /// </summary>
-        public void DestroySalt() =>
             CryptoUtils.DestroyElement(ref _salt);
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -359,8 +364,7 @@
         {
             if (!disposing)
                 return;
-            DestroyPassword();
-            DestroySalt();
+            DestroySecretData();
         }
     }
 }
