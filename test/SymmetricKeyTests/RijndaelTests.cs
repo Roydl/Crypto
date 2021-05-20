@@ -152,16 +152,17 @@
         {
             var pass = new WeakReference(TestVars.GetRandomBytes());
             var salt = new WeakReference(TestVars.GetRandomBytes());
+
             var instance = new Rijndael((byte[])pass.Target, (byte[])salt.Target, TestVars.GetRandomInt());
+
             Assert.AreEqual(pass.Target, instance.Password);
             Assert.AreSame(pass.Target, instance.Password);
+
             Assert.AreEqual(salt.Target, instance.Salt);
             Assert.AreSame(salt.Target, instance.Salt);
 
-            instance.DestroyPassword();
+            instance.DestroySecretData();
             Assert.IsNull(instance.Password);
-
-            instance.DestroySalt();
             Assert.IsNull(instance.Salt);
 
             // `GC.WaitForPendingFinalizers()` is useless here
