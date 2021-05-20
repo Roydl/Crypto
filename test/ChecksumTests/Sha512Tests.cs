@@ -16,15 +16,26 @@
         private const int RawHashSize = 64;
         private const string ExpectedTestHash = "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31";
         private const string ExpectedRangeHash = "0523f0b765970e2d2b04eb14e2f797b0c4d4b348b02dc5b7d16e49a0fdff3328ab711490b02b9fb6d7c71c7ac529e2c98c2719b7cf7561b1221b33397931af74";
+        private const string HmacExpectedTestHash = "3359b5fa34b289f2bfe0a7fa592a1c5c030052e82e6e07981b2360ecbd3adffa8450856cee6ce89d2d645ff61ac3ea8a6a6ea684a316c357f9129c833545c55a";
+        private const string HmacExpectedRangeHash = "2c7d58cc987034cb266b7329aac27a9f11fc3155ee56f81117440e6f4fa300412cc459da6d42aea644144623c1e7e7c73ca229c5f579b4264989510c9453d370";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
-        private static readonly TestCaseData[] TestData =
+        private static readonly TestCaseData[] TestDataDefault =
         {
-            new(TestVarsType.TestStream, ExpectedTestHash),
-            new(TestVarsType.TestBytes, ExpectedTestHash),
-            new(TestVarsType.TestString, ExpectedTestHash),
-            new(TestVarsType.TestFile, ExpectedTestHash),
-            new(TestVarsType.RangeString, ExpectedRangeHash)
+            new(TestSetting.Default, TestVarsType.TestStream, ExpectedTestHash),
+            new(TestSetting.Default, TestVarsType.TestBytes, ExpectedTestHash),
+            new(TestSetting.Default, TestVarsType.TestString, ExpectedTestHash),
+            new(TestSetting.Default, TestVarsType.TestFile, ExpectedTestHash),
+            new(TestSetting.Default, TestVarsType.RangeString, ExpectedRangeHash)
+        };
+
+        private static readonly TestCaseData[] TestDataHmac =
+        {
+            new(TestSetting.Hmac, TestVarsType.TestStream, HmacExpectedTestHash),
+            new(TestSetting.Hmac, TestVarsType.TestBytes, HmacExpectedTestHash),
+            new(TestSetting.Hmac, TestVarsType.TestString, HmacExpectedTestHash),
+            new(TestSetting.Hmac, TestVarsType.TestFile, HmacExpectedTestHash),
+            new(TestSetting.Hmac, TestVarsType.RangeString, HmacExpectedRangeHash)
         };
 
         private static Sha512 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
@@ -52,9 +63,9 @@
         }
 
         [Test]
-        [TestCaseSource(nameof(TestData))]
+        [TestCaseSource(nameof(TestDataDefault))]
         [Category("Extension")]
-        public void ExtensionEncrypt(TestVarsType varsType, string expectedHash)
+        public void ExtensionEncrypt(TestSetting _, TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
@@ -123,10 +134,12 @@
         }
 
         [Test]
-        [TestCaseSource(nameof(TestData))]
+        [TestCaseSource(nameof(TestDataDefault))]
+        [TestCaseSource(nameof(TestDataHmac))]
         [Category("Method")]
-        public void InstanceEncrypt(TestVarsType varsType, string expectedHash)
+        public void InstanceEncrypt(TestSetting setting, TestVarsType varsType, string expectedHash)
         {
+            _instanceDefault.SecretKey = setting == TestSetting.Hmac ? TestVars.TestSecretKey : null;
             switch (varsType)
             {
                 case TestVarsType.TestStream:
