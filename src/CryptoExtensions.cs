@@ -98,29 +98,39 @@
             if (braces)
                 sb.Append('{');
             var pos = (source as Stream)?.Position ?? -1L;
-            var first = source?.Encrypt(algorithm1) ?? new string('0', 8);
-            if (first.Length < 8)
-                first = first.PadLeft(8, '0');
-            if (first.Length > 8)
-                first = first[..8];
-            sb.Append(first);
+            InternalGenericEncrypt(source, algorithm1, out var instance1);
             if (pos >= 0L && source is Stream stream)
                 stream.Position = pos;
-            var second = source?.Encrypt(algorithm2) ?? new string('0', 12);
-            if (second.Length < 12)
-                second = second.PadRight(12, '0');
-            for (var i = 0; i < 3; i++)
+            InternalGenericEncrypt(source, algorithm2, out var instance2);
+            var span = CombineHashBytes(instance1.RawHash.Span, instance2.RawHash.Span, 16);
+            var index = 0;
+            for (var i = 0; i < 5; i++)
             {
-                sb.Append('-');
-                sb.Append(second.Substring(i * 4, 4));
+                var size = i switch { < 1 => 4, < 4 => 2, _ => 6 };
+                for (var j = 0 + i; j < size + i; j++)
+                    sb.AppendFormat("{0:x2}", span[index++]);
+                if (i < 4)
+                    sb.Append('-');
             }
-            sb.Append('-');
-            sb.Append(second[^12..]);
             if (braces)
                 sb.Append('}');
-            var s = sb.ToString();
+            var str = sb.ToString();
             sb.Clear();
-            return s;
+            return str;
+
+            static ReadOnlySpan<byte> CombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
+            {
+                var ba = new byte[size];
+                var i1 = 0;
+                var i2 = 0;
+                for (var i = 0; i < size; i++)
+                {
+                    var e1 = span1.IsEmpty ? 17 : span1[i1 < span1.Length ? i1++ : i1 = 0];
+                    var e2 = span2.IsEmpty ? 23 : span2[i2 < span2.Length ? i2++ : i2 = 0];
+                    ba[i] = (byte)CryptoUtils.CombineHashCodes(e1, e2);
+                }
+                return ba;
+            }
         }
 
         /// <summary>
