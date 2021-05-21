@@ -43,44 +43,14 @@
         public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large) : base(password, salt, iterations, 128, keySize) { }
 
         /// <inheritdoc/>
-        public override void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false)
-        {
-            if (inputStream == null)
-                throw new ArgumentNullException(nameof(inputStream));
-            if (outputStream == null)
-                throw new ArgumentNullException(nameof(outputStream));
-            using var rm = new RijndaelManaged
-            {
-                BlockSize = BlockSize,
-                KeySize = (int)KeySize,
-                Mode = (CipherMode)Mode,
-                Padding = (PaddingMode)Padding
-            };
-            using (var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations))
-            {
-                rm.Key = db.GetBytes(rm.KeySize / 8);
-                rm.IV = db.GetBytes(rm.BlockSize / 8);
-            }
-            try
-            {
-                var ba = CryptoUtils.CreateBuffer(inputStream);
-                int i;
-                using var cs = new CryptoStream(outputStream, rm.CreateEncryptor(), CryptoStreamMode.Write);
-                while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
-                    cs.Write(ba, 0, i);
-            }
-            finally
-            {
-                if (dispose)
-                {
-                    inputStream.Dispose();
-                    outputStream.Dispose();
-                }
-            }
-        }
+        public override void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false) =>
+            InternalEncryptDecrypt(inputStream, outputStream, true, dispose);
 
         /// <inheritdoc/>
-        public override void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false)
+        public override void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false) =>
+            InternalEncryptDecrypt(inputStream, outputStream, false, dispose);
+
+        private void InternalEncryptDecrypt(Stream inputStream, Stream outputStream, bool encrypt, bool dispose = false)
         {
             if (inputStream == null)
                 throw new ArgumentNullException(nameof(inputStream));
@@ -102,7 +72,7 @@
             {
                 var ba = CryptoUtils.CreateBuffer(inputStream);
                 int i;
-                using var cs = new CryptoStream(outputStream, rm.CreateDecryptor(), CryptoStreamMode.Write);
+                using var cs = new CryptoStream(outputStream, encrypt ? rm.CreateEncryptor() : rm.CreateDecryptor(), CryptoStreamMode.Write);
                 while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
                     cs.Write(ba, 0, i);
             }

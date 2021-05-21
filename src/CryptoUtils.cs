@@ -144,10 +144,7 @@
         }
 
         internal static byte[] CreateBuffer(Stream stream) =>
-            new byte[GetBufferSize(stream)];
-
-        private static int GetBufferSize(Stream stream) =>
-            GetBufferSize(stream?.Length ?? 0L);
+            new byte[GetBufferSize(stream?.Length ?? 0x1000L)];
 
         private static int GetBufferSize(long streamLength)
         {

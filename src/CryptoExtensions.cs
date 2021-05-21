@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -92,6 +93,7 @@
         ///     A string that contains the results of encrypting the specified object by
         ///     the specified algorithms.
         /// </returns>
+        [return: NotNullIfNotNull("source")]
         public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
         {
             var sb = new StringBuilder(braces ? 38 : 36);
@@ -179,6 +181,7 @@
         ///     A string that contains the result of encrypting the specified object by the
         ///     specified algorithm.
         /// </returns>
+        [return: NotNullIfNotNull("source")]
         public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
             InternalGenericEncrypt(source, algorithm, out var instance);
