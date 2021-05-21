@@ -135,6 +135,41 @@
         }
 
         [Test]
+        [Category("Security")]
+        public void InstanceDestroySecretKey()
+        {
+            var secretKey = new WeakReference(TestVars.GetRandomBytes(128));
+            var instance = new Sha384
+            {
+                SecretKey = (byte[])secretKey.Target
+            };
+
+            // Let's see if the password and salt were created correctly.
+            Assert.GreaterOrEqual(instance.SecretKey?.Length, 128);
+            Assert.AreEqual(secretKey.Target, instance.SecretKey);
+            Assert.AreSame(secretKey.Target, instance.SecretKey);
+
+            // Let's use the instance as usual.
+            instance.Encrypt(TestVars.RangeStr);
+
+            // Time to remove secret key from process memory.
+            instance.DestroySecretKey();
+            Assert.IsNull(instance.SecretKey);
+
+            // This takes a few milliseconds. For the worst case scenario, we will skip the use of `while`. 
+            for (var i = 0; i < 0xffffff; i++)
+            {
+                if (!secretKey.IsAlive)
+                    break;
+                Task.Delay(1);
+            }
+
+            // Now we will see if all secret key has been removed from the process memory.
+            Assert.IsNull(secretKey.Target);
+            Assert.IsFalse(secretKey.IsAlive);
+        }
+
+        [Test]
         [TestCaseSource(nameof(TestDataDefault))]
         [TestCaseSource(nameof(TestDataHmac))]
         [Category("Method")]
@@ -209,30 +244,6 @@
             Assert.IsFalse(_instanceStream != _instanceByteArray);
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
-        }
-
-        [Test]
-        [Category("Security")]
-        [NonParallelizable]
-        public void InstanceSecretKeyDestroy()
-        {
-            var secretKey = new WeakReference(TestVars.GetRandomBytes(128));
-            var instance = new Sha384
-            {
-                SecretKey = (byte[])secretKey.Target
-            };
-            Assert.AreEqual(secretKey.Target, instance.SecretKey);
-            Assert.AreSame(secretKey.Target, instance.SecretKey);
-
-            instance.DestroySecretKey();
-            Assert.IsNull(instance.SecretKey);
-
-            // `GC.WaitForPendingFinalizers()` is useless here
-            for (var i = 0; i < 0xfffff; i++)
-                Task.Delay(1);
-
-            Assert.IsNull(secretKey.Target);
-            Assert.IsFalse(secretKey.IsAlive);
         }
 
         [Test]
