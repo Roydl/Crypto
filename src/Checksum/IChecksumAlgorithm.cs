@@ -65,7 +65,7 @@
         ///     Gets the 64-bit unsigned integer representation of the computed hash code.
         /// </summary>
         /// <remarks>
-        ///     For algorithms with less than 64 bits, this field holds the real raw hash.
+        ///     For algorithms with up to 64 bits, this field holds the real raw hash.
         /// </remarks>
         ulong HashNumber { get; }
 

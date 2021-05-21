@@ -120,9 +120,11 @@
             var sb = new StringBuilder(HashSize);
             foreach (var b in RawHash.Span)
                 sb.Append(b.ToString(uppercase ? "X2" : "x2", CultureInfo.CurrentCulture));
-            var s = sb.ToString();
+            while (sb.Length < HashSize)
+                sb.Insert(0, '0');
+            var str = sb.ToString();
             sb.Clear();
-            return s.PadLeft(HashSize, '0');
+            return str;
         }
 
         /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
