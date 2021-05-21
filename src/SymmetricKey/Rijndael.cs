@@ -5,27 +5,6 @@
     using System.Security.Cryptography;
 
     /// <summary>
-    ///     Provides enumerated bits of the key size.
-    /// </summary>
-    public enum RijndaelKeySize
-    {
-        /// <summary>
-        ///     128 bits.
-        /// </summary>
-        Aes128 = 128,
-
-        /// <summary>
-        ///     192 bits.
-        /// </summary>
-        Aes192 = 192,
-
-        /// <summary>
-        ///     256 bits.
-        /// </summary>
-        Aes256 = 256
-    }
-
-    /// <summary>
     ///     Provides functionality to encrypt and decrypt data using Advanced
     ///     Encryption Standard algorithm.
     /// </summary>
@@ -60,8 +39,8 @@
         /// <param name="keySize">
         ///     The size of the secret key.
         /// </param>
-        /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, int)"/>
-        public Rijndael(byte[] password, byte[] salt, int iterations = 1000, RijndaelKeySize keySize = RijndaelKeySize.Aes256) : base(password, salt, iterations, 128, (int)keySize) { }
+        /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, SymmetricKeySize)"/>
+        public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large) : base(password, salt, iterations, 128, keySize) { }
 
         /// <inheritdoc/>
         public override void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false)
@@ -73,9 +52,9 @@
             using var rm = new RijndaelManaged
             {
                 BlockSize = BlockSize,
-                KeySize = KeySize,
-                Mode = Mode,
-                Padding = Padding
+                KeySize = (int)KeySize,
+                Mode = (CipherMode)Mode,
+                Padding = (PaddingMode)Padding
             };
             using (var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations))
             {
@@ -84,7 +63,7 @@
             }
             try
             {
-                var ba = new byte[short.MaxValue];
+                var ba = CryptoUtils.CreateBuffer(inputStream);
                 int i;
                 using var cs = new CryptoStream(outputStream, rm.CreateEncryptor(), CryptoStreamMode.Write);
                 while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
@@ -110,9 +89,9 @@
             using var rm = new RijndaelManaged
             {
                 BlockSize = BlockSize,
-                KeySize = KeySize,
-                Mode = Mode,
-                Padding = Padding
+                KeySize = (int)KeySize,
+                Mode = (CipherMode)Mode,
+                Padding = (PaddingMode)Padding
             };
             using (var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations))
             {
@@ -121,7 +100,7 @@
             }
             try
             {
-                var ba = new byte[short.MaxValue];
+                var ba = CryptoUtils.CreateBuffer(inputStream);
                 int i;
                 using var cs = new CryptoStream(outputStream, rm.CreateDecryptor(), CryptoStreamMode.Write);
                 while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)

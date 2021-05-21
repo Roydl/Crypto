@@ -6,6 +6,61 @@
     using System.Security.Cryptography;
     using Resources;
 
+    /// Wrapper to kick out unsupported modes
+    /// <inheritdoc cref="CipherMode"/>
+    public enum BlockCipherMode
+    {
+        /// <inheritdoc cref="CipherMode.CBC"/>
+        Cbc = 1,
+
+        /// <inheritdoc cref="CipherMode.ECB"/>
+        Ecb = 2,
+
+        /// <inheritdoc cref="CipherMode.CFB"/>
+        Cfb = 4
+    }
+
+    /// Wrapper to prevent additional namespace for a single feature
+    /// <inheritdoc cref="PaddingMode"/>
+    public enum BlockPaddingMode
+    {
+        /// <inheritdoc cref="PaddingMode.None"/>
+        None = 1,
+
+        /// <inheritdoc cref="PaddingMode.PKCS7"/>
+        Pkcs7 = 2,
+
+        /// <inheritdoc cref="PaddingMode.Zeros"/>
+        Zeros = 3,
+
+        /// <inheritdoc cref="PaddingMode.ANSIX923"/>
+        Ansix923 = 4,
+
+        /// <inheritdoc cref="PaddingMode.ISO10126"/>
+        Iso10126 = 5
+    }
+
+    /// <summary>
+    ///     Provides enumerated bits of the key size.
+    /// </summary>
+    public enum SymmetricKeySize
+    {
+        /// <summary>
+        ///     128 bits.
+        /// </summary>
+        Small = 128,
+
+        /// <summary>
+        ///     192 bits.
+        /// </summary>
+        Medium = 192,
+
+        /// <summary>
+        ///     256 bits.
+        /// </summary>
+        Large = 256
+    }
+
     /// <summary>
     ///     Represents the base class from which all implementations of symmetric key
     ///     encryption algorithms must derive.
@@ -22,19 +77,19 @@
         /// <summary>
         ///     The size, in bits, of the secret key used for the symmetric algorithm.
         /// </summary>
-        public int KeySize { get; }
+        public SymmetricKeySize KeySize { get; }
 
         /// <summary>
         ///     The mode for operation of the symmetric algorithm. The default is
-        ///     <see cref="CipherMode.CBC"/>.
+        ///     <see cref="BlockCipherMode.Cbc"/>.
         /// </summary>
-        public CipherMode Mode { get; set; } = CipherMode.CBC;
+        public BlockCipherMode Mode { get; set; } = BlockCipherMode.Cbc;
 
         /// <summary>
         ///     The padding mode used in the symmetric algorithm. The default is
-        ///     <see cref="PaddingMode.PKCS7"/>.
+        ///     <see cref="BlockPaddingMode.Pkcs7"/>.
         /// </summary>
-        public PaddingMode Padding { get; set; } = PaddingMode.PKCS7;
+        public BlockPaddingMode Padding { get; set; } = BlockPaddingMode.Pkcs7;
 
         /// <summary>
         ///     The number of iterations for the operation.
@@ -107,7 +162,7 @@
         /// <exception cref="ArgumentException">
         ///     salt size is smaller than 8 bytes.
         /// </exception>
-        protected SymmetricKeyAlgorithm(byte[] password, byte[] salt, int iterations, int blockSize, int keySize)
+        protected SymmetricKeyAlgorithm(byte[] password, byte[] salt, int iterations, int blockSize, SymmetricKeySize keySize)
         {
             _password = password ?? throw new ArgumentNullException(nameof(password));
             if (salt == null)
