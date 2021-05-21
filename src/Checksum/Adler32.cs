@@ -64,7 +64,7 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            var ba = new byte[4096];
+            var ba = CryptoUtils.CreateBuffer(stream);
             var uia = new[]
             {
                 1u,

@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     /// <summary>
@@ -140,6 +141,31 @@
             GC.Collect(generation, GCCollectionMode.Forced);
             if (isCollection)
                 GC.Collect();
+        }
+
+        internal static byte[] CreateBuffer(Stream stream) =>
+            new byte[GetBufferSize(stream)];
+
+        private static int GetBufferSize(Stream stream) =>
+            GetBufferSize(stream?.Length ?? 0L);
+
+        private static int GetBufferSize(long streamLength)
+        {
+            const int kb128 = 0x20000;
+            const int kb64 = 0x10000;
+            const int kb32 = 0x8000;
+            const int kb16 = 0x4000;
+            const int kb8 = 0x2000;
+            const int kb4 = 0x1000;
+            return (int)Math.Floor(streamLength / 1.5d) switch
+            {
+                > kb128 => kb128,
+                > kb64 => kb64,
+                > kb32 => kb32,
+                > kb16 => kb16,
+                > kb8 => kb8,
+                _ => kb4
+            };
         }
     }
 }

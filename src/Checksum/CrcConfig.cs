@@ -143,7 +143,7 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             hash = Seed;
-            var ba = new byte[4096];
+            var ba = CryptoUtils.CreateBuffer(stream);
             int len;
             while ((len = stream.Read(ba, 0, ba.Length)) > 0)
             {
