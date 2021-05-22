@@ -39,49 +39,44 @@ _I hope I don't have to say that checksums shouldn't be used to verify sensitive
 ```cs
 // The `value` can be almost anything, even an entire type with many values,
 // which is then serialized into a JSON byte sequence before being hashed.
-string hash1 = value.Encrypt(ChecksumAlgo.Md5);
-
-// SHA-256 is used by default if `ChecksumAlgo` is not set.
-string hash2 = value.Encrypt();
+string strHash = value.Encrypt(ChecksumAlgo.Sha512);
 
 // The file encryption has an additional method, where `value` must be a
 // `string` with a valid file path.
-string hash3 = value.EncryptFile();
+string strHash = value.EncryptFile(); // SHA-256 is used by default.
 
-// The `EncryptRaw` extension method retrieves an unsigned 64-bit integer
+// The `GetCipher` extension method retrieves an unsigned 64-bit integer
 // representation of the computed hash. It follows the same rules outlined
 // earlier.
-// It can be helpful to compare types that are normally not comparable.
-ulong hash3 = value.EncryptRaw(ChecksumAlgo.Crc64);
+ulong numHash = value.GetCipher(ChecksumAlgo.Crc64);
 
-// Instances are also supported. However, the `value` must be a stream,
-// byte sequence, or string.
-Sha1 instance1 = new Sha1(value);
+// HMAC is supported via instances by setting the secret key. 
+Sha512 instance1 = new Sha512()
+{
+    SecretKey = new byte[128] { /* some bytes */ }
+};
 
-// Files can be encrypted with an extra boolean when `value` is a string,
-Crc32 instance2 = new Crc32(value, true);
+// Encryptions uses the secret key until `DestroySecretKey()` is called.
+instance1.Encrypt(value);
 
-// You can also initialize an instance without parameters.
-Sha512 instance3 = new Sha512();
+// `RawHash` stores the raw data of the last computed hash code.
+byte[] bytesHash = instance1.RawHash;
 
-// And use the encryption methods later as described earlier.
-instance3.Encrypt(value);
-instance3.EncryptFile(value);
+// `HashNumber` holds the 64-bit unsigned integer representation of the
+// last computed hash code. In case of CRC, this is the real raw hash code.
+ulong numHash = instance1.HashNumber;
 
-// The last encrypted data will be stored in some fields.
-string hash = instance3.Hash;
-byte[] raw = instance3.RawHash;
+// `Hash` returns the string representation of the last computed hash code
+// where letters are always in lowercase.
+string lowercase = instance1.Hash;
 
-// This corresponds to the `EncryptRaw` extension method. This field came
-// later, so the name is different. `EncryptRaw` was first created
-// exclusively for CRC. Only the CRC `RawHash` was an integral value, but
-// it is now always a sequence of bytes and this field was added to support
-// all other types as well.
-long num = instance3.HashNumber;
+// `Hash` corresponds to`ToString()` in which an additional boolean value
+// can be specified for uppercase letters.
+string uppercase = instance1.ToString(true);
 
 // The last thing you need to know is that instances have equality operators.
-bool equ = (instance1 == instance3);
-bool neq = (instance1 != instance3);
+bool equ = (instance1 == instance2);
+bool neq = (instance1 != instance2);
 ```
 
 #### CRC customization:
@@ -91,17 +86,19 @@ If you need a different CRC algorithm, you can easily create your own variations
 ```cs
 public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
 {
+    private const int Bits = 32;
+    private const uint Poly = 0x04c11db7u;
+    private const uint Seed = 0x00000000u;
+    private const bool Reversed = true;
+    private const bool Swapped = false;
+
     // Sets a new `CrcConfig` with bits, polynomial, seed, normal compution,
     // and reversed bits of final hash.
-    private static readonly CrcConfig<uint> Current = new(32, 0x4c11db7u, 0u, false, true);
+    private static readonly CrcConfig<uint> Current = new(Bits, Poly, Seed, Swapped, Reversed);
 
     // At least one constructor is required because `base(bits)` has to
     // be called.
-    public Crc32Posix() : base(32) { }
-
-    // All other constructors require the call to `this()`.
-    public Crc32(Stream stream) : this() =>
-        Encrypt(stream);
+    public Crc32Posix() : base(Bits) { }
 
     // Lets `CrcConfig` struct do the job. This method is the only one
     // that needs to be overwritten.
@@ -123,6 +120,26 @@ public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
 | Name | Algorithm |
 | ---- | ---- |
 | Rijndael | `128` bit block size; optional: `128`, `192` or `256` bit key size, `cipher` and `padding` modes |
+
+
+#### Usage:
+```cs
+byte[] password = new byte[] { /* some bytes */ };
+byte[] salt = new byte[] { /* some bytes */ };
+using var aes = new Rijndael(password, salt, 1000, SymmetricKeySize.Large);
+
+byte[] encryptedBytes = aes.EncryptBytes(new byte[] { /* some bytes */ });
+byte[] encryptedFile = aes.EncryptFile("C:\\FileToEncrypt.example");
+aes.EncryptFile("C:\\FileToEncrypt.example", "C:\\EncryptedFile.example");
+
+aes.EncryptStream(streamToEncrypt, encryptedStream);
+
+byte[] decryptedBytes = aes.DecryptBytes(new byte[] { /* some bytes */ });
+byte[] decryptedFile = aes.DecryptFile("C:\\Some\\File.source");
+aes.DecryptFile("C:\\FileToDecrypt.example", "C:\\DecryptedFile.example");
+
+aes.DecryptStream(streamToDecrypt, decryptedStream);
+```
 
 ---
 
