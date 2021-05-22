@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Security.Cryptography;
+    using Internal;
 
     /// <summary>
     ///     Provides functionality to compute MD5 hashes.
@@ -42,15 +43,14 @@
         ///     Initializes a new instance of the <see cref="Md5"/> class and encrypts the
         ///     specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        public Md5(byte[] bytes) : this() =>
-            Encrypt(bytes);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
+        public Md5(byte[] bytes) : base(128, bytes) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Md5"/> class and encrypts the
         ///     specified text or file.
         /// </summary>
-        /// <inheritdoc cref="Adler32(string, bool)"/>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
         public Md5(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
@@ -65,9 +65,8 @@
         ///     Initializes a new instance of the <see cref="Md5"/> class and encrypts the
         ///     specified text.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public Md5(string text) : this() =>
-            Encrypt(text);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
+        public Md5(string text) : this(text, false) { }
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
@@ -98,6 +97,6 @@
         ///     </list>
         /// </remarks>
         public void DestroySecretKey() =>
-            CryptoUtils.DestroyElement(ref _secretKey);
+            Helper.DestroyElement(ref _secretKey);
     }
 }

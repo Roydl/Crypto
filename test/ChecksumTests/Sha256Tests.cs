@@ -135,6 +135,9 @@
         }
 
         [Test]
+        [Retry(3)]
+        [MaxTime(3000)]
+        [RequiresThread]
         [Category("Security")]
         public void InstanceDestroySecretKey()
         {
@@ -156,13 +159,9 @@
             instance.DestroySecretKey();
             Assert.IsNull(instance.SecretKey);
 
-            // This takes a few milliseconds. For the worst case scenario, we will skip the use of `while`. 
-            for (var i = 0; i < 0xffffff; i++)
-            {
-                if (!secretKey.IsAlive)
-                    break;
+            // This takes a few milliseconds. 
+            while (secretKey.IsAlive)
                 Task.Delay(1);
-            }
 
             // Now we will see if all secret key has been removed from the process memory.
             Assert.IsNull(secretKey.Target);

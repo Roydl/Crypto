@@ -32,8 +32,7 @@
         public ulong HashNumber { get; protected set; }
 
         /// <summary>
-        ///     Initializes a new instance of the
-        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
+        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.
         /// </summary>
         /// <param name="bits">
         ///     The hash size in bits.
@@ -49,6 +48,58 @@
             HashSize = bits / 4;
             RawHashSize = bits / 8;
         }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
+        ///     encrypts the specified sequence of bytes.
+        /// </summary>
+        /// <param name="bits">
+        ///     The hash size in bits.
+        /// </param>
+        /// <param name="bytes">
+        ///     The sequence of bytes to encrypt.
+        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
+        protected ChecksumAlgorithm(int bits, byte[] bytes) : this(bits) =>
+            Encrypt(bytes);
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
+        ///     encrypts the specified text or file.
+        /// </summary>
+        /// <param name="bits">
+        ///     The hash size in bits.
+        /// </param>
+        /// <param name="textOrFile">
+        ///     The text or file to encrypt.
+        /// </param>
+        /// <param name="strIsFilePath">
+        ///     <see langword="true"/> if the specified value is a file path; otherwise,
+        ///     <see langword="false"/>.
+        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
+        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : this(bits)
+        {
+            if (strIsFilePath)
+            {
+                EncryptFile(textOrFile);
+                return;
+            }
+            Encrypt(textOrFile);
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
+        ///     encrypts the specified text.
+        /// </summary>
+        /// <param name="bits">
+        ///     The hash size in bits.
+        /// </param>
+        /// <param name="text">
+        ///     The string to encrypt.
+        /// </param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        protected ChecksumAlgorithm(int bits, string text) : this(bits, text, false) { }
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public abstract void Encrypt(Stream stream);
@@ -85,6 +136,13 @@
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = File.OpenRead(path);
             Encrypt(fs);
+        }
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            RawHash = default;
+            HashNumber = default;
         }
 
         /// <summary>
@@ -225,6 +283,30 @@
         /// </summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits) : base(bits) { }
+
+        /// <summary>
+        ///     Initializes a new instance of the
+        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
+        ///     sequence of bytes.
+        /// </summary>
+        /// <inheritdoc/>
+        protected ChecksumAlgorithm(int bits, byte[] bytes) : base(bits, bytes) { }
+
+        /// <summary>
+        ///     Initializes a new instance of the
+        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
+        ///     text or file.
+        /// </summary>
+        /// <inheritdoc/>
+        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : base(bits, textOrFile, strIsFilePath) { }
+
+        /// <summary>
+        ///     Initializes a new instance of the
+        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
+        ///     text.
+        /// </summary>
+        /// <inheritdoc/>
+        protected ChecksumAlgorithm(int bits, string text) : base(bits, text) { }
 
         /// <summary>
         ///     Determines whether this instance have same values as the specified

@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using Internal;
 
     /// <summary>
     ///     Provides functionality to compute Adler-32 hashes.
@@ -25,53 +26,32 @@
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        public Adler32(byte[] bytes) : this() =>
-            Encrypt(bytes);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
+        public Adler32(byte[] bytes) : base(32, bytes) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified text or file.
         /// </summary>
-        /// <param name="textOrFile">
-        ///     The text or file to encrypt.
-        /// </param>
-        /// <param name="strIsFilePath">
-        ///     <see langword="true"/> if the specified value is a file path; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
-        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
-        public Adler32(string textOrFile, bool strIsFilePath) : this()
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
+        public Adler32(string textOrFile, bool strIsFilePath) : base(32, textOrFile, strIsFilePath) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public Adler32(string text) : this() =>
-            Encrypt(text);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
+        public Adler32(string text) : base(32, text) { }
 
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
         public override void Encrypt(Stream stream)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            var ba = CryptoUtils.CreateBuffer(stream);
-            var uia = new[]
-            {
-                1u,
-                0u
-            };
+            var ba = new byte[Helper.GetBufferSize(stream)].AsSpan();
+            var uia = new[] { 1u, 0u }.AsSpan();
             int len;
-            while ((len = stream.Read(ba, 0, ba.Length)) > 0)
+            while ((len = stream.Read(ba)) > 0)
             {
                 for (var i = 0; i < len; i++)
                 {
@@ -81,7 +61,7 @@
             }
             var num = ((uia[1] << 16) | uia[0]) & uint.MaxValue;
             HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, BitConverter.IsLittleEndian);
+            RawHash = CryptoUtils.GetByteArray(num, RawHashSize);
         }
     }
 }

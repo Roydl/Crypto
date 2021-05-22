@@ -1,9 +1,7 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
 
     /// <summary>
@@ -94,7 +92,7 @@
         ///     The size of the sequence. Must be between 1 and 64.
         /// </param>
         /// <param name="inverted">
-        ///     <see langword="true"/> to invert the order; otherwise,
+        ///     <see langword="true"/> to invert the byte order; otherwise,
         ///     <see langword="false"/>.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -113,6 +111,17 @@
         }
 
         /// <summary>
+        ///     Returns the specified 64-bit unsigned integer value as a sequence of bytes.
+        /// </summary>
+        /// <remarks>
+        ///     The byte order is automatically reversed if
+        ///     <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <inheritdoc cref="GetBytes(ulong, int, bool)"/>
+        public static IEnumerable<byte> GetBytes(ulong value, int size) =>
+            GetBytes(value, size, BitConverter.IsLittleEndian);
+
+        /// <summary>
         ///     Returns the specified 64-bit unsigned integer value as an array of bytes.
         /// </summary>
         /// <returns>
@@ -122,47 +131,15 @@
         public static byte[] GetByteArray(ulong value, int size, bool inverted) =>
             GetBytes(value, size, inverted)?.ToArray();
 
-        internal static void DestroyElement<TElement>(ref TElement element) where TElement : class
-        {
-            if (element == null)
-                return;
-            var isCollection = false;
-            switch (element)
-            {
-                case ICollection:
-                    isCollection = element is not Array;
-                    break;
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-            }
-            var generation = GC.GetGeneration(element);
-            element = null;
-            GC.Collect(generation, GCCollectionMode.Forced);
-            if (isCollection)
-                GC.Collect();
-        }
-
-        internal static byte[] CreateBuffer(Stream stream) =>
-            new byte[GetBufferSize(stream?.Length ?? 0x1000L)];
-
-        private static int GetBufferSize(long streamLength)
-        {
-            const int kb128 = 0x20000;
-            const int kb64 = 0x10000;
-            const int kb32 = 0x8000;
-            const int kb16 = 0x4000;
-            const int kb8 = 0x2000;
-            const int kb4 = 0x1000;
-            return (int)Math.Floor(streamLength / 1.5d) switch
-            {
-                > kb128 => kb128,
-                > kb64 => kb64,
-                > kb32 => kb32,
-                > kb16 => kb16,
-                > kb8 => kb8,
-                _ => kb4
-            };
-        }
+        /// <summary>
+        ///     Returns the specified 64-bit unsigned integer value as an array of bytes.
+        /// </summary>
+        /// <remarks>
+        ///     The byte order is automatically reversed if
+        ///     <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.
+        /// </remarks>
+        /// <inheritdoc cref="GetByteArray(ulong, int, bool)"/>
+        public static byte[] GetByteArray(ulong value, int size) =>
+            GetBytes(value, size)?.ToArray();
     }
 }

@@ -27,32 +27,22 @@
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        public Crc32(byte[] bytes) : this() =>
-            Encrypt(bytes);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
+        public Crc32(byte[] bytes) : base(32, bytes) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified text or file.
         /// </summary>
-        /// <inheritdoc cref="Adler32(string, bool)"/>
-        public Crc32(string textOrFile, bool strIsFilePath) : this()
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
+        public Crc32(string textOrFile, bool strIsFilePath) : base(32, textOrFile, strIsFilePath) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc32"/> class and encrypts
         ///     the specified text.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public Crc32(string text) : this() =>
-            Encrypt(text);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
+        public Crc32(string text) : base(32, text) { }
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
@@ -61,7 +51,7 @@
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);
             HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, BitConverter.IsLittleEndian);
+            RawHash = CryptoUtils.GetByteArray(num, RawHashSize);
         }
     }
 }

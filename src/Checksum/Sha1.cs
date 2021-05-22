@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Security.Cryptography;
+    using Internal;
 
     /// <summary>
     ///     Provides functionality to compute SHA-1 hashes.
@@ -42,15 +43,14 @@
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified sequence of bytes.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        public Sha1(byte[] bytes) : this() =>
-            Encrypt(bytes);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
+        public Sha1(byte[] bytes) : base(160, bytes) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified text or file.
         /// </summary>
-        /// <inheritdoc cref="Adler32(string, bool)"/>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
         public Sha1(string textOrFile, bool strIsFilePath) : this()
         {
             if (strIsFilePath)
@@ -65,9 +65,8 @@
         ///     Initializes a new instance of the <see cref="Sha1"/> class and encrypts the
         ///     specified text.
         /// </summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public Sha1(string text) : this() =>
-            Encrypt(text);
+        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
+        public Sha1(string text) : this(text, false) { }
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
@@ -82,6 +81,6 @@
         /// </summary>
         /// <inheritdoc cref="Md5.DestroySecretKey()"/>
         public void DestroySecretKey() =>
-            CryptoUtils.DestroyElement(ref _secretKey);
+            Helper.DestroyElement(ref _secretKey);
     }
 }

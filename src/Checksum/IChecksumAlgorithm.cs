@@ -126,6 +126,11 @@
         void EncryptFile(string path);
 
         /// <summary>
+        ///     Removes the saved data from this instance.
+        /// </summary>
+        void Reset();
+
+        /// <summary>
         ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
         ///     string representation.
         /// </summary>

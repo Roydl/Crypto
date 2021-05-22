@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Security.Cryptography;
+    using Internal;
 
     /// <summary>
     ///     Provides functionality to encrypt and decrypt data using Advanced
@@ -70,11 +71,11 @@
             }
             try
             {
-                var ba = CryptoUtils.CreateBuffer(inputStream);
-                int i;
+                var ba = new byte[Helper.GetBufferSize(inputStream)];
+                int len;
                 using var cs = new CryptoStream(outputStream, encrypt ? rm.CreateEncryptor() : rm.CreateDecryptor(), CryptoStreamMode.Write);
-                while ((i = inputStream.Read(ba, 0, ba.Length)) > 0)
-                    cs.Write(ba, 0, i);
+                while ((len = inputStream.Read(ba)) > 0)
+                    cs.Write(ba, 0, len);
             }
             finally
             {

@@ -11,11 +11,10 @@
     {
         private static readonly TestCaseData[] GetGuidTestData =
         {
-            new(TestVarsType.TestStream, ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, "2bc35bcf-ed0c-65fc-cd0e-c1553d72fb54"),
+            new(TestVarsType.TestStream, ChecksumAlgo.Crc16, ChecksumAlgo.Crc16, false, "40004040-0040-4000-4040-004040004040"),
             new(TestVarsType.TestBytes, ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, "2bc35bcf-ed0c-65fc-cd0e-c1553d72fb54"),
-            new(TestVarsType.QuoteString, ChecksumAlgo.Crc16, ChecksumAlgo.Md5, false, "9c419ea9-8899-10bc-57b1-7c4046ad416d"),
+            new(TestVarsType.TestBytes, ChecksumAlgo.Sha256, ChecksumAlgo.Crc32, false, "cba33b6f-4d8c-c57c-ad4e-a1f59d329bd4"),
             new(TestVarsType.QuoteString, ChecksumAlgo.Sha1, ChecksumAlgo.Crc64, false, "a5a80644-f996-6528-f58f-9cea95e3569f"),
-            new(TestVarsType.QuoteString, ChecksumAlgo.Adler32, ChecksumAlgo.Crc16, true, "{f877c403-9ff8-10a3-03f8-9f10c464f8f8}"),
             new(TestVarsType.RangeString, ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, "c52f1114-7bd6-81cb-b190-0bf72374be7f")
         };
 
@@ -38,6 +37,7 @@
 
         [Test]
         [TestCaseSource(nameof(GetGuidTestData))]
+        [Retry(2)]
         [Category("Extension")]
         public void GetGuid(TestVarsType varsType, ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, string expectedGuid)
         {

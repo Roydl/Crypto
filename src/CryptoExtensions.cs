@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Text;
     using System.Text.Json;
-    using System.Threading;
     using Checksum;
 
     /// <summary>
@@ -67,7 +66,29 @@
     /// </summary>
     public static class CryptoExtensions
     {
-        private static volatile IChecksumAlgorithm[] _cachedInstances;
+        /// <summary>
+        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
+        ///     algorithm and returns the 64-bit unsigned integer representation of the
+        ///     computed hash code.
+        /// </summary>
+        /// <typeparam name="TSource">
+        ///     The type of source.
+        /// </typeparam>
+        /// <param name="source">
+        ///     The object to encrypt.
+        /// </param>
+        /// <param name="algorithm">
+        ///     The algorithm to use.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     source is null.
+        /// </exception>
+        /// <returns>
+        ///     A 64-bit unsigned integer that contains the result of encrypting the
+        ///     specified object by the specified algorithm.
+        /// </returns>
+        public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
+            InternalGenericEncrypt(source, algorithm).HashNumber;
 
         /// <summary>
         ///     Encrypts this <typeparamref name="TSource"/> object with the specified
@@ -99,12 +120,9 @@
             var sb = new StringBuilder(braces ? 38 : 36);
             if (braces)
                 sb.Append('{');
-            var pos = (source as Stream)?.Position ?? -1L;
-            InternalGenericEncrypt(source, algorithm1, out var instance1);
-            if (pos >= 0L && source is Stream stream)
-                stream.Position = pos;
-            InternalGenericEncrypt(source, algorithm2, out var instance2);
-            var span = CombineHashBytes(instance1.RawHash.Span, instance2.RawHash.Span, 16);
+            var raw1 = InternalGenericEncrypt(source, algorithm1, true).RawHash.Span;
+            var raw2 = InternalGenericEncrypt(source, algorithm2, true).RawHash.Span;
+            var span = CombineHashBytes(raw1, raw2, 16);
             var index = 0;
             for (var i = 0; i < 5; i++)
             {
@@ -127,38 +145,12 @@
                 var i2 = 0;
                 for (var i = 0; i < size; i++)
                 {
-                    var e1 = span1.IsEmpty ? 17 : span1[i1 < span1.Length ? i1++ : i1 = 0];
-                    var e2 = span2.IsEmpty ? 23 : span2[i2 < span2.Length ? i2++ : i2 = 0];
+                    var e1 = span1.IsEmpty ? byte.MinValue : span1[i1 < span1.Length ? i1++ : i1 = 0];
+                    var e2 = span2.IsEmpty ? byte.MaxValue : span2[i2 < span2.Length ? i2++ : i2 = 0];
                     ba[i] = (byte)CryptoUtils.CombineHashCodes(e1, e2);
                 }
                 return ba;
             }
-        }
-
-        /// <summary>
-        ///     Encrypts this <typeparamref name="TSource"/> object with the
-        ///     <see cref="ChecksumAlgo.Crc32"/> algorithm.
-        /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     source is null.
-        /// </exception>
-        /// <returns>
-        ///     A 64-bit unsigned that contains the result of encrypting the specified
-        ///     object by the specified algorithm.
-        /// </returns>
-        public static ulong EncryptRaw<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
-        {
-            InternalGenericEncrypt(source, algorithm, out var instance);
-            return instance.HashNumber;
         }
 
         /// <summary>
@@ -182,11 +174,8 @@
         ///     specified algorithm.
         /// </returns>
         [return: NotNullIfNotNull("source")]
-        public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
-        {
-            InternalGenericEncrypt(source, algorithm, out var instance);
-            return instance.Hash;
-        }
+        public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
+            InternalGenericEncrypt(source, algorithm).Hash;
 
         /// <summary>
         ///     Encrypts this file with the specified algorithm.
@@ -210,58 +199,60 @@
         }
 
         /// <summary>
-        ///     Retrieves a cached instance of the specified algorithm.
+        ///     Creates a default instance of this algorithm.
         /// </summary>
         /// <param name="algorithm">
         ///     The algorithm to use.
         /// </param>
         /// <returns>
-        ///     A cached instance of the specified algorithm.
+        ///     A default instance of the specified algorithm.
         /// </returns>
-        public static IChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo algorithm)
-        {
-            var i = (int)algorithm;
-            while (_cachedInstances == null)
-                Interlocked.CompareExchange(ref _cachedInstances, new IChecksumAlgorithm[Enum.GetValues(typeof(ChecksumAlgo)).Length], null);
-            while (_cachedInstances[i] == null)
-                Interlocked.CompareExchange(ref _cachedInstances[i], algorithm switch
-                {
-                    ChecksumAlgo.Adler32 => new Adler32(),
-                    ChecksumAlgo.Crc16 => new Crc16(),
-                    ChecksumAlgo.Crc32 => new Crc32(),
-                    ChecksumAlgo.Crc64 => new Crc64(),
-                    ChecksumAlgo.Md5 => new Md5(),
-                    ChecksumAlgo.Sha1 => new Sha1(),
-                    ChecksumAlgo.Sha256 => new Sha256(),
-                    ChecksumAlgo.Sha384 => new Sha384(),
-                    ChecksumAlgo.Sha512 => new Sha512(),
-                    _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
-                }, null);
-            return _cachedInstances[i];
-        }
+        public static IChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo algorithm) =>
+            algorithm switch
+            {
+                ChecksumAlgo.Adler32 => new Adler32(),
+                ChecksumAlgo.Crc16 => new Crc16(),
+                ChecksumAlgo.Crc32 => new Crc32(),
+                ChecksumAlgo.Crc64 => new Crc64(),
+                ChecksumAlgo.Md5 => new Md5(),
+                ChecksumAlgo.Sha1 => new Sha1(),
+                ChecksumAlgo.Sha256 => new Sha256(),
+                ChecksumAlgo.Sha384 => new Sha384(),
+                ChecksumAlgo.Sha512 => new Sha512(),
+                _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
+            };
 
-        private static void InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, out IChecksumAlgorithm instance)
+        private static IChecksumAlgorithm InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos = false)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            instance = algorithm.GetDefaultInstance();
+            var instance = algorithm.GetDefaultInstance();
             switch (source)
             {
                 case Stream stream:
+
+                    var pos = ifStreamRestorePos ? stream.Position : -1L;
                     instance.Encrypt(stream);
-                    return;
+                    if (pos >= 0)
+                        stream.Position = pos;
+                    break;
                 case IEnumerable<byte> bytes:
                     instance.Encrypt(bytes as byte[] ?? bytes.ToArray());
-                    return;
+                    break;
                 case IEnumerable<char> chars:
                     instance.Encrypt(chars as string ?? new string(chars.ToArray()));
-                    return;
+                    break;
+                default:
+                    using (var ms = new MemoryStream())
+                    {
+                        using var bw = new Utf8JsonWriter(ms, new JsonWriterOptions { SkipValidation = true });
+                        JsonSerializer.Serialize(bw, source);
+                        ms.Position = 0L;
+                        instance.Encrypt(ms);
+                    }
+                    break;
             }
-            using var ms = new MemoryStream();
-            using var bw = new Utf8JsonWriter(ms, new JsonWriterOptions { SkipValidation = true });
-            JsonSerializer.Serialize(bw, source);
-            ms.Position = 0L;
-            instance.Encrypt(ms);
+            return instance;
         }
     }
 }

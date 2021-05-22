@@ -84,26 +84,26 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void ExtensionEncryptRaw(TestVarsType varsType, string expectedHash)
+        public void ExtensionGetCipher(TestVarsType varsType, string expectedHash)
         {
             ulong hash;
             switch (varsType)
             {
                 case TestVarsType.TestStream:
                     using (var ms = new MemoryStream(TestVars.TestBytes))
-                        hash = ms.EncryptRaw(Algorithm);
+                        hash = ms.GetCipher(Algorithm);
                     break;
                 case TestVarsType.TestBytes:
-                    hash = TestVars.TestBytes.EncryptRaw(Algorithm);
+                    hash = TestVars.TestBytes.GetCipher(Algorithm);
                     break;
                 case TestVarsType.TestString:
-                    hash = TestVars.TestStr.EncryptRaw(Algorithm);
+                    hash = TestVars.TestStr.GetCipher(Algorithm);
                     break;
                 case TestVarsType.TestFile:
-                    hash = File.ReadAllBytes(TestFilePath).EncryptRaw(Algorithm);
+                    hash = File.ReadAllBytes(TestFilePath).GetCipher(Algorithm);
                     break;
                 case TestVarsType.RangeString:
-                    hash = TestVars.RangeStr.EncryptRaw(Algorithm);
+                    hash = TestVars.RangeStr.GetCipher(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

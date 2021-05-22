@@ -92,16 +92,19 @@
         }
 
         [Test]
+        [Retry(3)]
+        [MaxTime(3000)]
+        [RequiresThread]
         [Category("Security")]
         public void InstanceDestroySecretData()
         {
-            var pass = new WeakReference(TestVars.GetRandomBytes());
-            var salt = new WeakReference(TestVars.GetRandomBytes());
+            var pass = new WeakReference(TestVars.GetRandomBytes(256));
+            var salt = new WeakReference(TestVars.GetRandomBytes(128));
             var inst = new Rijndael((byte[])pass.Target, (byte[])salt.Target, TestVars.GetRandomInt());
 
             // Let's see if the password and salt were created correctly.
-            Assert.GreaterOrEqual(inst.Password.Count, short.MaxValue);
-            Assert.GreaterOrEqual(inst.Salt.Count, short.MaxValue);
+            Assert.AreEqual(256, inst.Password.Count);
+            Assert.AreEqual(128, inst.Salt.Count);
             Assert.AreEqual(pass.Target, inst.Password);
             Assert.AreEqual(salt.Target, inst.Salt);
             Assert.AreSame(pass.Target, inst.Password);
@@ -118,13 +121,9 @@
             Assert.IsNull(inst.Password);
             Assert.IsNull(inst.Salt);
 
-            // This takes a few milliseconds. For the worst case scenario, we will skip the use of `while`. 
-            for (var i = 0; i < 0xffffff; i++)
-            {
-                if (!pass.IsAlive && !salt.IsAlive)
-                    break;
+            // This takes a few milliseconds. 
+            while (pass.IsAlive || salt.IsAlive)
                 Task.Delay(1);
-            }
 
             // Now we will see if all secret data has been removed from the process memory.
             Assert.IsNull(pass.Target);

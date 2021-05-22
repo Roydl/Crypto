@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Internal;
 
     /// <summary>
     ///     Represents a CRC configuration structure.
@@ -143,9 +144,9 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             hash = Seed;
-            var ba = CryptoUtils.CreateBuffer(stream);
+            var ba = new byte[Helper.GetBufferSize(stream)].AsSpan();
             int len;
-            while ((len = stream.Read(ba, 0, ba.Length)) > 0)
+            while ((len = stream.Read(ba)) > 0)
             {
                 for (var i = 0; i < len; i++)
                     ComputeHash(ba[i], ref hash);

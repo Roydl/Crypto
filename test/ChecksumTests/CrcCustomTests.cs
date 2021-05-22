@@ -7,28 +7,28 @@
 
     internal sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
     {
-        private static readonly CrcConfig<uint> Current = new(32, 0x04c11db7u, uint.MinValue, false, true);
+        private const int Bits = 32;
+        private const uint Poly = 0x04c11db7u;
+        private const bool Reversed = true;
+        private const uint Seed = 0x00000000u;
+        private const bool Swapped = false;
+        private static readonly CrcConfig<uint> Current = new(Bits, Poly, Seed, Swapped, Reversed);
 
-        public Crc32Posix() : base(32) { }
+        /// <inheritdoc cref="Crc32()"/>
+        public Crc32Posix() : base(Bits) { }
 
-        public Crc32Posix(Stream stream) : this() =>
+        /// <inheritdoc cref="Crc32(Stream)"/>
+        public Crc32Posix(Stream stream) : base(Bits) =>
             Encrypt(stream);
 
-        public Crc32Posix(byte[] bytes) : this() =>
-            Encrypt(bytes);
+        /// <inheritdoc cref="Crc32(byte[])"/>
+        public Crc32Posix(byte[] bytes) : base(Bits, bytes) { }
 
-        public Crc32Posix(string textOrFile, bool strIsFilePath) : this()
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
+        /// <inheritdoc cref="Crc32(string, bool)"/>
+        public Crc32Posix(string textOrFile, bool strIsFilePath) : base(Bits, textOrFile, strIsFilePath) { }
 
-        public Crc32Posix(string str) : this() =>
-            Encrypt(str);
+        /// <inheritdoc cref="Crc32(string)"/>
+        public Crc32Posix(string text) : base(Bits, text) { }
 
         public override void Encrypt(Stream stream)
         {
@@ -36,7 +36,7 @@
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);
             HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize, true);
+            RawHash = CryptoUtils.GetByteArray(num, RawHashSize);
         }
     }
 

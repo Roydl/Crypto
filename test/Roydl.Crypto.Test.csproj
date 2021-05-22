@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Crypto.csproj" />
+    <ProjectReference Include="..\src\Roydl.Crypto.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Security.Cryptography;
+    using Internal;
     using Resources;
 
     /// Wrapper to kick out unsupported modes
@@ -430,8 +431,8 @@
         /// </remarks>
         public void DestroySecretData()
         {
-            CryptoUtils.DestroyElement(ref _password);
-            CryptoUtils.DestroyElement(ref _salt);
+            Helper.DestroyElement(ref _password);
+            Helper.DestroyElement(ref _salt);
         }
 
         /// <inheritdoc/>

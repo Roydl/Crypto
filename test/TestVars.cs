@@ -48,7 +48,13 @@
 
         public static byte[] GetRandomBytes(int size = 0)
         {
-            var bytes = new byte[size > 0 ? size : Randomizer.Next(short.MaxValue, ushort.MaxValue)];
+            if (size < 1)
+            {
+                size = Randomizer.Next(byte.MaxValue, short.MaxValue);
+                if (size % 2 == 0)
+                    --size;
+            }
+            var bytes = new byte[size];
             Randomizer.NextBytes(bytes);
             return bytes;
         }
