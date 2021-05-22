@@ -88,7 +88,7 @@
         ///     specified object by the specified algorithm.
         /// </returns>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm).HashNumber;
+            InternalGenericEncrypt(source, algorithm, false).HashNumber;
 
         /// <summary>
         ///     Encrypts this <typeparamref name="TSource"/> object with the specified
@@ -121,7 +121,7 @@
             if (braces)
                 sb.Append('{');
             var raw1 = InternalGenericEncrypt(source, algorithm1, true).RawHash.Span;
-            var raw2 = InternalGenericEncrypt(source, algorithm2, true).RawHash.Span;
+            var raw2 = InternalGenericEncrypt(source, algorithm2, false).RawHash.Span;
             var span = CombineHashBytes(raw1, raw2, 16);
             var index = 0;
             for (var i = 0; i < 5; i++)
@@ -175,7 +175,7 @@
         /// </returns>
         [return: NotNullIfNotNull("source")]
         public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm).Hash;
+            InternalGenericEncrypt(source, algorithm, false).Hash;
 
         /// <summary>
         ///     Encrypts this file with the specified algorithm.
@@ -222,7 +222,7 @@
                 _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
             };
 
-        private static IChecksumAlgorithm InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos = false)
+        private static IChecksumAlgorithm InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
