@@ -127,7 +127,7 @@
             for (var i = 0; i < 5; i++)
             {
                 var size = i switch { < 1 => 4, < 4 => 2, _ => 6 };
-                for (var j = 0 + i; j < size + i; j++)
+                for (var j = 0; j < size; j++)
                     sb.AppendFormat("{0:x2}", span[index++]);
                 if (i < 4)
                     sb.Append('-');
