@@ -138,9 +138,9 @@
             sb.Clear();
             return str;
 
-            static ReadOnlySpan<byte> CombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
+            static Span<byte> CombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
             {
-                var ba = new byte[size];
+                var ba = new byte[size].AsSpan();
                 var i1 = 0;
                 var i2 = 0;
                 for (var i = 0; i < size; i++)
