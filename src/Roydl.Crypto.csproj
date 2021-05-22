@@ -21,12 +21,12 @@
     <Version>1.0.7</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Fixed an issue where a weak hash was being ignored in the last GUID section of `GetGuid` extension method
-- Instance caching for extension methods is now thread-safe
-- `HMAC` encryption is now available for MD5 and SHA-1+2 by defining the `SecretKey` instance field
+    <PackageReleaseNotes>- Fixed an issue where the byte order of Adler-32 and CRC-16+32+64 was wrong on big-endian processor architecture
+- Removed internal instance caching, which is no longer needed
+- Reworked `GetGuid` extension method so that it combines the bytes of both hashes instead of cutting parts and placing them next to each other
+- `HMAC` encryption is now available for MD5 and SHA-1+2 by setting the `SecretKey` instance field
   - The `SecretKey` can be removed from process memory by calling the `DestroySecretKey()` instance method
-- The hash byte order of Adler32 and CRC-16+32+64 now depends on the endianness of the processor architecture
-- Improved documentation in general</PackageReleaseNotes>
+- General code improvements, minor fixes and expansion of the documentation</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
   </PropertyGroup>
 
