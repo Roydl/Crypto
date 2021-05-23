@@ -50,6 +50,14 @@
         string Hash { get; }
 
         /// <summary>
+        ///     Gets the 64-bit unsigned integer representation of the computed hash code.
+        /// </summary>
+        /// <remarks>
+        ///     For algorithms with up to 64 bits, this field holds the real raw hash.
+        /// </remarks>
+        ulong HashNumber { get; }
+
+        /// <summary>
         ///     Gets the sequence of bytes of the computed hash code.
         /// </summary>
         /// <remarks>
@@ -60,14 +68,6 @@
         ///     .
         /// </remarks>
         ReadOnlyMemory<byte> RawHash { get; }
-
-        /// <summary>
-        ///     Gets the 64-bit unsigned integer representation of the computed hash code.
-        /// </summary>
-        /// <remarks>
-        ///     For algorithms with up to 64 bits, this field holds the real raw hash.
-        /// </remarks>
-        ulong HashNumber { get; }
 
         /// <summary>
         ///     Encrypts the specified stream.
@@ -140,10 +140,7 @@
         /// </param>
         string ToString(bool uppercase);
 
-        /// <summary>
-        ///     Converts the <see cref="RawHash"/> of this instance to its equivalent
-        ///     string representation.
-        /// </summary>
+        /// <inheritdoc cref="ToString(bool)"/>
         string ToString();
     }
 }

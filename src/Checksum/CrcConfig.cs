@@ -113,15 +113,13 @@
                 throw new ArgumentOutOfRangeException(nameof(bits));
 
             var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
-            var table = CreateTable(bits, poly, mask, swapped).ToArray();
-
             Bits = bits;
             Mask = mask;
             Poly = poly;
             Seed = seed;
             Swapped = swapped;
             Reversed = reversed;
-            Table = new ReadOnlyMemory<TValue>(table, 0, table.Length);
+            Table = CreateTable(bits, poly, mask, swapped).ToArray();
         }
 
         /// <summary>
@@ -168,12 +166,15 @@
         /// </remarks>
         public void ComputeHash(byte value, ref TValue hash)
         {
+            var byteMask = (TValue)(dynamic)0xff;
+            var current = (dynamic)hash;
+            var table = Table.Span;
             if (Swapped)
             {
-                hash = (TValue)((((dynamic)hash >> 8) ^ Table.Span[(int)(value ^ ((dynamic)hash & (TValue)(dynamic)0xff))]) & Mask);
+                hash = (TValue)(((current >> 8) ^ table[(int)(value ^ (current & byteMask))]) & Mask);
                 return;
             }
-            hash = (TValue)((Table.Span[(int)((((dynamic)hash >> (Bits - 8)) ^ value) & (TValue)(dynamic)0xff)] ^ ((dynamic)hash << 8)) & Mask);
+            hash = (TValue)((table[(int)(((current >> (Bits - 8)) ^ value) & byteMask)] ^ (current << 8)) & Mask);
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Globalization;
     using System.IO;
     using System.Security.Cryptography;
     using System.Text;
@@ -26,10 +25,10 @@
         public string Hash => ToString();
 
         /// <inheritdoc/>
-        public ReadOnlyMemory<byte> RawHash { get; protected set; }
+        public ulong HashNumber { get; protected set; }
 
         /// <inheritdoc/>
-        public ulong HashNumber { get; protected set; }
+        public ReadOnlyMemory<byte> RawHash { get; protected set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.
@@ -177,7 +176,7 @@
                 return string.Empty;
             var sb = new StringBuilder(HashSize);
             foreach (var b in RawHash.Span)
-                sb.Append(b.ToString(uppercase ? "X2" : "x2", CultureInfo.CurrentCulture));
+                sb.AppendFormat(uppercase ? "{0:X2}" : "{0:x2}", b);
             while (sb.Length < HashSize)
                 sb.Insert(0, '0');
             var str = sb.ToString();
