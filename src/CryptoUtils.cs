@@ -89,21 +89,21 @@
         ///     The number to convert.
         /// </param>
         /// <param name="size">
-        ///     The size of the sequence. Must be between 1 and 64.
+        ///     The size of the sequence. Must be between 1 and 8.
         /// </param>
         /// <param name="inverted">
         ///     <see langword="true"/> to invert the byte order; otherwise,
         ///     <see langword="false"/>.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     size is less 1 or greater 64.
+        ///     size is less 1 or greater 8.
         /// </exception>
         /// <returns>
         ///     A sequence of bytes with length of size.
         /// </returns>
         public static IEnumerable<byte> GetBytes(ulong value, int size, bool inverted)
         {
-            if (size is < 1 or > 64)
+            if (size is < 1 or > 8)
                 throw new ArgumentOutOfRangeException(nameof(size), size, null);
             var i = 0;
             while (inverted ? --size >= 0 : i++ < size)
