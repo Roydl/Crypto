@@ -4,7 +4,7 @@
 <a href="https://github.com/Roydl/Crypto/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/Roydl/Crypto?style=for-the-badge" title="Read the license terms" alt="License"></a>
 </p>
 <p align="center">
-<a href="https://github.com/Roydl/Crypto/actions"><img src="https://img.shields.io/github/workflow/status/Roydl/Crypto/build%2Btest?style=for-the-badge&label=build%2Btest&logo=github&logoColor=silver" title="Check the last workflow results" alt="Build+Test"></a>
+<a href="https://github.com/Roydl/Crypto/actions/workflows/dotnet.yml"><img src="https://img.shields.io/github/workflow/status/Roydl/Crypto/build%2Btest?style=for-the-badge&label=build%2Btest&logo=github&logoColor=silver" title="Check the last workflow results" alt="Build+Test"></a>
 <a href="https://github.com/Roydl/Crypto/commits/master"><img src="https://img.shields.io/github/last-commit/Roydl/Crypto?style=for-the-badge&logo=github&logoColor=silver" title="Check the last commits" alt="Commits"></a>
 <a href="https://github.com/Roydl/Crypto/archive/refs/heads/master.zip"><img src="https://img.shields.io/badge/download-source-important?style=for-the-badge&logo=github&logoColor=silver" title="Start downloading the &apos;master.zip&apos; file" alt="Source"></a>
 </p>
