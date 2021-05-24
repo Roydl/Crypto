@@ -150,9 +150,9 @@ aes.DecryptStream(streamToDecrypt, decryptedStream);
 
 ## Would you like to help?
 
-- [Star this Project](https://github.com/Roydl/AlphaNumericComparer/stargazers) :star: and show me that this project interests you :hugs:
-- [Open an Issue](https://github.com/Roydl/AlphaNumericComparer/issues/new) :coffee: to give me your feedback and tell me your ideas and wishes for the future :sunglasses:
-- [Open a Ticket](https://support.si13n7.de/) :mailbox: if you don't have a GitHub account, you can contact me directly on my website :wink:
-- [Donate by PayPal](http://donate.si13n7.com/) :money_with_wings: to buy me some cakes :cake:
+- [Star this Project](https://github.com/Roydl/Crypto/stargazers) :star: and show me that this project interests you :hugs:
+- [Open an Issue](https://github.com/Roydl/Crypto/issues/new) :coffee: to give me your feedback and tell me your ideas and wishes for the future :sunglasses:
+- [Open a Ticket](https://www.si13n7.com/?page=contact) :mailbox: if you don't have a GitHub account, you can contact me directly on my website :wink:
+- [Donate by PayPal](https://paypal.me/si13n7/) :money_with_wings: to buy me some cakes :cake:
 
 _Please note that I cannot fix bugs that are unknown to me. So do yourself and me the favor and get in touch with me._ :face_with_head_bandage:
