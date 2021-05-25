@@ -37,11 +37,11 @@
         ///     The hash size in bits.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8, greater than 512, or odd.
+        ///     bits is less than 8 or greater than 512.
         /// </exception>
         protected ChecksumAlgorithm(int bits)
         {
-            if (bits is < 8 or > 512 || bits % 2 != 0)
+            if (bits is < 8 or > 512)
                 throw new ArgumentOutOfRangeException(nameof(bits));
             HashBits = bits;
             HashSize = bits / 4;

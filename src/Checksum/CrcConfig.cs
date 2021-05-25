@@ -107,7 +107,7 @@
         ///     The value to xor with the final output.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8, greater than 64, or odd.
+        ///     bits is less than 8 or greater than 64.
         /// </exception>
         /// <exception cref="InvalidOperationException">
         ///     TValue type is invalid, i.e. not supported.
@@ -127,7 +127,7 @@
                 default:
                     throw new InvalidOperationException();
             }
-            if (bits is < 8 or > 64 || bits % 2 != 0)
+            if (bits is < 8 or > 64)
                 throw new ArgumentOutOfRangeException(nameof(bits));
             var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
             Bits = bits;
