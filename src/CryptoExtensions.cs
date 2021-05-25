@@ -1,10 +1,12 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Text;
     using System.Text.Json;
     using Checksum;
@@ -67,9 +69,9 @@
     public static class CryptoExtensions
     {
         /// <summary>
-        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
-        ///     algorithm and returns the 64-bit unsigned integer representation of the
-        ///     computed hash code.
+        ///     Encrypts this <paramref name="source"/> object with the specified
+        ///     <paramref name="algorithm"/> and returns the 64-bit unsigned integer
+        ///     representation of the computed hash code.
         /// </summary>
         /// <typeparam name="TSource">
         ///     The type of source.
@@ -83,20 +85,112 @@
         /// <exception cref="ArgumentNullException">
         ///     source is null.
         /// </exception>
+        /// <exception cref="ArgumentException">
+        ///     source is empty.
+        /// </exception>
+        /// <exception cref="FileNotFoundException">
+        ///     source cannot be found.
+        /// </exception>
+        /// <exception cref="UnauthorizedAccessException">
+        ///     source is a directory.
+        /// </exception>
+        /// <exception cref="IOException">
+        ///     source is already open.
+        /// </exception>
+        /// <remarks>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="Stream"/>:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(Stream)"/> is used to
+        ///                 encrypt the bytes of stream.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="FileInfo"/>:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(FileInfo)"/> is used to
+        ///                 read and encrypt the file, if exist and accessible.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
+        ///             <see cref="byte"/>&gt;:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(byte[])"/> is used to
+        ///                 encrypt the bytes.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
+        ///             <see cref="char"/>&gt;:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(string)"/> is used to
+        ///                 encrypt the string.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             Otherwise:
+        ///             <description>
+        ///                 The values of <paramref name="source"/> are serialized using
+        ///                 <see cref="Utf8JsonWriter"/> with skipped validation and the
+        ///                 result is encrypted, even if <paramref name="source"/> is not
+        ///                 <see cref="ISerializable"/>. This can be useful for comparing
+        ///                 types that normally cannot be easily compared.
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
         /// <returns>
         ///     A 64-bit unsigned integer that contains the result of encrypting the
-        ///     specified object by the specified algorithm.
+        ///     specified <paramref name="source"/> object by the specified
+        ///     <paramref name="algorithm"/>.
         /// </returns>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             InternalGenericEncrypt(source, algorithm, false).HashNumber;
 
         /// <summary>
-        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
-        ///     <see cref="ChecksumAlgo"/> and combines both hashes into a unique GUID.
+        ///     Encrypts this <paramref name="source"/> object with the specified
+        ///     <paramref name="algorithm"/> and returns the string representation of the
+        ///     computed hash code with lowercase letters.
         /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
+        /// <returns>
+        ///     A string that contains the result of encrypting the specified
+        ///     <paramref name="source"/> object by the specified
+        ///     <paramref name="algorithm"/>.
+        /// </returns>
+        /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
+        [return: NotNullIfNotNull("source")]
+        public static string GetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
+            InternalGenericEncrypt(source, algorithm, false).Hash;
+
+        /// <summary>
+        ///     Encrypts the file at this <paramref name="path"/> with the specified
+        ///     <paramref name="algorithm"/>.
+        /// </summary>
+        /// <param name="path">
+        ///     The full path of the file to encrypt.
+        /// </param>
+        /// <param name="algorithm">
+        ///     The algorithm to use.
+        /// </param>
+        /// <returns>
+        ///     A string that contains the result of encrypting the file at specified
+        ///     <paramref name="path"/> by the specified <paramref name="algorithm"/>.
+        /// </returns>
+        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
+        public static string GetFileChecksum(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
+        {
+            var instance = algorithm.GetDefaultInstance();
+            instance.EncryptFile(path);
+            return instance.Hash;
+        }
+
+        /// <summary>
+        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
+        ///     <see cref="ChecksumAlgo"/> and combines both hashes into a unique GUID
+        ///     string.
+        /// </summary>
         /// <param name="source">
         ///     The object to encrypt.
         /// </param>
@@ -111,9 +205,12 @@
         ///     The second algorithm to use.
         /// </param>
         /// <returns>
-        ///     A string that contains the results of encrypting the specified object by
-        ///     the specified algorithms.
+        ///     A string with a GUID that contains the results of encrypting the specified
+        ///     <paramref name="source"/> object by the specified
+        ///     <paramref name="algorithm1"/> and the specified
+        ///     <paramref name="algorithm2"/>.
         /// </returns>
+        /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
         {
@@ -122,7 +219,7 @@
                 sb.Append('{');
             var raw1 = InternalGenericEncrypt(source, algorithm1, true).RawHash.Span;
             var raw2 = InternalGenericEncrypt(source, algorithm2, false).RawHash.Span;
-            var span = CombineHashBytes(raw1, raw2, 16);
+            var span = LocalCombineHashBytes(raw1, raw2, 16);
             var index = 0;
             for (var i = 0; i < 5; i++)
             {
@@ -138,7 +235,7 @@
             sb.Clear();
             return str;
 
-            static Span<byte> CombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
+            static Span<byte> LocalCombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
             {
                 var ba = new byte[size].AsSpan();
                 var i1 = 0;
@@ -151,51 +248,6 @@
                 }
                 return ba;
             }
-        }
-
-        /// <summary>
-        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
-        ///     algorithm.
-        /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     source is null.
-        /// </exception>
-        /// <returns>
-        ///     A string that contains the result of encrypting the specified object by the
-        ///     specified algorithm.
-        /// </returns>
-        [return: NotNullIfNotNull("source")]
-        public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm, false).Hash;
-
-        /// <summary>
-        ///     Encrypts this file with the specified algorithm.
-        /// </summary>
-        /// <param name="path">
-        ///     The full path of the file to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <returns>
-        ///     A string that contains the result of encrypting the specified file by the
-        ///     specified algorithm.
-        /// </returns>
-        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
-        public static string EncryptFile(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
-        {
-            var instance = algorithm.GetDefaultInstance();
-            instance.EncryptFile(path);
-            return instance.Hash;
         }
 
         /// <summary>
@@ -230,11 +282,13 @@
             switch (source)
             {
                 case Stream stream:
-
                     var pos = ifStreamRestorePos ? stream.Position : -1L;
                     instance.Encrypt(stream);
                     if (pos >= 0)
                         stream.Position = pos;
+                    break;
+                case FileInfo file:
+                    instance.Encrypt(file);
                     break;
                 case IEnumerable<byte> bytes:
                     instance.Encrypt(bytes as byte[] ?? bytes.ToArray());
@@ -254,5 +308,20 @@
             }
             return instance;
         }
+
+        #region Obsolete
+
+        /// <inheritdoc cref="GetChecksum{TSource}(TSource, ChecksumAlgo)"/>
+        [Obsolete("Please use `GetChecksum` instead. This extension will be removed in the next version.")]
+        [return: NotNullIfNotNull("source")]
+        public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
+            source?.GetChecksum(algorithm);
+
+        /// <inheritdoc cref="GetFileChecksum(string, ChecksumAlgo)"/>
+        [Obsolete("Please use `GetFileChecksum` instead. This extension will be removed in the next version.")]
+        public static string EncryptFile(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
+            path?.GetFileChecksum(algorithm);
+
+        #endregion
     }
 }

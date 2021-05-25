@@ -111,6 +111,20 @@
         /// <summary>
         ///     Encrypts the specified file.
         /// </summary>
+        /// <param name="fileInfo">
+        ///     The file to encrypt.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        ///     fileInfo is null.
+        /// </exception>
+        /// <exception cref="FileNotFoundException">
+        ///     File cannot be found.
+        /// </exception>
+        void Encrypt(FileInfo fileInfo);
+
+        /// <summary>
+        ///     Encrypts the specified file.
+        /// </summary>
         /// <param name="path">
         ///     The full path of the file to encrypt.
         /// </param>

@@ -125,6 +125,17 @@
         }
 
         /// <inheritdoc/>
+        public void Encrypt(FileInfo fileInfo)
+        {
+            if (fileInfo == null)
+                throw new ArgumentNullException(nameof(fileInfo));
+            if (!fileInfo.Exists)
+                throw new FileNotFoundException(ExceptionMessages.FileNotFound, fileInfo.FullName);
+            using var fs = fileInfo.OpenRead();
+            Encrypt(fs);
+        }
+
+        /// <inheritdoc/>
         public void EncryptFile(string path)
         {
             if (path == null)
