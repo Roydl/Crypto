@@ -61,19 +61,19 @@
             {
                 case TestVarsType.TestStream:
                     using (var ms = new MemoryStream(TestVars.TestBytes))
-                        hash = ms.Encrypt(Algorithm);
+                        hash = ms.GetChecksum(Algorithm);
                     break;
                 case TestVarsType.TestBytes:
-                    hash = TestVars.TestBytes.Encrypt(Algorithm);
+                    hash = TestVars.TestBytes.GetChecksum(Algorithm);
                     break;
                 case TestVarsType.TestString:
-                    hash = TestVars.TestStr.Encrypt(Algorithm);
+                    hash = TestVars.TestStr.GetChecksum(Algorithm);
                     break;
                 case TestVarsType.TestFile:
-                    hash = TestFilePath.EncryptFile(Algorithm);
+                    hash = TestFilePath.GetFileChecksum(Algorithm);
                     break;
                 case TestVarsType.RangeString:
-                    hash = TestVars.RangeStr.Encrypt(Algorithm);
+                    hash = TestVars.RangeStr.GetChecksum(Algorithm);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
