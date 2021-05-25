@@ -14,9 +14,6 @@
         /// <inheritdoc cref="CipherMode.CBC"/>
         Cbc = CipherMode.CBC,
 
-        /// <inheritdoc cref="CipherMode.ECB"/>
-        Ecb = CipherMode.ECB,
-
         /// <inheritdoc cref="CipherMode.CFB"/>
         Cfb = CipherMode.CFB
     }
