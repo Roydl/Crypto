@@ -12,13 +12,13 @@
     public enum BlockCipherMode
     {
         /// <inheritdoc cref="CipherMode.CBC"/>
-        Cbc = 1,
+        Cbc = CipherMode.CBC,
 
         /// <inheritdoc cref="CipherMode.ECB"/>
-        Ecb = 2,
+        Ecb = CipherMode.ECB,
 
         /// <inheritdoc cref="CipherMode.CFB"/>
-        Cfb = 4
+        Cfb = CipherMode.CFB
     }
 
     /// Wrapper to prevent additional namespace for a single feature
@@ -26,19 +26,19 @@
     public enum BlockPaddingMode
     {
         /// <inheritdoc cref="PaddingMode.None"/>
-        None = 1,
+        None = PaddingMode.None,
 
         /// <inheritdoc cref="PaddingMode.PKCS7"/>
-        Pkcs7 = 2,
+        Pkcs7 = PaddingMode.PKCS7,
 
         /// <inheritdoc cref="PaddingMode.Zeros"/>
-        Zeros = 3,
+        Zeros = PaddingMode.Zeros,
 
         /// <inheritdoc cref="PaddingMode.ANSIX923"/>
-        Ansix923 = 4,
+        Ansix923 = PaddingMode.ANSIX923,
 
         /// <inheritdoc cref="PaddingMode.ISO10126"/>
-        Iso10126 = 5
+        Iso10126 = PaddingMode.ISO10126
     }
 
     /// <summary>
