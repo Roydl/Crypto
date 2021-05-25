@@ -44,8 +44,8 @@
             if (bits is < 8 or > 512)
                 throw new ArgumentOutOfRangeException(nameof(bits));
             HashBits = bits;
-            HashSize = bits / 4;
-            RawHashSize = bits / 8;
+            HashSize = (int)MathF.Ceiling(bits / 4f);
+            RawHashSize = (int)MathF.Ceiling(bits / 8f);
         }
 
         /// <summary>
