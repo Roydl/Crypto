@@ -92,13 +92,13 @@ public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
 {
     private const int Bits = 32;
     private const uint Poly = 0x04c11db7u;
-    private const uint Seed = 0x00000000u;
-    private const bool Reversed = true;
-    private const bool Swapped = false;
+    private const uint Init = 0x00000000u;
+    private const bool RefIn = false;
+    private const bool RefOut = false;
+    private const uint XorOut = 0xffffffffu;
 
-    // Sets a new `CrcConfig` with bits, polynomial, seed, normal compution,
-    // and reversed bits of final hash.
-    private static readonly CrcConfig<uint> Current = new(Bits, Poly, Seed, Swapped, Reversed);
+    // Sets a new `CrcConfig` with the constants from above.
+    private static readonly CrcConfig<uint> Current = new(Bits, Poly, Init, RefIn, RefOut, XorOut);
 
     // At least one constructor is required because `base(bits)` has to
     // be called.
