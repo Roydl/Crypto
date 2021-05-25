@@ -43,11 +43,11 @@ _I hope I don't have to say that checksums shouldn't be used to verify sensitive
 ```cs
 // The `value` can be almost anything, even an entire type with many values,
 // which is then serialized into a JSON byte sequence before being hashed.
-string strHash = value.Encrypt(ChecksumAlgo.Sha512);
+string strHash = value.GetChecksum(ChecksumAlgo.Sha512);
 
 // The file encryption has an additional method, where `value` must be a
 // `string` with a valid file path.
-string strHash = value.EncryptFile(); // SHA-256 is used by default.
+string strHash = value.GetFileChecksum(); // SHA-256 is used by default.
 
 // The `GetCipher` extension method retrieves an unsigned 64-bit integer
 // representation of the computed hash. It follows the same rules outlined
