@@ -5,34 +5,34 @@
     using Checksum;
     using NUnit.Framework;
 
-    internal sealed class CrcCustom<T> : ChecksumAlgorithm<CrcCustom<T>> where T : IConvertible
-    {
-        private CrcConfig<T> Current { get; }
-
-        public CrcCustom(int bits, T poly, T init, bool refIn, bool refOut, T xorOut) : base(bits) =>
-            Current = new CrcConfig<T>(bits, poly, init, refIn, refOut, xorOut);
-
-        public override void Encrypt(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            Current.ComputeHash(stream, out var num);
-            HashNumber = (ulong)(dynamic)num;
-            RawHash = CryptoUtils.GetByteArray(HashNumber, RawHashSize);
-        }
-    }
-
-    public enum CrcCustomAlgo
-    {
-        Crc32Jam,
-        Crc32Posix
-    }
-
     [TestFixture]
     [Parallelizable]
     [Platform(Include = TestVars.PlatformInclude)]
     public class CrcCustomTests
     {
+        public sealed class CrcCustom<T> : ChecksumAlgorithm<CrcCustom<T>> where T : IConvertible
+        {
+            private CrcConfig<T> Current { get; }
+
+            public CrcCustom(int bits, T poly, T init, bool refIn, bool refOut, T xorOut) : base(bits) =>
+                Current = new CrcConfig<T>(bits, poly, init, refIn, refOut, xorOut);
+
+            public override void Encrypt(Stream stream)
+            {
+                if (stream == null)
+                    throw new ArgumentNullException(nameof(stream));
+                Current.ComputeHash(stream, out var num);
+                HashNumber = (ulong)(dynamic)num;
+                RawHash = CryptoUtils.GetByteArray(HashNumber, RawHashSize);
+            }
+        }
+
+        public enum CrcCustomAlgo
+        {
+            Crc32Jam,
+            Crc32Posix
+        }
+
         private static readonly TestCaseData[] TestData =
         {
             new(CrcCustomAlgo.Crc32Jam, TestVarsType.TestString, "87b22ecd"),
