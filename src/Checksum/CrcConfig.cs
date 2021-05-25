@@ -63,7 +63,7 @@
         public bool RefOut { get; }
 
         /// <summary>
-        ///     The value to xor with the final output.
+        ///     The value to xor with the calculated hash code.
         /// </summary>
         /// <remarks>
         ///     Used in <see cref="FinalizeHash(ref TValue)"/>.
