@@ -8,7 +8,7 @@
     /// </summary>
     public sealed class Crc16 : ChecksumAlgorithm<Crc16>
     {
-        private static readonly CrcConfig<ushort> Current = new(16, 0x1021, 0x1d0f, false, false);
+        private static readonly CrcConfig<ushort> Current = new(16, 0x1021, 0x1d0f);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc16"/> class.

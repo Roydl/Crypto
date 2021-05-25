@@ -27,7 +27,7 @@
         public TValue Mask { get; }
 
         /// <summary>
-        ///     Gets the polynomial used to generate the CRC hash table once.
+        ///     Gets the polynomial used to generate the CRC hash table.
         /// </summary>
         /// <remarks>
         ///     Used to create the <see cref="Table"/> once.
@@ -35,21 +35,23 @@
         public TValue Poly { get; }
 
         /// <summary>
-        ///     Gets the seed from which to start the calculation.
+        ///     Gets the seed from which the CRC register should be initialized at
+        ///     beginning of the calculation.
         /// </summary>
         /// <remarks>
         ///     Only automatically used in <see cref="ComputeHash(Stream, out TValue)"/>.
         /// </remarks>
-        public TValue Seed { get; }
+        public TValue Init { get; }
 
         /// <summary>
-        ///     Gets the value that determines whether the calculation is swapped.
+        ///     Gets the value that determines whether the input bytes are processed in
+        ///     big-endian bit order for the calculation.
         /// </summary>
         /// <remarks>
-        ///     Used in <see cref="ComputeHash(Stream, out TValue)"/> and
-        ///     <see cref="ComputeHash(byte, ref TValue)"/>.
+        ///     Used in <see cref="ComputeHash(byte, ref TValue)"/>, which is also called
+        ///     by <see cref="ComputeHash(Stream, out TValue)"/>.
         /// </remarks>
-        public bool Swapped { get; }
+        public bool RefIn { get; }
 
         /// <summary>
         ///     Gets the value that determines whether the bits of the calculated hash code
@@ -58,13 +60,25 @@
         /// <remarks>
         ///     Used in <see cref="FinalizeHash(ref TValue)"/>.
         /// </remarks>
-        public bool Reversed { get; }
+        public bool RefOut { get; }
+
+        /// <summary>
+        ///     The value to xor with the final output.
+        /// </summary>
+        /// <remarks>
+        ///     Used in <see cref="FinalizeHash(ref TValue)"/>.
+        /// </remarks>
+        public TValue XorOut { get; }
 
         /// <summary>
         ///     Gets the generated hash table of the configured CRC algorithm.
         /// </summary>
         /// <remarks>
-        ///     For more information, see <see cref="Poly"/>.
+        ///     For more information, see
+        ///     <see cref="Poly">
+        ///         Poly
+        ///     </see>
+        ///     .
         /// </remarks>
         public ReadOnlyMemory<TValue> Table { get; }
 
@@ -77,16 +91,20 @@
         /// <param name="poly">
         ///     The polynomial used to generate CRC hash table.
         /// </param>
-        /// <param name="seed">
-        ///     The seed from which to start the calculation.
+        /// <param name="init">
+        ///     The seed from which the CRC register should be initialized at beginning of
+        ///     the calculation.
         /// </param>
-        /// <param name="swapped">
-        ///     <see langword="true"/> to swap the calculation; otherwise,
-        ///     <see langword="false"/>.
+        /// <param name="refIn">
+        ///     <see langword="true"/> to process the input bytes in big-endian bit order
+        ///     for the calculation; otherwise, <see langword="false"/>.
         /// </param>
-        /// <param name="reversed">
-        ///     <see langword="true"/> to reverse the bits of the final hash code;
+        /// <param name="refOut">
+        ///     <see langword="true"/> to process the final output in big-endian bit order;
         ///     otherwise, <see langword="false"/>.
+        /// </param>
+        /// <param name="xorOut">
+        ///     The value to xor with the final output.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         ///     bits is less than 8, greater than 64, or odd.
@@ -94,7 +112,7 @@
         /// <exception cref="InvalidOperationException">
         ///     TValue type is invalid, i.e. not supported.
         /// </exception>
-        public CrcConfig(int bits, TValue poly, TValue seed, bool swapped, bool reversed)
+        public CrcConfig(int bits, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default)
         {
             var type = typeof(TValue);
             switch (Type.GetTypeCode(type))
@@ -111,15 +129,15 @@
             }
             if (bits is < 8 or > 64 || bits % 2 != 0)
                 throw new ArgumentOutOfRangeException(nameof(bits));
-
             var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
             Bits = bits;
             Mask = mask;
             Poly = poly;
-            Seed = seed;
-            Swapped = swapped;
-            Reversed = reversed;
-            Table = CreateTable(bits, poly, mask, swapped).ToArray();
+            Init = init;
+            RefIn = refIn;
+            RefOut = refOut;
+            XorOut = xorOut;
+            Table = CreateTable(bits, poly, mask, refIn).ToArray();
         }
 
         /// <summary>
@@ -135,13 +153,14 @@
         ///     stream is null.
         /// </exception>
         /// <remarks>
-        ///     For more information, see <see cref="Seed"/> and <see cref="Reversed"/>.
+        ///     For more information, see <see cref="Init"/> , <see cref="RefIn"/> ,
+        ///     <see cref="RefOut"/> &amp; <see cref="XorOut"/>.
         /// </remarks>
         public void ComputeHash(Stream stream, out TValue hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            hash = Seed;
+            hash = Init;
             var ba = new byte[Helper.GetBufferSize(stream)].AsSpan();
             int len;
             while ((len = stream.Read(ba)) > 0)
@@ -162,14 +181,14 @@
         ///     The hash code to be computed or its computation that will be continued.
         /// </param>
         /// <remarks>
-        ///     <see cref="Seed"/> is not used.
+        ///     For more information, see <see cref="RefIn"/>.
         /// </remarks>
         public void ComputeHash(byte value, ref TValue hash)
         {
             var byteMask = (TValue)(dynamic)0xff;
             var current = (dynamic)hash;
             var table = Table.Span;
-            if (Swapped)
+            if (RefIn)
             {
                 hash = (TValue)(((current >> 8) ^ table[(int)(value ^ (current & byteMask))]) & Mask);
                 return;
@@ -184,20 +203,21 @@
         ///     The computed hash code to be finalized.
         /// </param>
         /// <remarks>
-        ///     For more information, see <see cref="Reversed"/>.
+        ///     For more information, see <see cref="RefOut"/> &amp; <see cref="XorOut"/>.
         /// </remarks>
         public void FinalizeHash(ref TValue hash)
         {
-            if (Reversed)
+            if (RefIn ^ RefOut)
                 hash = (TValue)~(dynamic)hash;
+            hash ^= (dynamic)XorOut;
         }
 
-        private static IEnumerable<T> CreateTable<T>(int bits, T poly, T mask, bool swapped)
+        private static IEnumerable<T> CreateTable<T>(int bits, T poly, T mask, bool refIn)
         {
             for (var i = 0; i < 256; i++)
             {
                 var x = (dynamic)(T)(dynamic)i;
-                if (swapped)
+                if (refIn)
                 {
                     for (var k = 0; k < 8; k++)
                         x = (T)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);

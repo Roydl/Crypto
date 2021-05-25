@@ -8,7 +8,7 @@
     /// </summary>
     public sealed class Crc32 : ChecksumAlgorithm<Crc32>
     {
-        private static readonly CrcConfig<uint> Current = new(32, 0xedb88320u, uint.MaxValue, true, true);
+        private static readonly CrcConfig<uint> Current = new(32, 0xedb88320u, uint.MaxValue, true, true, uint.MaxValue);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc32"/> class.

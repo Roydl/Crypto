@@ -8,7 +8,7 @@
     /// </summary>
     public sealed class Crc64 : ChecksumAlgorithm<Crc64>
     {
-        private static readonly CrcConfig<ulong> Current = new(64, 0x42f0e1eba9ea3693uL, ulong.MinValue, false, false);
+        private static readonly CrcConfig<ulong> Current = new(64, 0x42f0e1eba9ea3693uL);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Crc64"/> class.
