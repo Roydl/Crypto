@@ -73,15 +73,6 @@
         ///     <paramref name="algorithm"/> and returns the 64-bit unsigned integer
         ///     representation of the computed hash code.
         /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
         /// <exception cref="ArgumentNullException">
         ///     source is null.
         /// </exception>
@@ -95,65 +86,20 @@
         ///     source is a directory.
         /// </exception>
         /// <exception cref="IOException">
-        ///     source is already open.
+        ///     source is already open, or an I/O error occurs.
         /// </exception>
-        /// <remarks>
-        ///     <list type="bullet">
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="Stream"/>:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(Stream)"/> is used to
-        ///                 encrypt the bytes of stream.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="FileInfo"/>:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(FileInfo)"/> is used to
-        ///                 read and encrypt the file, if exist and accessible.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
-        ///             <see cref="byte"/>&gt;:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(byte[])"/> is used to
-        ///                 encrypt the bytes.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
-        ///             <see cref="char"/>&gt;:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(string)"/> is used to
-        ///                 encrypt the string.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             Otherwise:
-        ///             <description>
-        ///                 The values of <paramref name="source"/> are serialized using
-        ///                 <see cref="Utf8JsonWriter"/> with skipped validation and the
-        ///                 result is encrypted, even if <paramref name="source"/> is not
-        ///                 <see cref="ISerializable"/>. This can be useful for comparing
-        ///                 types that normally cannot be easily compared.
-        ///             </description>
-        ///         </item>
-        ///     </list>
-        /// </remarks>
+        /// <exception cref="NotSupportedException">
+        ///     source does not support reading.
+        /// </exception>
         /// <returns>
         ///     A 64-bit unsigned integer that contains the result of encrypting the
         ///     specified <paramref name="source"/> object by the specified
         ///     <paramref name="algorithm"/>.
         /// </returns>
+        /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             InternalGenericEncrypt(source, algorithm, false).HashNumber;
 
-        /// <summary>
-        ///     Encrypts this <paramref name="source"/> object with the specified
-        ///     <paramref name="algorithm"/> and returns the string representation of the
-        ///     computed hash code with lowercase letters.
-        /// </summary>
         /// <returns>
         ///     A string that contains the result of encrypting the specified
         ///     <paramref name="source"/> object by the specified
@@ -187,9 +133,10 @@
         }
 
         /// <summary>
-        ///     Encrypts this <typeparamref name="TSource"/> object with the specified
-        ///     <see cref="ChecksumAlgo"/> and combines both hashes into a unique GUID
-        ///     string.
+        ///     Encrypts this <paramref name="source"/> object with the specified
+        ///     <paramref name="algorithm1"/> and the specified
+        ///     <paramref name="algorithm2"/> and combines the bytes of both hashes into a
+        ///     unique GUID string.
         /// </summary>
         /// <param name="source">
         ///     The object to encrypt.
@@ -249,6 +196,134 @@
                 return ba;
             }
         }
+
+        /// <summary>
+        ///     Tries to encrypt this <paramref name="source"/> object with the specified
+        ///     <paramref name="algorithm"/> and returns a <see cref="bool"/> value that
+        ///     determines whether the encryption was successful. All possible exceptions
+        ///     are caught.
+        /// </summary>
+        /// <typeparam name="TSource">
+        ///     The type of source.
+        /// </typeparam>
+        /// <param name="source">
+        ///     The object to encrypt.
+        /// </param>
+        /// <param name="algorithm">
+        ///     The algorithm to use.
+        /// </param>
+        /// <param name="hash">
+        ///     If successful, the result of encrypting the specified
+        ///     <paramref name="source"/> object by the specified
+        ///     <paramref name="algorithm"/>; otherwise, <see langword="default"/>.
+        /// </param>
+        /// <remarks>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="Stream"/>:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(Stream)"/> is used to
+        ///                 encrypt the bytes of stream.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="FileInfo"/>:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(FileInfo)"/> is used to
+        ///                 read and encrypt the file, if exist and accessible.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
+        ///             <see cref="byte"/>&gt;:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(byte[])"/> is used to
+        ///                 encrypt the bytes.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
+        ///             <see cref="char"/>&gt;:
+        ///             <description>
+        ///                 <see cref="IChecksumAlgorithm.Encrypt(string)"/> is used to
+        ///                 encrypt the string.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             Otherwise:
+        ///             <description>
+        ///                 The values of <paramref name="source"/> are serialized using
+        ///                 <see cref="Utf8JsonWriter"/> with skipped validation and the
+        ///                 result is encrypted, even if <paramref name="source"/> is not
+        ///                 <see cref="ISerializable"/>. This can be useful for comparing
+        ///                 types that normally cannot be easily compared.
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
+        /// <returns>
+        ///     <see langword="true"/> if the specified <paramref name="source"/> could be
+        ///     encrypted by the specified <paramref name="algorithm"/>; otherwise,
+        ///     <see langword="false"/> .
+        /// </returns>
+        public static bool TryGetCipher<TSource>(this TSource source, ChecksumAlgo algorithm, out ulong hash)
+        {
+            try
+            {
+                hash = source.GetCipher(algorithm);
+                return hash > 0;
+            }
+            catch
+            {
+                hash = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        ///     Encrypts this <paramref name="source"/> object with the
+        ///     <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a
+        ///     <see cref="bool"/> value that determines whether the encryption was
+        ///     successful. All possible exceptions are caught.
+        /// </summary>
+        /// <typeparam name="TSource">
+        ///     The type of source.
+        /// </typeparam>
+        /// <param name="source">
+        ///     The object to encrypt.
+        /// </param>
+        /// <param name="hash">
+        ///     If successful, the result of encrypting the specified
+        ///     <paramref name="source"/> object by the <see cref="ChecksumAlgo.Sha256"/>
+        ///     algorithm; otherwise, <see langword="default"/>.
+        /// </param>
+        /// <returns>
+        ///     <see langword="true"/> if the specified <paramref name="source"/> could be
+        ///     encrypted by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise,
+        ///     <see langword="false"/> .
+        /// </returns>
+        /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
+        public static bool TryGetCipher<TSource>(this TSource source, out ulong hash) =>
+            source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
+
+        /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
+        public static bool TryGetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm, out string hash)
+        {
+            try
+            {
+                hash = source.GetChecksum(algorithm);
+                return !string.IsNullOrEmpty(hash);
+            }
+            catch
+            {
+                hash = default;
+                return false;
+            }
+        }
+
+        /// <inheritdoc cref="TryGetCipher{TSource}(TSource, out ulong)"/>
+        public static bool TryGetChecksum<TSource>(this TSource source, out string hash) =>
+            source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
 
         /// <summary>
         ///     Creates a default instance of this algorithm.
