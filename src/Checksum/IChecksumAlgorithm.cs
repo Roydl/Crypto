@@ -70,13 +70,20 @@
         ReadOnlyMemory<byte> RawHash { get; }
 
         /// <summary>
-        ///     Encrypts the specified stream.
+        ///     Encrypts the bytes of the specified stream starting at its current
+        ///     position.
         /// </summary>
         /// <param name="stream">
         ///     The stream to encrypt.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        ///     bytes is null.
+        ///     stream is null.
+        /// </exception>
+        /// <exception cref="IOException">
+        ///     An I/O error occurs.
+        /// </exception>
+        /// <exception cref="NotSupportedException">
+        ///     stream does not support reading.
         /// </exception>
         void Encrypt(Stream stream);
 
