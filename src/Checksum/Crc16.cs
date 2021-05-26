@@ -28,6 +28,10 @@
         /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
         public Crc16(string text) : base(16, text) { }
 
+        /// <summary>Initializes a new instance of the <see cref="Crc16"/> class and encrypts the specified file.</summary>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
+        public Crc16(FileInfo fileInfo) : base(16, fileInfo) { }
+
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {

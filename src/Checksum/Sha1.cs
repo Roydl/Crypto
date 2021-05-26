@@ -45,6 +45,10 @@
         /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
         public Sha1(string text) : this(text, false) { }
 
+        /// <summary>Initializes a new instance of the <see cref="Sha1"/> class and encrypts the specified file.</summary>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
+        public Sha1(FileInfo fileInfo) : base(160, fileInfo) { }
+
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
             Encrypt(stream, (HashAlgorithm)(SecretKey == null ? SHA1.Create() : new HMACSHA1(SecretKey)));

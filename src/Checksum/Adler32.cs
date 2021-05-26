@@ -27,6 +27,10 @@
         /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
         public Adler32(string text) : base(32, text) { }
 
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class and encrypts the specified file.</summary>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
+        public Adler32(FileInfo fileInfo) : base(32, fileInfo) { }
+
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
         public override void Encrypt(Stream stream)
         {

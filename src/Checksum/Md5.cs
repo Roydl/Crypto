@@ -45,6 +45,10 @@
         /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
         public Md5(string text) : this(text, false) { }
 
+        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified file.</summary>
+        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
+        public Md5(FileInfo fileInfo) : base(128, fileInfo) { }
+
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
             Encrypt(stream, (HashAlgorithm)(SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey)));

@@ -65,7 +65,15 @@
         /// <param name="bits">The hash size in bits.</param>
         /// <param name="text">The string to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        protected ChecksumAlgorithm(int bits, string text) : this(bits, text, false) { }
+        protected ChecksumAlgorithm(int bits, string text) : this(bits) =>
+            Encrypt(text);
+
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified file.</summary>
+        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="fileInfo">The file to encrypt.</param>
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(FileInfo)"/>
+        protected ChecksumAlgorithm(int bits, FileInfo fileInfo) : this(bits) =>
+            Encrypt(fileInfo);
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public abstract void Encrypt(Stream stream);
@@ -226,6 +234,10 @@
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified text.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, string text) : base(bits, text) { }
+
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified file.</summary>
+        /// <inheritdoc/>
+        protected ChecksumAlgorithm(int bits, FileInfo fileInfo) : base(bits, fileInfo) { }
 
         /// <summary>Determines whether this instance have same values as the specified <typeparamref name="THashAlgo"/> instance.</summary>
         /// <param name="other">The <typeparamref name="THashAlgo"/> instance to compare.</param>
