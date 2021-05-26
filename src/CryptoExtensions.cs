@@ -122,9 +122,7 @@
             }
         }
 
-#if NETCOREAPP3_1
-#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
-#endif
+#if NET5_0_OR_GREATER
         /// <summary>Tries to encrypt this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
         /// <typeparam name="TSource">The type of source.</typeparam>
         /// <param name="source">The object to encrypt.</param>
@@ -137,6 +135,20 @@
         ///     </list>
         /// </remarks>
         /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
+#else
+        /// <summary>Tries to encrypt this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <typeparam name="TSource">The type of source.</typeparam>
+        /// <param name="source">The object to encrypt.</param>
+        /// <param name="algorithm">The algorithm to use.</param>
+        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
+        /// <remarks>
+        ///     <list type="table">
+        ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
+        ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
+        ///     </list>
+        /// </remarks>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
+#endif
         public static bool TryGetCipher<TSource>(this TSource source, ChecksumAlgo algorithm, out ulong hash)
         {
             try
@@ -150,9 +162,6 @@
                 return false;
             }
         }
-#if NETCOREAPP3_1
-#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
-#endif
 
         /// <summary>Encrypts this <paramref name="source"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
         /// <typeparam name="TSource">The type of source.</typeparam>
@@ -164,7 +173,7 @@
             source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
-        public static bool TryGetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm, [NotNullWhen(true)] out string hash)
+        public static bool TryGetChecksum<TSource>([NotNullWhen(true)] this TSource source, ChecksumAlgo algorithm, out string hash)
         {
             try
             {
@@ -179,7 +188,7 @@
         }
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, out ulong)"/>
-        public static bool TryGetChecksum<TSource>(this TSource source, [NotNullWhen(true)] out string hash) =>
+        public static bool TryGetChecksum<TSource>([NotNullWhen(true)] this TSource source, out string hash) =>
             source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
 
         /// <summary>Creates a default instance of this algorithm.</summary>
@@ -234,11 +243,6 @@
 #else
                     try
                     {
-                        // Blittable types:
-                        // https://docs.microsoft.com/dotnet/framework/interop/blittable-and-non-blittable-types
-                        // sbyte, byte, short, ushort, char, int, uint, long, ulong, Half, float, double, decimal,
-                        // Enum, IntPtr, UIntPtr, Vector{T}, Vector2, Vector3, Vector4, Matrix3x2, Matrix4x4, Plane,
-                        // Quaternion, Complex, Guid, Rune, and more.
                         instance.Encrypt(LocalGetByteArray(source));
                     }
                     catch (ArgumentException)

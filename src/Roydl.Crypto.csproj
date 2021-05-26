@@ -31,12 +31,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>obj\Debug\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Debug\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net5.0'">obj\Debug\net5.0\Roydl.Crypto.xml</DocumentationFile>
     <OutputPath>..\bin\Debug</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>obj\Release\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Release\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net5.0'">obj\Release\net5.0\Roydl.Crypto.xml</DocumentationFile>
     <OutputPath>..\bin\Release</OutputPath>
   </PropertyGroup>
 
