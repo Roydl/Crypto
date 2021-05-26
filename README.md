@@ -41,8 +41,7 @@ _I hope I don't have to say that checksums shouldn't be used to verify sensitive
 
 #### Usage:
 ```cs
-// The `value` can be almost anything, even an entire type with many values,
-// which is then serialized into a JSON byte sequence before being hashed.
+// The `value` can be almost anything.
 string strHash = value.GetChecksum(ChecksumAlgo.Sha512);
 
 // The file encryption has an additional method, where `value` must be a
