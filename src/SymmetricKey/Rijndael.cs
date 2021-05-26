@@ -5,41 +5,18 @@
     using System.Security.Cryptography;
     using Internal;
 
-    /// <summary>
-    ///     Provides functionality to encrypt and decrypt data using Advanced
-    ///     Encryption Standard algorithm.
-    /// </summary>
+    /// <summary>Provides functionality to encrypt and decrypt data using Advanced Encryption Standard algorithm.</summary>
     public sealed class Rijndael : SymmetricKeyAlgorithm
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Rijndael"/> class.
-        /// </summary>
-        /// <param name="password">
-        ///     The sequence of bytes which is used as password.
-        ///     <para>
-        ///         For more information, see
-        ///         <see cref="SymmetricKeyAlgorithm.DestroySecretData()">
-        ///             here
-        ///         </see>
-        ///         .
-        ///     </para>
+        /// <summary>Initializes a new instance of the <see cref="Rijndael"/> class.</summary>
+        /// <param name="password">The sequence of bytes which is used as password.
+        ///     <para>For more information, see <see cref="SymmetricKeyAlgorithm.DestroySecretData()">here</see>.</para>
         /// </param>
-        /// <param name="salt">
-        ///     The sequence of bytes which is used as salt.
-        ///     <para>
-        ///         For more information, see
-        ///         <see cref="SymmetricKeyAlgorithm.DestroySecretData()">
-        ///             here
-        ///         </see>
-        ///         .
-        ///     </para>
+        /// <param name="salt">The sequence of bytes which is used as salt.
+        ///     <para>For more information, see <see cref="SymmetricKeyAlgorithm.DestroySecretData()">here</see>.</para>
         /// </param>
-        /// <param name="iterations">
-        ///     The number of iterations for the operation.
-        /// </param>
-        /// <param name="keySize">
-        ///     The size of the secret key.
-        /// </param>
+        /// <param name="iterations">The number of iterations for the operation.</param>
+        /// <param name="keySize">The size of the secret key.</param>
         /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, SymmetricKeySize)"/>
         public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large) : base(password, salt, iterations, 128, keySize) { }
 

@@ -11,125 +11,63 @@
     using System.Text.Json;
     using Checksum;
 
-    /// <summary>
-    ///     Specifies enumerated constants used to define an algorithm for encrypting
-    ///     data.
-    /// </summary>
+    /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
     public enum ChecksumAlgo
     {
-        /// <summary>
-        ///     Adler-32.
-        /// </summary>
+        /// <summary>Adler-32.</summary>
         Adler32,
 
-        /// <summary>
-        ///     CRC-16 (Cyclic Redundancy Check).
-        /// </summary>
+        /// <summary>CRC-16 (Cyclic Redundancy Check).</summary>
         Crc16,
 
-        /// <summary>
-        ///     CRC-32 (Cyclic Redundancy Check).
-        /// </summary>
+        /// <summary>CRC-32 (Cyclic Redundancy Check).</summary>
         Crc32,
 
-        /// <summary>
-        ///     CRC-64 (Cyclic Redundancy Check).
-        /// </summary>
+        /// <summary>CRC-64 (Cyclic Redundancy Check).</summary>
         Crc64,
 
-        /// <summary>
-        ///     MD5 (Message-Digest 5).
-        /// </summary>
+        /// <summary>MD5 (Message-Digest 5).</summary>
         Md5,
 
-        /// <summary>
-        ///     SHA-1 (Secure Hash Algorithm 1).
-        /// </summary>
+        /// <summary>SHA-1 (Secure Hash Algorithm 1).</summary>
         Sha1,
 
-        /// <summary>
-        ///     SHA-256 (Secure Hash Algorithm 2).
-        /// </summary>
+        /// <summary>SHA-256 (Secure Hash Algorithm 2).</summary>
         Sha256,
 
-        /// <summary>
-        ///     SHA-384 (Secure Hash Algorithm 2).
-        /// </summary>
+        /// <summary>SHA-384 (Secure Hash Algorithm 2).</summary>
         Sha384,
 
-        /// <summary>
-        ///     SHA-512 (Secure Hash Algorithm 2).
-        /// </summary>
+        /// <summary>SHA-512 (Secure Hash Algorithm 2).</summary>
         Sha512
     }
 
-    /// <summary>
-    ///     Provides extension methods for data encryption and decryption.
-    /// </summary>
+    /// <summary>Provides extension methods for data encryption and decryption.</summary>
     public static class CryptoExtensions
     {
-        /// <summary>
-        ///     Encrypts this <paramref name="source"/> object with the specified
-        ///     <paramref name="algorithm"/> and returns the 64-bit unsigned integer
-        ///     representation of the computed hash code.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">
-        ///     source is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        ///     source is empty.
-        /// </exception>
-        /// <exception cref="FileNotFoundException">
-        ///     source cannot be found.
-        /// </exception>
-        /// <exception cref="UnauthorizedAccessException">
-        ///     source is a directory.
-        /// </exception>
-        /// <exception cref="IOException">
-        ///     source is already open, or an I/O error occurs.
-        /// </exception>
-        /// <exception cref="NotSupportedException">
-        ///     source does not support reading.
-        /// </exception>
-        /// <returns>
-        ///     A 64-bit unsigned integer that contains the result of encrypting the
-        ///     specified <paramref name="source"/> object by the specified
-        ///     <paramref name="algorithm"/>.
-        /// </returns>
+        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the 64-bit unsigned integer representation of the computed hash code.</summary>
+        /// <exception cref="ArgumentNullException">source is null.</exception>
+        /// <exception cref="ArgumentException">source is empty.</exception>
+        /// <exception cref="FileNotFoundException">source cannot be found.</exception>
+        /// <exception cref="UnauthorizedAccessException">source is a directory.</exception>
+        /// <exception cref="IOException">source is already open, or an I/O error occurs.</exception>
+        /// <exception cref="NotSupportedException">source does not support reading.</exception>
+        /// <returns>A 64-bit unsigned integer that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             InternalGenericEncrypt(source, algorithm, false).HashNumber;
 
-        /// <summary>
-        ///     Encrypts this <paramref name="source"/> object with the specified
-        ///     <paramref name="algorithm"/> and returns the string representation of the
-        ///     computed hash code.
-        /// </summary>
-        /// <returns>
-        ///     A string that contains the result of encrypting the specified
-        ///     <paramref name="source"/> object by the specified
-        ///     <paramref name="algorithm"/>.
-        /// </returns>
+        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
+        /// <returns>A string that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             InternalGenericEncrypt(source, algorithm, false).Hash;
 
-        /// <summary>
-        ///     Encrypts the file at this <paramref name="path"/> with the specified
-        ///     <paramref name="algorithm"/> and returns the string representation of the
-        ///     computed hash code.
-        /// </summary>
-        /// <param name="path">
-        ///     The full path of the file to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <returns>
-        ///     A string that contains the result of encrypting the file at specified
-        ///     <paramref name="path"/> by the specified <paramref name="algorithm"/>.
-        /// </returns>
+        /// <summary>Encrypts the file at this <paramref name="path"/> with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
+        /// <param name="path">The full path of the file to encrypt.</param>
+        /// <param name="algorithm">The algorithm to use.</param>
+        /// <returns>A string that contains the result of encrypting the file at specified <paramref name="path"/> by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
         public static string GetFileChecksum(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
@@ -138,31 +76,12 @@
             return instance.Hash;
         }
 
-        /// <summary>
-        ///     Encrypts this <paramref name="source"/> object with the specified
-        ///     <paramref name="algorithm1"/> and the specified
-        ///     <paramref name="algorithm2"/> and combines the bytes of both hashes into a
-        ///     unique GUID string.
-        /// </summary>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="braces">
-        ///     <see langword="true"/> to place the GUID between braces; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
-        /// <param name="algorithm1">
-        ///     The first algorithm to use.
-        /// </param>
-        /// <param name="algorithm2">
-        ///     The second algorithm to use.
-        /// </param>
-        /// <returns>
-        ///     A string with a GUID that contains the results of encrypting the specified
-        ///     <paramref name="source"/> object by the specified
-        ///     <paramref name="algorithm1"/> and the specified
-        ///     <paramref name="algorithm2"/>.
-        /// </returns>
+        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm1"/> and the specified <paramref name="algorithm2"/> and combines the bytes of both hashes into a unique GUID string.</summary>
+        /// <param name="source">The object to encrypt.</param>
+        /// <param name="braces"><see langword="true"/> to place the GUID between braces; otherwise, <see langword="false"/>.</param>
+        /// <param name="algorithm1">The first algorithm to use.</param>
+        /// <param name="algorithm2">The second algorithm to use.</param>
+        /// <returns>A string with a GUID that contains the results of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm1"/> and the specified <paramref name="algorithm2"/>.</returns>
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
@@ -206,75 +125,18 @@
 #if NETCOREAPP3_1
 #pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
 #endif
-        /// <summary>
-        ///     Tries to encrypt this <paramref name="source"/> object with the specified
-        ///     <paramref name="algorithm"/> and returns a <see cref="bool"/> value that
-        ///     determines whether the encryption was successful. All possible exceptions
-        ///     are caught.
-        /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <param name="hash">
-        ///     If successful, the result of encrypting the specified
-        ///     <paramref name="source"/> object by the specified
-        ///     <paramref name="algorithm"/>; otherwise, <see langword="default"/>.
-        /// </param>
+        /// <summary>Tries to encrypt this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <typeparam name="TSource">The type of source.</typeparam>
+        /// <param name="source">The object to encrypt.</param>
+        /// <param name="algorithm">The algorithm to use.</param>
+        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks>
         ///     <list type="table">
-        ///         <item>
-        ///             <term>
-        ///                 Known
-        ///             </term>
-        ///             <description>
-        ///                 &#160;<see cref="bool"/>, <see cref="sbyte"/>,
-        ///                 <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>,
-        ///                 <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>,
-        ///                 <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>,
-        ///                 <see cref="float"/>, <see cref="double"/>,
-        ///                 <see cref="decimal"/>, <see cref="Enum"/>,&#160;
-        ///                 <see cref="IntPtr"/>, <see cref="UIntPtr"/>,
-        ///                 <see cref="Vector{T}"/>, <see cref="Vector2"/>,
-        ///                 <see cref="Vector3"/>, <see cref="Vector4"/>,
-        ///                 <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>,
-        ///                 <see cref="Plane"/>, <see cref="Quaternion"/>,
-        ///                 <see cref="Complex"/>, <see cref="BigInteger"/>,
-        ///                 <see cref="DateTime"/>, <see cref="DateTimeOffset"/>,
-        ///                 <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>,
-        ///                 <see cref="Stream"/>, <see cref="StreamReader"/>,
-        ///                 <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> &#160;
-        ///                 <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any
-        ///                 <see cref="IEnumerable{T}"/> &#160; <see cref="char"/>
-        ///                 sequence, i.e. <see cref="string"/>.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             <term>
-        ///                 Otherwise
-        ///             </term>
-        ///             <description>
-        ///                 An attempt is made to convert <paramref name="source"/> to a
-        ///                 byte array for the encryption, which should work for all
-        ///                 <see href="https://duckduckgo.com/?q=Blittable+types">
-        ///                     blittable types
-        ///                 </see>
-        ///                 . If this fails, <paramref name="source"/> is serialized using
-        ///                 <see cref="Utf8JsonWriter"/> and the result is encrypted.
-        ///             </description>
-        ///         </item>
+        ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
+        ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
         ///     </list>
         /// </remarks>
-        /// <returns>
-        ///     <see langword="true"/> if the specified <paramref name="source"/> could be
-        ///     encrypted by the specified <paramref name="algorithm"/>; otherwise,
-        ///     <see langword="false"/>.
-        /// </returns>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
         public static bool TryGetCipher<TSource>(this TSource source, ChecksumAlgo algorithm, out ulong hash)
         {
             try
@@ -292,28 +154,11 @@
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
 #endif
 
-        /// <summary>
-        ///     Encrypts this <paramref name="source"/> object with the
-        ///     <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a
-        ///     <see cref="bool"/> value that determines whether the encryption was
-        ///     successful. All possible exceptions are caught.
-        /// </summary>
-        /// <typeparam name="TSource">
-        ///     The type of source.
-        /// </typeparam>
-        /// <param name="source">
-        ///     The object to encrypt.
-        /// </param>
-        /// <param name="hash">
-        ///     If successful, the result of encrypting the specified
-        ///     <paramref name="source"/> object by the <see cref="ChecksumAlgo.Sha256"/>
-        ///     algorithm; otherwise, <see langword="default"/>.
-        /// </param>
-        /// <returns>
-        ///     <see langword="true"/> if the specified <paramref name="source"/> could be
-        ///     encrypted by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise,
-        ///     <see langword="false"/> .
-        /// </returns>
+        /// <summary>Encrypts this <paramref name="source"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <typeparam name="TSource">The type of source.</typeparam>
+        /// <param name="source">The object to encrypt.</param>
+        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="default"/>.</param>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="false"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static bool TryGetCipher<TSource>(this TSource source, out ulong hash) =>
             source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
@@ -337,15 +182,9 @@
         public static bool TryGetChecksum<TSource>(this TSource source, [NotNullWhen(true)] out string hash) =>
             source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
 
-        /// <summary>
-        ///     Creates a default instance of this algorithm.
-        /// </summary>
-        /// <param name="algorithm">
-        ///     The algorithm to use.
-        /// </param>
-        /// <returns>
-        ///     A default instance of the specified algorithm.
-        /// </returns>
+        /// <summary>Creates a default instance of this algorithm.</summary>
+        /// <param name="algorithm">The algorithm to use.</param>
+        /// <returns>A default instance of the specified algorithm.</returns>
         public static IChecksumAlgorithm GetDefaultInstance(this ChecksumAlgo algorithm) =>
             algorithm switch
             {

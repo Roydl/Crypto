@@ -4,42 +4,26 @@
     using System.IO;
     using Internal;
 
-    /// <summary>
-    ///     Provides functionality to compute Adler-32 hashes.
-    /// </summary>
+    /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32>
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Adler32"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
         public Adler32() : base(32) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
-        ///     the specified stream.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class and encrypts the specified stream.</summary>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
         public Adler32(Stream stream) : this() =>
             Encrypt(stream);
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
-        ///     the specified sequence of bytes.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
         public Adler32(byte[] bytes) : base(32, bytes) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
-        ///     the specified text or file.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
         public Adler32(string textOrFile, bool strIsFilePath) : base(32, textOrFile, strIsFilePath) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Adler32"/> class and encrypts
-        ///     the specified text.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="Adler32"/> class and encrypts the specified text.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
         public Adler32(string text) : base(32, text) { }
 

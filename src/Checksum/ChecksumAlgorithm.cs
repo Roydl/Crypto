@@ -6,10 +6,7 @@
     using System.Text;
     using Resources;
 
-    /// <summary>
-    ///     Represents the base class from which all implementations of checksum
-    ///     encryption algorithms must derive.
-    /// </summary>
+    /// <summary>Represents the base class from which all implementations of checksum encryption algorithms must derive.</summary>
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
         /// <inheritdoc/>
@@ -30,15 +27,9 @@
         /// <inheritdoc/>
         public ReadOnlyMemory<byte> RawHash { get; protected set; }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.
-        /// </summary>
-        /// <param name="bits">
-        ///     The hash size in bits.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     bits is less than 8 or greater than 512.
-        /// </exception>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
+        /// <param name="bits">The hash size in bits.</param>
+        /// <exception cref="ArgumentOutOfRangeException">bits is less than 8 or greater than 512.</exception>
         protected ChecksumAlgorithm(int bits)
         {
             if (bits is < 8 or > 512)
@@ -48,34 +39,17 @@
             RawHashSize = (int)MathF.Ceiling(bits / 8f);
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
-        ///     encrypts the specified sequence of bytes.
-        /// </summary>
-        /// <param name="bits">
-        ///     The hash size in bits.
-        /// </param>
-        /// <param name="bytes">
-        ///     The sequence of bytes to encrypt.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
+        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="bytes">The sequence of bytes to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
         protected ChecksumAlgorithm(int bits, byte[] bytes) : this(bits) =>
             Encrypt(bytes);
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
-        ///     encrypts the specified text or file.
-        /// </summary>
-        /// <param name="bits">
-        ///     The hash size in bits.
-        /// </param>
-        /// <param name="textOrFile">
-        ///     The text or file to encrypt.
-        /// </param>
-        /// <param name="strIsFilePath">
-        ///     <see langword="true"/> if the specified value is a file path; otherwise,
-        ///     <see langword="false"/>.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text or file.</summary>
+        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="textOrFile">The text or file to encrypt.</param>
+        /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
         protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : this(bits)
         {
@@ -87,16 +61,9 @@
             Encrypt(textOrFile);
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and
-        ///     encrypts the specified text.
-        /// </summary>
-        /// <param name="bits">
-        ///     The hash size in bits.
-        /// </param>
-        /// <param name="text">
-        ///     The string to encrypt.
-        /// </param>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text.</summary>
+        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="text">The string to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
         protected ChecksumAlgorithm(int bits, string text) : this(bits, text, false) { }
 
@@ -155,13 +122,8 @@
             HashNumber = default;
         }
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <see cref="ChecksumAlgorithm"/> instance.
-        /// </summary>
-        /// <param name="other">
-        ///     The <see cref="ChecksumAlgorithm"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether this instance have same values as the specified <see cref="ChecksumAlgorithm"/> instance.</summary>
+        /// <param name="other">The <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         /// <inheritdoc/>
         public bool Equals(ChecksumAlgorithm other)
         {
@@ -199,22 +161,11 @@
         public sealed override string ToString() =>
             ToString(false);
 
-        /// <summary>
-        ///     Encrypts the specified stream with the specified
-        ///     <see cref="HashAlgorithm"/>.
-        /// </summary>
-        /// <typeparam name="THashAlgorithm">
-        ///     The type of the algorithm.
-        /// </typeparam>
-        /// <param name="stream">
-        ///     The stream to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     stream or algorithm is null.
-        /// </exception>
+        /// <summary>Encrypts the specified stream with the specified <see cref="HashAlgorithm"/>.</summary>
+        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
+        /// <param name="stream">The stream to encrypt.</param>
+        /// <param name="algorithm">The algorithm to encrypt.</param>
+        /// <exception cref="ArgumentNullException">stream or algorithm is null.</exception>
         protected void Encrypt<THashAlgorithm>(Stream stream, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
         {
             if (stream == null)
@@ -226,22 +177,11 @@
             HashNumber = BitConverter.ToUInt64(csp.Hash);
         }
 
-        /// <summary>
-        ///     Encrypts the specified string with the specified
-        ///     <see cref="HashAlgorithm"/>.
-        /// </summary>
-        /// <typeparam name="THashAlgorithm">
-        ///     The type of the algorithm.
-        /// </typeparam>
-        /// <param name="text">
-        ///     The string to encrypt.
-        /// </param>
-        /// <param name="algorithm">
-        ///     The algorithm to encrypt.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        ///     text or algorithm is null.
-        /// </exception>
+        /// <summary>Encrypts the specified string with the specified <see cref="HashAlgorithm"/>.</summary>
+        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
+        /// <param name="text">The string to encrypt.</param>
+        /// <param name="algorithm">The algorithm to encrypt.</param>
+        /// <exception cref="ArgumentNullException">text or algorithm is null.</exception>
         protected void Encrypt<THashAlgorithm>(string text, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
         {
             if (text == null)
@@ -254,77 +194,41 @@
             HashNumber = BitConverter.ToUInt64(csp.Hash);
         }
 
-        /// <summary>
-        ///     Determines whether two specified <see cref="ChecksumAlgorithm"/> instances
-        ///     have same values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="ChecksumAlgorithm"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="ChecksumAlgorithm"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have same values.</summary>
+        /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         public static bool operator ==(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
             left?.Equals(right) ?? right is null;
 
-        /// <summary>
-        ///     Determines whether two specified <see cref="ChecksumAlgorithm"/> instances
-        ///     have different values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <see cref="ChecksumAlgorithm"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <see cref="ChecksumAlgorithm"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have different values.</summary>
+        /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
+        /// <param name="right">The second <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         public static bool operator !=(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
             !(left == right);
     }
 
-    /// <typeparam name="THashAlgo">
-    ///     The hash algorithm type.
-    /// </typeparam>
+    /// <typeparam name="THashAlgo">The hash algorithm type.</typeparam>
     /// <inheritdoc cref="ChecksumAlgorithm"/>
     public abstract class ChecksumAlgorithm<THashAlgo> : ChecksumAlgorithm, IEquatable<THashAlgo> where THashAlgo : IChecksumAlgorithm
     {
-        /// <summary>
-        ///     Initializes a new instance of the
-        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits) : base(bits) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the
-        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
-        ///     sequence of bytes.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, byte[] bytes) : base(bits, bytes) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the
-        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
-        ///     text or file.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : base(bits, textOrFile, strIsFilePath) { }
 
-        /// <summary>
-        ///     Initializes a new instance of the
-        ///     <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified
-        ///     text.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified text.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, string text) : base(bits, text) { }
 
-        /// <summary>
-        ///     Determines whether this instance have same values as the specified
-        ///     <typeparamref name="THashAlgo"/> instance.
-        /// </summary>
-        /// <param name="other">
-        ///     The <typeparamref name="THashAlgo"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether this instance have same values as the specified <typeparamref name="THashAlgo"/> instance.</summary>
+        /// <param name="other">The <typeparamref name="THashAlgo"/> instance to compare.</param>
         /// <inheritdoc/>
         public bool Equals(THashAlgo other)
         {
@@ -343,29 +247,15 @@
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>
-        ///     Determines whether two specified <typeparamref name="THashAlgo"/> instances
-        ///     have same values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <typeparamref name="THashAlgo"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <typeparamref name="THashAlgo"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether two specified <typeparamref name="THashAlgo"/> instances have same values.</summary>
+        /// <param name="left">The first <typeparamref name="THashAlgo"/> instance to compare.</param>
+        /// <param name="right">The second <typeparamref name="THashAlgo"/> instance to compare.</param>
         public static bool operator ==(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
             left?.Equals(right) ?? right is null;
 
-        /// <summary>
-        ///     Determines whether two specified <typeparamref name="THashAlgo"/> instances
-        ///     have different values.
-        /// </summary>
-        /// <param name="left">
-        ///     The first <typeparamref name="THashAlgo"/> instance to compare.
-        /// </param>
-        /// <param name="right">
-        ///     The second <typeparamref name="THashAlgo"/> instance to compare.
-        /// </param>
+        /// <summary>Determines whether two specified <typeparamref name="THashAlgo"/> instances have different values.</summary>
+        /// <param name="left">The first <typeparamref name="THashAlgo"/> instance to compare.</param>
+        /// <param name="right">The second <typeparamref name="THashAlgo"/> instance to compare.</param>
         public static bool operator !=(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
             !(left == right);
     }
