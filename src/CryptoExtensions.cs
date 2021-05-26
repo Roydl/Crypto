@@ -285,20 +285,5 @@
                     stream.Position = pos;
             }
         }
-
-        #region Obsolete
-
-        /// <inheritdoc cref="GetChecksum{TSource}(TSource, ChecksumAlgo)"/>
-        [Obsolete("Please use `GetChecksum` instead. This extension will be removed in the next version.")]
-        [return: NotNullIfNotNull("source")]
-        public static string Encrypt<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            source?.GetChecksum(algorithm);
-
-        /// <inheritdoc cref="GetFileChecksum(string, ChecksumAlgo)"/>
-        [Obsolete("Please use `GetFileChecksum` instead. This extension will be removed in the next version.")]
-        public static string EncryptFile(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            path?.GetFileChecksum(algorithm);
-
-        #endregion
     }
 }
