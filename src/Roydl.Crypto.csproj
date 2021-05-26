@@ -22,12 +22,21 @@
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
     <PackageReleaseNotes>- Fixed issue where array size limit in `GetBytes` was too large
+
 - Improved `CrcConfig` struct so that more CRC variations are supported
+
 - Added support for `FileInfo` objects
+
 - Added `Try` extensions which suppress exceptions
+
 - Added support for odd bit algorithms
+
 - Removed vulnerable ECB (Electronic Code Book) encryption mode
-- Increased the number of supported types of extensions by more than 30 types</PackageReleaseNotes>
+
+- Increased the number of supported types of extensions by more than 30 types
+
+- Renamend `Encrypt` extensions to `GetChecksum` to avoid name collisions
+   - (Obsolete extension will be removed next version)</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
   </PropertyGroup>
 
