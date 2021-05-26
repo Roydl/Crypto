@@ -1,12 +1,12 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization;
+    using System.Numerics;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Text.Json;
     using Checksum;
@@ -100,6 +100,11 @@
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             InternalGenericEncrypt(source, algorithm, false).HashNumber;
 
+        /// <summary>
+        ///     Encrypts this <paramref name="source"/> object with the specified
+        ///     <paramref name="algorithm"/> and returns the string representation of the
+        ///     computed hash code.
+        /// </summary>
         /// <returns>
         ///     A string that contains the result of encrypting the specified
         ///     <paramref name="source"/> object by the specified
@@ -112,7 +117,8 @@
 
         /// <summary>
         ///     Encrypts the file at this <paramref name="path"/> with the specified
-        ///     <paramref name="algorithm"/>.
+        ///     <paramref name="algorithm"/> and returns the string representation of the
+        ///     computed hash code.
         /// </summary>
         /// <param name="path">
         ///     The full path of the file to encrypt.
@@ -197,6 +203,9 @@
             }
         }
 
+#if NETCOREAPP3_1
+#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
+#endif
         /// <summary>
         ///     Tries to encrypt this <paramref name="source"/> object with the specified
         ///     <paramref name="algorithm"/> and returns a <see cref="bool"/> value that
@@ -218,45 +227,45 @@
         ///     <paramref name="algorithm"/>; otherwise, <see langword="default"/>.
         /// </param>
         /// <remarks>
-        ///     <list type="bullet">
+        ///     <list type="table">
         ///         <item>
-        ///             If <paramref name="source"/> is <see cref="Stream"/>:
+        ///             <term>
+        ///                 Known
+        ///             </term>
         ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(Stream)"/> is used to
-        ///                 encrypt the bytes of stream.
+        ///                 &#160;<see cref="bool"/>, <see cref="sbyte"/>,
+        ///                 <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>,
+        ///                 <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>,
+        ///                 <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>,
+        ///                 <see cref="float"/>, <see cref="double"/>,
+        ///                 <see cref="decimal"/>, <see cref="Enum"/>,&#160;
+        ///                 <see cref="IntPtr"/>, <see cref="UIntPtr"/>,
+        ///                 <see cref="Vector{T}"/>, <see cref="Vector2"/>,
+        ///                 <see cref="Vector3"/>, <see cref="Vector4"/>,
+        ///                 <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>,
+        ///                 <see cref="Plane"/>, <see cref="Quaternion"/>,
+        ///                 <see cref="Complex"/>, <see cref="BigInteger"/>,
+        ///                 <see cref="DateTime"/>, <see cref="DateTimeOffset"/>,
+        ///                 <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>,
+        ///                 <see cref="Stream"/>, <see cref="StreamReader"/>,
+        ///                 <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> &#160;
+        ///                 <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any
+        ///                 <see cref="IEnumerable{T}"/> &#160; <see cref="char"/>
+        ///                 sequence, i.e. <see cref="string"/>.
         ///             </description>
         ///         </item>
         ///         <item>
-        ///             If <paramref name="source"/> is <see cref="FileInfo"/>:
+        ///             <term>
+        ///                 Otherwise
+        ///             </term>
         ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(FileInfo)"/> is used to
-        ///                 read and encrypt the file, if exist and accessible.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
-        ///             <see cref="byte"/>&gt;:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(byte[])"/> is used to
-        ///                 encrypt the bytes.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             If <paramref name="source"/> is <see cref="IEnumerable"/>&lt;
-        ///             <see cref="char"/>&gt;:
-        ///             <description>
-        ///                 <see cref="IChecksumAlgorithm.Encrypt(string)"/> is used to
-        ///                 encrypt the string.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             Otherwise:
-        ///             <description>
-        ///                 The values of <paramref name="source"/> are serialized using
-        ///                 <see cref="Utf8JsonWriter"/> with skipped validation and the
-        ///                 result is encrypted, even if <paramref name="source"/> is not
-        ///                 <see cref="ISerializable"/>. This can be useful for comparing
-        ///                 types that normally cannot be easily compared.
+        ///                 An attempt is made to convert <paramref name="source"/> to a
+        ///                 byte array for the encryption, which should work for all
+        ///                 <see href="https://duckduckgo.com/?q=Blittable+types">
+        ///                     blittable types
+        ///                 </see>
+        ///                 . If this fails, <paramref name="source"/> is serialized using
+        ///                 <see cref="Utf8JsonWriter"/> and the result is encrypted.
         ///             </description>
         ///         </item>
         ///     </list>
@@ -264,7 +273,7 @@
         /// <returns>
         ///     <see langword="true"/> if the specified <paramref name="source"/> could be
         ///     encrypted by the specified <paramref name="algorithm"/>; otherwise,
-        ///     <see langword="false"/> .
+        ///     <see langword="false"/>.
         /// </returns>
         public static bool TryGetCipher<TSource>(this TSource source, ChecksumAlgo algorithm, out ulong hash)
         {
@@ -279,6 +288,9 @@
                 return false;
             }
         }
+#if NETCOREAPP3_1
+#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
+#endif
 
         /// <summary>
         ///     Encrypts this <paramref name="source"/> object with the
@@ -307,7 +319,7 @@
             source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
-        public static bool TryGetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm, out string hash)
+        public static bool TryGetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm, [NotNullWhen(true)] out string hash)
         {
             try
             {
@@ -322,7 +334,7 @@
         }
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, out ulong)"/>
-        public static bool TryGetChecksum<TSource>(this TSource source, out string hash) =>
+        public static bool TryGetChecksum<TSource>(this TSource source, [NotNullWhen(true)] out string hash) =>
             source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
 
         /// <summary>
@@ -356,32 +368,79 @@
             var instance = algorithm.GetDefaultInstance();
             switch (source)
             {
-                case Stream stream:
-                    var pos = ifStreamRestorePos ? stream.Position : -1L;
-                    instance.Encrypt(stream);
-                    if (pos >= 0)
-                        stream.Position = pos;
+                case BigInteger x:
+                    instance.Encrypt(x.ToByteArray());
                     break;
-                case FileInfo file:
-                    instance.Encrypt(file);
+                case char x:
+                    instance.Encrypt(x.ToString());
                     break;
-                case IEnumerable<byte> bytes:
-                    instance.Encrypt(bytes as byte[] ?? bytes.ToArray());
+                case IEnumerable<byte> x:
+                    instance.Encrypt(x as byte[] ?? x.ToArray());
                     break;
-                case IEnumerable<char> chars:
-                    instance.Encrypt(chars as string ?? new string(chars.ToArray()));
+                case IEnumerable<char> x:
+                    instance.Encrypt(x as string ?? new string(x.ToArray()));
+                    break;
+                case StreamReader x:
+                    LocalProcessStream(instance, x.BaseStream, ifStreamRestorePos);
+                    break;
+                case Stream x:
+                    LocalProcessStream(instance, x, ifStreamRestorePos);
+                    break;
+                case FileInfo x:
+                    instance.Encrypt(x);
                     break;
                 default:
-                    using (var ms = new MemoryStream())
+#if DEBUG
+                    instance.Encrypt(LocalGetByteArray(source));
+#else
+                    try
                     {
-                        using var bw = new Utf8JsonWriter(ms, new JsonWriterOptions { SkipValidation = true });
-                        JsonSerializer.Serialize(bw, source);
+                        // Blittable types:
+                        // https://docs.microsoft.com/dotnet/framework/interop/blittable-and-non-blittable-types
+                        // sbyte, byte, short, ushort, char, int, uint, long, ulong, Half, float, double, decimal,
+                        // Enum, IntPtr, UIntPtr, Vector{T}, Vector2, Vector3, Vector4, Matrix3x2, Matrix4x4, Plane,
+                        // Quaternion, Complex, Guid, Rune, and more.
+                        instance.Encrypt(LocalGetByteArray(source));
+                    }
+                    catch (ArgumentException)
+                    {
+                        // Fallback
+                        using var ms = new MemoryStream();
+                        using var jw = new Utf8JsonWriter(ms, new JsonWriterOptions { SkipValidation = true });
+                        JsonSerializer.Serialize(jw, source);
                         ms.Position = 0L;
                         instance.Encrypt(ms);
                     }
+#endif
                     break;
             }
             return instance;
+
+            static byte[] LocalGetByteArray(object value)
+            {
+                value = value switch
+                {
+                    bool x => x ? 1 : 0,
+                    TimeSpan x => x.TotalMilliseconds,
+                    DateTime x => new DateTimeOffset(x).ToUnixTimeMilliseconds(),
+                    DateTimeOffset x => x.ToUnixTimeMilliseconds(),
+                    _ => value
+                };
+                var size = Marshal.SizeOf(value);
+                var handle = GCHandle.Alloc(value, GCHandleType.Pinned);
+                var bytes = new byte[size];
+                Marshal.Copy(handle.AddrOfPinnedObject(), bytes, 0, bytes.Length);
+                handle.Free();
+                return bytes;
+            }
+
+            static void LocalProcessStream(IChecksumAlgorithm instance, Stream stream, bool restorePos)
+            {
+                var pos = restorePos ? stream.Position : -1L;
+                instance.Encrypt(stream);
+                if (restorePos && pos >= 0)
+                    stream.Position = pos;
+            }
         }
 
         #region Obsolete
