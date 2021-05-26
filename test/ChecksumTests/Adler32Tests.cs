@@ -150,6 +150,15 @@
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFilePath);
             Assert.AreNotSame(instanceString, instanceFilePath);
             Assert.AreEqual(hashSize, instanceFilePath.Hash.Length);
+
+            var instanceFileInfo = new Adler32(new FileInfo(TestFilePath));
+            Assert.IsInstanceOf(typeof(Adler32), instanceFileInfo);
+            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFileInfo);
+            Assert.AreNotSame(instanceString, instanceFileInfo);
+            Assert.AreEqual(hashSize, instanceFileInfo.Hash.Length);
+
+            Assert.AreEqual(instanceFilePath.HashNumber, instanceFileInfo.HashNumber);
+            Assert.AreEqual(instanceFilePath.Hash, instanceFileInfo.Hash);
         }
 
         [Test]
