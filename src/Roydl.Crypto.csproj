@@ -18,15 +18,16 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Fixed an issue where the byte order of Adler-32 and CRC-16+32+64 was wrong on big-endian processor architecture
-- Removed internal instance caching, which is no longer needed
-- Reworked `GetGuid` extension method so that it combines the bytes of both hashes instead of cutting parts and placing them next to each other
-- `HMAC` encryption is now available for MD5 and SHA-1+2 by setting the `SecretKey` instance field
-  - The `SecretKey` can be removed from process memory by calling the `DestroySecretKey()` instance method
-- General code improvements, minor fixes and expansion of the documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>- Fixed issue where array size limit in `GetBytes` was too large
+- Improved `CrcConfig` struct so that more CRC variations are supported
+- Added support for `FileInfo` objects
+- Added `Try` extensions which suppress exceptions
+- Added support for odd bit algorithms
+- Removed vulnerable ECB (Electronic Code Book) encryption mode
+- Increased the number of supported types of extensions by more than 30 types</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
   </PropertyGroup>
 
