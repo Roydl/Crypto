@@ -29,14 +29,18 @@
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="bits">The hash size in bits.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits is less than 8 or greater than 512.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 512.</exception>
         protected ChecksumAlgorithm(int bits)
         {
             if (bits is < 8 or > 512)
                 throw new ArgumentOutOfRangeException(nameof(bits));
             HashBits = bits;
-            HashSize = (int)MathF.Ceiling(bits / 4f);
-            RawHashSize = (int)MathF.Ceiling(bits / 8f);
+            HashSize = (int)MathF.Floor(HashBits / 4f);
+            if (HashSize % 2 != 0)
+                --HashSize;
+            if (HashSize < 2)
+                HashSize = 2;
+            RawHashSize = HashSize / 2;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
