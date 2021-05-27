@@ -61,6 +61,15 @@ namespace Roydl.Crypto.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The size in bits is too large for the specified type..
+        /// </summary>
+        internal static string BitsLargerThanType {
+            get {
+                return ResourceManager.GetString("BitsLargerThanType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The destination path is invalid..
         /// </summary>
         internal static string DestPathNotValid {
@@ -93,6 +102,15 @@ namespace Roydl.Crypto.Resources {
         internal static string SizeTooSmall {
             get {
                 return ResourceManager.GetString("SizeTooSmall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified type invalid..
+        /// </summary>
+        internal static string TypeInvalid {
+            get {
+                return ResourceManager.GetString("TypeInvalid", resourceCulture);
             }
         }
     }

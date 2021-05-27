@@ -4,11 +4,13 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using Internal;
+    using Resources;
 
     /// <summary>Represents a CRC configuration structure.</summary>
-    /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, or <see cref="ulong"/>.</typeparam>
-    public readonly struct CrcConfig<TValue> where TValue : IConvertible
+    /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, or <see cref="ulong"/>.</typeparam>
+    public readonly struct CrcConfig<TValue> where TValue : IConvertible, IFormattable
     {
         /// <summary>Gets the hash size in bits.</summary>
         public int Bits { get; }
@@ -47,21 +49,25 @@
         /// <param name="refIn"><see langword="true"/> to process the input bytes in big-endian bit order for the calculation; otherwise, <see langword="false"/>.</param>
         /// <param name="refOut"><see langword="true"/> to process the final output in big-endian bit order; otherwise, <see langword="false"/>.</param>
         /// <param name="xorOut">The value to xor with the final output.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits is less than 8 or greater than 64.</exception>
-        /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 64.</exception>
+        /// <exception cref="ArgumentException">bits are larger than the size of the TValue type allows.</exception>
+        /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported</exception>
         public CrcConfig(int bits, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default)
         {
             switch (poly)
             {
+                case byte:
                 case short:
                 case ushort:
                 case int:
                 case uint:
                 case long:
                 case ulong:
+                    if (Marshal.SizeOf(default(TValue)) < MathF.Floor(bits / 8f))
+                        throw new ArgumentException(ExceptionMessages.BitsLargerThanType);
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(ExceptionMessages.TypeInvalid);
             }
             if (bits is < 8 or > 64)
                 throw new ArgumentOutOfRangeException(nameof(bits));
