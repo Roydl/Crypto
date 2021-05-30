@@ -10,33 +10,18 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Provides a handy way to hash data using Adler32, CRC (16/32/64/custom), MD5, SHA-1 and SHA-2 (256/384/512), including HMAC keyed hashing for some types. Functions for encrypting and decrypting data with Rijndael (128/192/256) are also offered.</Description>
+    <Description>Provides a handy way to hash data using Adler32, CRC (16/17/21/24/30/31/32/40/64/82/custom), MD5, SHA-1 and SHA-2 (256/384/512), including HMAC keyed hashing for some types. Functions for encrypting and decrypting data with Rijndael (128/192/256) are also offered.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
-    <RepositoryUrl>git://github.com/Roydl/Crypto</RepositoryUrl>
-    <PackageTags>encryption decryption hmac adler32 crc16 crc32 crc64 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
+    <RepositoryUrl>https://github.com/Roydl/Crypto</RepositoryUrl>
+    <PackageTags>encryption decryption hmac adler32 crc crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>false</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Fixed issue where array size limit in `GetBytes` was too large
-
-- Improved `CrcConfig` struct so that more CRC variations are supported
-
-- Added support for `FileInfo` objects
-
-- Added `Try` extensions which suppress exceptions
-
-- Added support for odd bit algorithms
-
-- Removed vulnerable ECB (Electronic Code Book) encryption mode
-
-- Increased the number of supported types of extensions by more than 30 types
-
-- Renamend `Encrypt` extensions to `GetChecksum` to avoid name collisions
-   - (Obsolete extension will be removed next version)</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/Roydl/Crypto/releases/latest</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
   </PropertyGroup>
 
