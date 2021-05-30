@@ -27,7 +27,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
-        public Md5(byte[] bytes) : base(128, bytes) { }
+        public Md5(byte[] bytes) : this() =>
+            Encrypt(bytes);
 
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
@@ -47,7 +48,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified file.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
-        public Md5(FileInfo fileInfo) : base(128, fileInfo) { }
+        public Md5(FileInfo fileInfo) : this() =>
+            Encrypt(fileInfo);
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>

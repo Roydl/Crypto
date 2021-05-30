@@ -27,7 +27,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
-        public Sha256(byte[] bytes) : base(256, bytes) { }
+        public Sha256(byte[] bytes) : this() =>
+            Encrypt(bytes);
 
         /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
@@ -47,7 +48,8 @@
 
         /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified file.</summary>
         /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
-        public Sha256(FileInfo fileInfo) : base(256, fileInfo) { }
+        public Sha256(FileInfo fileInfo) : this() =>
+            Encrypt(fileInfo);
 
         /// <inheritdoc/>
         public override void Encrypt(Stream stream) =>
