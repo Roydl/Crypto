@@ -155,26 +155,26 @@
             new(CrcCustomPreset.Crc08, TestVarsType.TestString, "77"),
             new(CrcCustomPreset.Crc08, TestVarsType.RangeString, "a8"),
 
-            new(CrcCustomPreset.Crc10, TestVarsType.TestString, "30"),
-            new(CrcCustomPreset.Crc10, TestVarsType.RangeString, "f5"),
+            new(CrcCustomPreset.Crc10, TestVarsType.TestString, "f030"),
+            new(CrcCustomPreset.Crc10, TestVarsType.RangeString, "36f5"),
 
-            new(CrcCustomPreset.Crc11, TestVarsType.TestString, "bf"),
-            new(CrcCustomPreset.Crc11, TestVarsType.RangeString, "0f"),
+            new(CrcCustomPreset.Crc11, TestVarsType.TestString, "cbbf"),
+            new(CrcCustomPreset.Crc11, TestVarsType.RangeString, "350f"),
 
-            new(CrcCustomPreset.Crc12Dect, TestVarsType.TestString, "5e"),
-            new(CrcCustomPreset.Crc12Dect, TestVarsType.RangeString, "5c"),
+            new(CrcCustomPreset.Crc12Dect, TestVarsType.TestString, "5b5e"),
+            new(CrcCustomPreset.Crc12Dect, TestVarsType.RangeString, "c25c"),
 
-            new(CrcCustomPreset.Crc13Bbc, TestVarsType.TestString, "66"),
-            new(CrcCustomPreset.Crc13Bbc, TestVarsType.RangeString, "72"),
+            new(CrcCustomPreset.Crc13Bbc, TestVarsType.TestString, "6566"),
+            new(CrcCustomPreset.Crc13Bbc, TestVarsType.RangeString, "1672"),
 
-            new(CrcCustomPreset.Crc14Darc, TestVarsType.TestString, "aa"),
-            new(CrcCustomPreset.Crc14Darc, TestVarsType.RangeString, "d9"),
+            new(CrcCustomPreset.Crc14Darc, TestVarsType.TestString, "30aa"),
+            new(CrcCustomPreset.Crc14Darc, TestVarsType.RangeString, "30d9"),
 
-            new(CrcCustomPreset.Crc15, TestVarsType.TestString, "53"),
-            new(CrcCustomPreset.Crc15, TestVarsType.RangeString, "dc"),
+            new(CrcCustomPreset.Crc15, TestVarsType.TestString, "ab53"),
+            new(CrcCustomPreset.Crc15, TestVarsType.RangeString, "77dc"),
 
-            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.TestString, "0f"),
-            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.RangeString, "f8"),
+            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.TestString, "920f"),
+            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.RangeString, "4bf8"),
 
             #endregion
 
@@ -253,11 +253,11 @@
 
             #region CRC-17 and CRC-21
 
-            new(CrcCustomPreset.Crc17, TestVarsType.TestString, "c38d"),
-            new(CrcCustomPreset.Crc17, TestVarsType.RangeString, "82d1"),
+            new(CrcCustomPreset.Crc17, TestVarsType.TestString, "c6c38d"),
+            new(CrcCustomPreset.Crc17, TestVarsType.RangeString, "f582d1"),
 
-            new(CrcCustomPreset.Crc21, TestVarsType.TestString, "8a0d"),
-            new(CrcCustomPreset.Crc21, TestVarsType.RangeString, "c0c0"),
+            new(CrcCustomPreset.Crc21, TestVarsType.TestString, "d28a0d"),
+            new(CrcCustomPreset.Crc21, TestVarsType.RangeString, "d6c0c0"),
 
             #endregion
 
@@ -291,11 +291,11 @@
 
             #region CRC-30 and CRC-31
 
-            new(CrcCustomPreset.Crc30, TestVarsType.TestString, "fc8f98"),
-            new(CrcCustomPreset.Crc30, TestVarsType.RangeString, "4e1078"),
+            new(CrcCustomPreset.Crc30, TestVarsType.TestString, "09fc8f98"),
+            new(CrcCustomPreset.Crc30, TestVarsType.RangeString, "a74e1078"),
 
-            new(CrcCustomPreset.Crc31Philips, TestVarsType.TestString, "76718d"),
-            new(CrcCustomPreset.Crc31Philips, TestVarsType.RangeString, "e0c69c"),
+            new(CrcCustomPreset.Crc31Philips, TestVarsType.TestString, "1a76718d"),
+            new(CrcCustomPreset.Crc31Philips, TestVarsType.RangeString, "37e0c69c"),
 
             #endregion
 
@@ -361,8 +361,9 @@
 
             #region CRC-82
 
-            new(CrcCustomPreset.Crc82, TestVarsType.TestString, "03c97c1a9a92d954cf37"),
-            new(CrcCustomPreset.Crc82, TestVarsType.RangeString, "05d9765b4f8f041e644d")
+            // ***WIP: Hashes still unconfirmed.
+            new(CrcCustomPreset.Crc82, TestVarsType.TestString, "0003c97c1a9a92d954cf37"),
+            new(CrcCustomPreset.Crc82, TestVarsType.RangeString, "0005d9765b4f8f041e644d")
 
             #endregion
         };

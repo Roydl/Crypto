@@ -12,10 +12,10 @@
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Crc30;
         private const int HashBits = 30;
-        private const int HashSize = 6;
-        private const int RawHashSize = 3;
-        private const string ExpectedTestHash = "fc8f98";
-        private const string ExpectedRangeHash = "4e1078";
+        private const int HashSize = 8;
+        private const int RawHashSize = 4;
+        private const string ExpectedTestHash = "09fc8f98";
+        private const string ExpectedRangeHash = "a74e1078";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
@@ -79,6 +79,36 @@
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
             }
             Assert.AreEqual(expectedHash, hash);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(TestData))]
+        [Category("Extension")]
+        public void ExtensionGetCipher(TestVarsType varsType, string expectedHash)
+        {
+            ulong hash;
+            switch (varsType)
+            {
+                case TestVarsType.TestStream:
+                    using (var ms = new MemoryStream(TestVars.TestBytes))
+                        hash = ms.GetCipher(Algorithm);
+                    break;
+                case TestVarsType.TestBytes:
+                    hash = TestVars.TestBytes.GetCipher(Algorithm);
+                    break;
+                case TestVarsType.TestString:
+                    hash = TestVars.TestStr.GetCipher(Algorithm);
+                    break;
+                case TestVarsType.TestFile:
+                    hash = File.ReadAllBytes(TestFilePath).GetCipher(Algorithm);
+                    break;
+                case TestVarsType.RangeString:
+                    hash = TestVars.RangeStr.GetCipher(Algorithm);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
+            }
+            Assert.AreEqual(Convert.ToUInt64(expectedHash, 16), hash);
         }
 
         [Test]
