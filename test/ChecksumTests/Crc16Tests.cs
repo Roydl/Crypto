@@ -14,8 +14,8 @@
         private const int HashBits = 16;
         private const int HashSize = 4;
         private const int RawHashSize = 2;
-        private const string ExpectedTestHash = "a258";
-        private const string ExpectedRangeHash = "113b";
+        private const string ExpectedTestHash = "e3da";
+        private const string ExpectedRangeHash = "9354";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
@@ -212,8 +212,15 @@
         {
             Assert.AreEqual(_instanceDefault.GetHashCode(), new Crc16().GetHashCode());
             Assert.AreNotEqual(new Adler32().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc17().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc21().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc24().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc30().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc31().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Crc32().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc40().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Crc64().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Crc82().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Md5().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Sha1().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Sha256().GetHashCode(), _instanceDefault.GetHashCode());
