@@ -1,16 +1,15 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
+    using System.Numerics;
     using System.Runtime.InteropServices;
     using Internal;
     using Resources;
 
     /// <summary>Represents a CRC configuration structure.</summary>
-    /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, or <see cref="ulong"/>.</typeparam>
-    public readonly struct CrcConfig<TValue> where TValue : IConvertible, IFormattable
+    /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, or <see cref="BigInteger"/>.</typeparam>
+    public readonly struct CrcConfig<TValue> where TValue : IFormattable
     {
         /// <summary>Gets the hash size in bits.</summary>
         public int Bits { get; }
@@ -49,29 +48,27 @@
         /// <param name="refIn"><see langword="true"/> to process the input bytes in big-endian bit order for the calculation; otherwise, <see langword="false"/>.</param>
         /// <param name="refOut"><see langword="true"/> to process the final output in big-endian bit order; otherwise, <see langword="false"/>.</param>
         /// <param name="xorOut">The value to xor with the final output.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 64.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 82.</exception>
         /// <exception cref="ArgumentException">bits are larger than the size of the TValue type allows.</exception>
         /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported</exception>
         public CrcConfig(int bits, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default)
         {
+            if (bits is < 8 or > 82)
+                throw new ArgumentOutOfRangeException(nameof(bits));
             switch (poly)
             {
                 case byte:
-                case short:
                 case ushort:
-                case int:
                 case uint:
-                case long:
                 case ulong:
-                    if (Marshal.SizeOf(default(TValue)) < MathF.Floor(bits / 8f))
+                case BigInteger:
+                    if (Marshal.SizeOf(default(TValue)) < (int)MathF.Floor(bits / 8f))
                         throw new ArgumentException(ExceptionMessages.BitsLargerThanType);
                     break;
                 default:
                     throw new InvalidOperationException(ExceptionMessages.TypeInvalid);
             }
-            if (bits is < 8 or > 64)
-                throw new ArgumentOutOfRangeException(nameof(bits));
-            var mask = (TValue)typeof(TValue).GetField(nameof(int.MaxValue))?.GetValue(null);
+            var mask = CreateMask<TValue>(bits);
             Bits = bits;
             Mask = mask;
             Poly = poly;
@@ -79,7 +76,7 @@
             RefIn = refIn;
             RefOut = refOut;
             XorOut = xorOut;
-            Table = CreateTable(bits, poly, mask, refIn).ToArray();
+            Table = CreateTable(bits, poly, mask, refIn);
         }
 
         /// <summary>Computes the hash of stream data using the configured CRC algorithm.</summary>
@@ -92,12 +89,12 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             hash = Init;
-            var ba = new byte[Helper.GetBufferSize(stream)].AsSpan();
+            var span = new byte[Helper.GetBufferSize(stream)].AsSpan();
             int len;
-            while ((len = stream.Read(ba)) > 0)
+            while ((len = stream.Read(span)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(ba[i], ref hash);
+                    ComputeHash(span[i], ref hash);
             }
             FinalizeHash(ref hash);
         }
@@ -129,24 +126,37 @@
             hash ^= (dynamic)XorOut;
         }
 
-        private static IEnumerable<T> CreateTable<T>(int bits, T poly, T mask, bool refIn)
+        private static T CreateMask<T>(int bits)
         {
-            for (var i = 0; i < 256; i++)
+            var byteMask = (dynamic)(T)(dynamic)0xff;
+            var mask = (T)byteMask;
+            var size = (int)MathF.Ceiling(bits / 8f);
+            for (var i = 1; i < size; i++)
+                mask ^= byteMask << (8 * i);
+            return mask;
+        }
+
+        private static ReadOnlyMemory<T> CreateTable<T>(int bits, T poly, T mask, bool refIn)
+        {
+            var top = (dynamic)(T)(dynamic)1 << (bits - 1);
+            var mem = new T[1 << 8].AsMemory();
+            var span = mem.Span;
+            for (var i = 0; i < span.Length; i++)
             {
                 var x = (dynamic)(T)(dynamic)i;
                 if (refIn)
                 {
                     for (var k = 0; k < 8; k++)
                         x = (T)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
-                    yield return (T)(x & mask);
+                    span[i] = (T)(x & mask);
                     continue;
                 }
-                var top = (dynamic)(T)(dynamic)1 << (bits - 1);
                 x <<= bits - 8;
                 for (var j = 0; j < 8; j++)
                     x = (T)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
-                yield return (T)(x & mask);
+                span[i] = (T)(x & mask);
             }
+            return mem;
         }
     }
 }
