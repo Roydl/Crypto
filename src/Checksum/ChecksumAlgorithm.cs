@@ -35,12 +35,12 @@
             if (bits is < 8 or > 512)
                 throw new ArgumentOutOfRangeException(nameof(bits));
             HashBits = bits;
-            HashSize = (int)MathF.Floor(HashBits / 4f);
+            HashSize = (int)MathF.Ceiling(HashBits / 4f);
             if (HashSize % 2 != 0)
-                --HashSize;
+                ++HashSize;
             if (HashSize < 2)
                 HashSize = 2;
-            RawHashSize = HashSize / 2;
+            RawHashSize = (int)MathF.Ceiling(HashSize / 2f);
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
@@ -169,6 +169,8 @@
             while (sb.Length < HashSize)
                 sb.Insert(0, '0');
             var str = sb.ToString();
+            if (str.Length > HashSize)
+                str = str[^HashSize..];
             sb.Clear();
             return str;
         }
