@@ -61,9 +61,10 @@
                 case ushort:
                 case uint:
                 case ulong:
-                case BigInteger:
                     if (Marshal.SizeOf(default(TValue)) < (int)MathF.Floor(bits / 8f))
                         throw new ArgumentException(ExceptionMessages.BitsLargerThanType);
+                    break;
+                case BigInteger:
                     break;
                 default:
                     throw new InvalidOperationException(ExceptionMessages.TypeInvalid);
