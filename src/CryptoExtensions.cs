@@ -17,14 +17,272 @@
         /// <summary>Adler-32.</summary>
         Adler32,
 
-        /// <summary>CRC-16 (Cyclic Redundancy Check).</summary>
+        /// <summary>CRC-16/USB.</summary>
+        /// <remarks>Equal to <see cref="Crc16Usb"/>.</remarks>
         Crc16,
 
-        /// <summary>CRC-32 (Cyclic Redundancy Check).</summary>
+        /// <summary>CRC-16/USB.</summary>
+        /// <remarks>Equal to <see cref="Crc16"/>.</remarks>
+        Crc16Usb = Crc16,
+
+        /// <summary>CRC-16/A.</summary>
+        Crc16A,
+
+        /// <summary>CRC-16/ARC.</summary>
+        Crc16Arc,
+
+        /// <summary>CRC-16/AUG-CCITT.</summary>
+        Crc16AugCcitt,
+
+        /// <summary>CRC-16/BUYPASS.</summary>
+        Crc16Buypass,
+
+        /// <summary>CRC-16/CCITT-FALSE.</summary>
+        Crc16CcittFalse,
+
+        /// <summary>CRC-16/CDMA2000.</summary>
+        Crc16Cdma2000,
+
+        /// <summary>CRC-16/DDS-110.</summary>
+        Crc16Dds110,
+
+        /// <summary>CRC-16/DECT-R.</summary>
+        Crc16DectR,
+
+        /// <summary>CRC-16/DECT-X.</summary>
+        Crc16DectX,
+
+        /// <summary>CRC-16/DNP.</summary>
+        Crc16Dnp,
+
+        /// <summary>CRC-16/EN-13757.</summary>
+        Crc16En13757,
+
+        /// <summary>CRC-16/GENIBUS.</summary>
+        Crc16Genibus,
+
+        /// <summary>CRC-16/KERMIT.</summary>
+        Crc16Kermit,
+
+        /// <summary>CRC-16/MAXIM.</summary>
+        Crc16Maxim,
+
+        /// <summary>CRC-16/MCRF4XX.</summary>
+        Crc16Mcrf4Xx,
+
+        /// <summary>CRC-16/MODBUS.</summary>
+        Crc16ModBus,
+
+        /// <summary>CRC-16/RIELLO.</summary>
+        Crc16Riello,
+
+        /// <summary>CRC-16/T10-DIF.</summary>
+        Crc16T10Dif,
+
+        /// <summary>CRC-16/TELEDISK.</summary>
+        Crc16TeleDisk,
+
+        /// <summary>CRC-16/TMS37157.</summary>
+        Crc16Tms37157,
+
+        /// <summary>CRC-16/XMODEM.</summary>
+        Crc16XModem,
+
+        /// <summary>CRC-16/X-25.</summary>
+        Crc16X25,
+
+        /// <summary>CRC-17/CAN-FD.</summary>
+        /// <remarks>Equal to <see cref="Crc17CanFd"/>.</remarks>
+        Crc17,
+
+        /// <summary>CRC-17/CAN-FD.</summary>
+        /// <remarks>Equal to <see cref="Crc17"/>.</remarks>
+        Crc17CanFd = Crc17,
+
+        /// <summary>CRC-21/CAN-FD.</summary>
+        /// <remarks>Equal to <see cref="Crc21CanFd"/>.</remarks>
+        Crc21,
+
+        /// <summary>CRC-21/CAN-FD.</summary>
+        /// <remarks>Equal to <see cref="Crc21"/>.</remarks>
+        Crc21CanFd = Crc21,
+
+        /// <summary>CRC-24/OPENPGP.</summary>
+        /// <remarks>Equal to <see cref="Crc24OpenPgp"/>.</remarks>
+        Crc24,
+
+        /// <summary>CRC-24/OPENPGP.</summary>
+        /// <remarks>Equal to <see cref="Crc24"/>.</remarks>
+        Crc24OpenPgp = Crc24,
+
+        /// <summary>CRC-24/BLE.</summary>
+        Crc24Ble,
+
+        /// <summary>CRC-24/LTE-A.</summary>
+        Crc24LteA,
+
+        /// <summary>CRC-24/LTE-B.</summary>
+        Crc24LteB,
+
+        /// <summary>CRC-24/FLEXRAY-A.</summary>
+        Crc24FlexRayA,
+
+        /// <summary>CRC-24/FLEXRAY-B.</summary>
+        Crc24FlexRayB,
+
+        /// <summary>CRC-24/INTERLAKEN.</summary>
+        Crc24Interlaken,
+
+        /// <summary>CRC-24/OS-9.</summary>
+        Crc24Os9,
+
+        /// <summary>CRC-30/CDMA.</summary>
+        /// <remarks>Equal to <see cref="Crc30Cdma"/>.</remarks>
+        Crc30,
+
+        /// <summary>CRC-30/CDMA.</summary>
+        /// <remarks>Equal to <see cref="Crc30"/>.</remarks>
+        Crc30Cdma = Crc30,
+
+        /// <summary>CRC-31/PHILIPS.</summary>
+        /// <remarks>Equal to <see cref="Crc31Philips"/>.</remarks>
+        Crc31,
+
+        /// <summary>CRC-31/PHILIPS.</summary>
+        /// <remarks>Equal to <see cref="Crc31"/>.</remarks>
+        Crc31Philips = Crc31,
+
+        /// <summary>CRC-32/ISO-HDLC.</summary>
+        /// <remarks>Equal to <see cref="Crc32Adccp"/>, <see cref="Crc32IsoHdlc"/>, <see cref="Crc32PkZip"/>, <see cref="Crc32V24"/> and <see cref="Crc32Xz"/>.</remarks>
         Crc32,
 
-        /// <summary>CRC-64 (Cyclic Redundancy Check).</summary>
+        /// <summary>CRC-32/ADCCP.</summary>
+        /// <remarks>Equal to <see cref="Crc32"/>, <see cref="Crc32PkZip"/>, <see cref="Crc32V24"/> and <see cref="Crc32Xz"/>.</remarks>
+        Crc32Adccp = Crc32,
+
+        /// <summary>CRC-32/ISO-HDLC.</summary>
+        /// <remarks>Equal to <see cref="Crc32"/>, <see cref="Crc32Adccp"/>, <see cref="Crc32PkZip"/>, <see cref="Crc32V24"/> and <see cref="Crc32Xz"/>.</remarks>
+        Crc32IsoHdlc = Crc32,
+
+        /// <summary>CRC-32/PKZip.</summary>
+        /// <remarks>Equal to <see cref="Crc32"/>, <see cref="Crc32Adccp"/>, <see cref="Crc32IsoHdlc"/>, <see cref="Crc32V24"/> and <see cref="Crc32Xz"/>.</remarks>
+        Crc32PkZip = Crc32,
+
+        /// <summary>CRC-32/V-24.</summary>
+        /// <remarks>Equal to <see cref="Crc32"/>, <see cref="Crc32Adccp"/>, <see cref="Crc32IsoHdlc"/>, <see cref="Crc32PkZip"/> and <see cref="Crc32Xz"/>.</remarks>
+        Crc32V24 = Crc32,
+
+        /// <summary>CRC-32/XZ.</summary>
+        /// <remarks>Equal to <see cref="Crc32"/>, <see cref="Crc32Adccp"/>, <see cref="Crc32IsoHdlc"/>, <see cref="Crc32PkZip"/> and <see cref="Crc32V24"/>.</remarks>
+        Crc32Xz = Crc32,
+
+        /// <summary>CRC-32/AUTOSAR.</summary>
+        Crc32Autosar,
+
+        /// <summary>CRC-32/CD-ROM-EDC.</summary>
+        Crc32CdRomEdc,
+
+        /// <summary>CRC-32/Q.</summary>
+        /// <remarks>Equal to <see cref="Crc32Aixm"/>.</remarks>
+        Crc32Q,
+
+        /// <summary>CRC-32/AIXM.</summary>
+        /// <remarks>Equal to <see cref="Crc32Q"/>.</remarks>
+        Crc32Aixm = Crc32Q,
+
+        /// <summary>CRC-32/BZIP2.</summary>
+        /// <remarks>Equal to <see cref="Crc32AaL5"/>, <see cref="Crc32DectB"/> and <see cref="Crc32BCrc"/>.</remarks>
+        Crc32BZip2,
+
+        /// <summary>CRC-32/AAL5.</summary>
+        /// <remarks>Equal to <see cref="Crc32BZip2"/>, <see cref="Crc32DectB"/> and <see cref="Crc32BCrc"/>.</remarks>
+        Crc32AaL5 = Crc32BZip2,
+
+        /// <summary>CRC-32/DECT-B.</summary>
+        /// <remarks>Equal to <see cref="Crc32AaL5"/>, <see cref="Crc32BZip2"/> and <see cref="Crc32BCrc"/>.</remarks>
+        Crc32DectB = Crc32BZip2,
+
+        /// <summary>CRC-32/B-CRC.</summary>
+        /// <remarks>Equal to <see cref="Crc32AaL5"/>, <see cref="Crc32BZip2"/> and <see cref="Crc32DectB"/>.</remarks>
+        Crc32BCrc = Crc32BZip2,
+
+        /// <summary>CRC-32/C.</summary>
+        /// <remarks>Equal to <see cref="Crc32Base91C"/>, <see cref="Crc32Castagnoli"/>, <see cref="Crc32Interlaken"/> and <see cref="Crc32Iscsi"/>.</remarks>
+        Crc32C,
+
+        /// <summary>CRC-32/BASE91-C.</summary>
+        /// <remarks>Equal to <see cref="Crc32C"/>, <see cref="Crc32Castagnoli"/>, <see cref="Crc32Interlaken"/> and <see cref="Crc32Iscsi"/>.</remarks>
+        Crc32Base91C = Crc32C,
+
+        /// <summary>CRC-32/Castagnoli.</summary>
+        /// <remarks>Equal to <see cref="Crc32Base91C"/>, <see cref="Crc32C"/>, <see cref="Crc32Interlaken"/> and <see cref="Crc32Iscsi"/>.</remarks>
+        Crc32Castagnoli = Crc32C,
+
+        /// <summary>CRC-32/Interlaken.</summary>
+        /// <remarks>Equal to <see cref="Crc32Base91C"/>, <see cref="Crc32C"/>, <see cref="Crc32Castagnoli"/> and <see cref="Crc32Iscsi"/>.</remarks>
+        Crc32Interlaken = Crc32C,
+
+        /// <summary>CRC-32/ISCSI.</summary>
+        /// <remarks>Equal to <see cref="Crc32Base91C"/>, <see cref="Crc32C"/>, <see cref="Crc32Castagnoli"/> and <see cref="Crc32Interlaken"/>.</remarks>
+        Crc32Iscsi = Crc32C,
+
+        /// <summary>CRC-32/D.</summary>
+        Crc32D,
+
+        /// <summary>CRC-32/JAMCRC.</summary>
+        Crc32JamCrc,
+
+        /// <summary>CRC-32/MPEG-2.</summary>
+        Crc32Mpeg2,
+
+        /// <summary>CRC-32/POSIX.</summary>
+        /// <remarks>Equal to <see cref="Crc32CkSum"/>.</remarks>
+        Crc32Posix,
+
+        /// <summary>CRC-32/CKSUM.</summary>
+        /// <remarks>Equal to <see cref="Crc32Posix"/>.</remarks>
+        Crc32CkSum = Crc32Posix,
+
+        /// <summary>CRC-32/XFER.</summary>
+        Crc32Xfer,
+
+        /// <summary>CRC-40/GSM.</summary>
+        /// <remarks>Equal to <see cref="Crc40Gsm"/>.</remarks>
+        Crc40,
+
+        /// <summary>CRC-40/GSM.</summary>
+        /// <remarks>Equal to <see cref="Crc40"/>.</remarks>
+        Crc40Gsm = Crc40,
+
+        /// <summary>CRC-64/ECMA-182.</summary>
+        /// <remarks>Equal to <see cref="Crc64Ecma"/>.</remarks>
         Crc64,
+
+        /// <summary>CRC-64/ECMA-182.</summary>
+        /// <remarks>Equal to <see cref="Crc64"/>.</remarks>
+        Crc64Ecma = Crc64,
+
+        /// <summary>CRC-64/WE.</summary>
+        Crc64We,
+
+        /// <summary>CRC-64/XZ.</summary>
+        /// <remarks>Equal to <see cref="Crc64GoEcma"/>.</remarks>
+        Crc64Xz,
+
+        /// <summary>CRC-64/GO-ECMA.</summary>
+        /// <remarks>Equal to <see cref="Crc64Xz"/>.</remarks>
+        Crc64GoEcma = Crc64Xz,
+
+        /// <summary>CRC-64/GO-ISO.</summary>
+        Crc64GoIso,
+
+        /// <summary>CRC-82/DARC.</summary>
+        /// <remarks>Equal to <see cref="Crc82Darc"/>.</remarks>
+        Crc82,
+
+        /// <summary>CRC-82/DARC.</summary>
+        /// <remarks>Equal to <see cref="Crc82"/>.</remarks>
+        Crc82Darc = Crc82,
 
         /// <summary>MD5 (Message-Digest 5).</summary>
         Md5,
@@ -199,8 +457,57 @@
             {
                 ChecksumAlgo.Adler32 => new Adler32(),
                 ChecksumAlgo.Crc16 => new Crc16(),
+                ChecksumAlgo.Crc16A => new Crc16(Crc16Preset.A),
+                ChecksumAlgo.Crc16Arc => new Crc16(Crc16Preset.Arc),
+                ChecksumAlgo.Crc16AugCcitt => new Crc16(Crc16Preset.AugCcitt),
+                ChecksumAlgo.Crc16Buypass => new Crc16(Crc16Preset.Buypass),
+                ChecksumAlgo.Crc16CcittFalse => new Crc16(Crc16Preset.CcittFalse),
+                ChecksumAlgo.Crc16Cdma2000 => new Crc16(Crc16Preset.Cdma2000),
+                ChecksumAlgo.Crc16Dds110 => new Crc16(Crc16Preset.Dds110),
+                ChecksumAlgo.Crc16DectR => new Crc16(Crc16Preset.DectR),
+                ChecksumAlgo.Crc16DectX => new Crc16(Crc16Preset.DectX),
+                ChecksumAlgo.Crc16Dnp => new Crc16(Crc16Preset.Dnp),
+                ChecksumAlgo.Crc16En13757 => new Crc16(Crc16Preset.En13757),
+                ChecksumAlgo.Crc16Genibus => new Crc16(Crc16Preset.Genibus),
+                ChecksumAlgo.Crc16Kermit => new Crc16(Crc16Preset.Kermit),
+                ChecksumAlgo.Crc16Maxim => new Crc16(Crc16Preset.Maxim),
+                ChecksumAlgo.Crc16Mcrf4Xx => new Crc16(Crc16Preset.Mcrf4Xx),
+                ChecksumAlgo.Crc16ModBus => new Crc16(Crc16Preset.ModBus),
+                ChecksumAlgo.Crc16Riello => new Crc16(Crc16Preset.Riello),
+                ChecksumAlgo.Crc16T10Dif => new Crc16(Crc16Preset.T10Dif),
+                ChecksumAlgo.Crc16TeleDisk => new Crc16(Crc16Preset.TeleDisk),
+                ChecksumAlgo.Crc16Tms37157 => new Crc16(Crc16Preset.Tms37157),
+                ChecksumAlgo.Crc16XModem => new Crc16(Crc16Preset.A),
+                ChecksumAlgo.Crc16X25 => new Crc16(Crc16Preset.X25),
+                ChecksumAlgo.Crc17 => new Crc17(),
+                ChecksumAlgo.Crc21 => new Crc21(),
+                ChecksumAlgo.Crc24 => new Crc24(),
+                ChecksumAlgo.Crc24Ble => new Crc24(Crc24Preset.Ble),
+                ChecksumAlgo.Crc24LteA => new Crc24(Crc24Preset.LteA),
+                ChecksumAlgo.Crc24LteB => new Crc24(Crc24Preset.LteB),
+                ChecksumAlgo.Crc24FlexRayA => new Crc24(Crc24Preset.FlexRayA),
+                ChecksumAlgo.Crc24FlexRayB => new Crc24(Crc24Preset.FlexRayB),
+                ChecksumAlgo.Crc24Interlaken => new Crc24(Crc24Preset.Interlaken),
+                ChecksumAlgo.Crc24Os9 => new Crc24(Crc24Preset.Os9),
+                ChecksumAlgo.Crc30 => new Crc30(),
+                ChecksumAlgo.Crc31 => new Crc31(),
                 ChecksumAlgo.Crc32 => new Crc32(),
+                ChecksumAlgo.Crc32Autosar => new Crc32(Crc32Preset.Autosar),
+                ChecksumAlgo.Crc32CdRomEdc => new Crc32(Crc32Preset.CdRomEdc),
+                ChecksumAlgo.Crc32Q => new Crc32(Crc32Preset.Q),
+                ChecksumAlgo.Crc32BZip2 => new Crc32(Crc32Preset.BZip2),
+                ChecksumAlgo.Crc32C => new Crc32(Crc32Preset.C),
+                ChecksumAlgo.Crc32D => new Crc32(Crc32Preset.D),
+                ChecksumAlgo.Crc32JamCrc => new Crc32(Crc32Preset.JamCrc),
+                ChecksumAlgo.Crc32Mpeg2 => new Crc32(Crc32Preset.Mpeg2),
+                ChecksumAlgo.Crc32Posix => new Crc32(Crc32Preset.Posix),
+                ChecksumAlgo.Crc32Xfer => new Crc32(Crc32Preset.Xfer),
+                ChecksumAlgo.Crc40 => new Crc40(),
                 ChecksumAlgo.Crc64 => new Crc64(),
+                ChecksumAlgo.Crc64We => new Crc64(Crc64Preset.We),
+                ChecksumAlgo.Crc64Xz => new Crc64(Crc64Preset.Xz),
+                ChecksumAlgo.Crc64GoIso => new Crc64(Crc64Preset.GoIso),
+                ChecksumAlgo.Crc82 => new Crc82(),
                 ChecksumAlgo.Md5 => new Md5(),
                 ChecksumAlgo.Sha1 => new Sha1(),
                 ChecksumAlgo.Sha256 => new Sha256(),
