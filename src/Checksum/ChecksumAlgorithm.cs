@@ -55,15 +55,8 @@
         /// <param name="textOrFile">The text or file to encrypt.</param>
         /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
-        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : this(bits)
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
+        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : this(bits) =>
+            Encrypt(textOrFile, strIsFilePath);
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text.</summary>
         /// <param name="bits">The hash size in bits.</param>
@@ -91,6 +84,17 @@
                 throw new ArgumentException(ExceptionMessages.IsEmpty, nameof(bytes));
             using var ms = new MemoryStream(bytes);
             Encrypt(ms);
+        }
+
+        /// <inheritdoc/>
+        public void Encrypt(string textOrFile, bool strIsFilePath)
+        {
+            if (strIsFilePath)
+            {
+                EncryptFile(textOrFile);
+                return;
+            }
+            Encrypt(textOrFile);
         }
 
         /// <inheritdoc/>

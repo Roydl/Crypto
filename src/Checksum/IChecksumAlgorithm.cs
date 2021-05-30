@@ -44,6 +44,15 @@
         /// <remarks>For more information, see <see cref="Hash">Hash</see>, <see cref="HashNumber">HashNumber</see> and <see cref="RawHash">RawHash</see>.</remarks>
         void Encrypt(byte[] bytes);
 
+        /// <summary>Encrypts the specified text or file.</summary>
+        /// <param name="textOrFile">The text or file to encrypt.</param>
+        /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>
+        /// <exception cref="ArgumentNullException">textOrFile is null.</exception>
+        /// <exception cref="ArgumentException">textOrFile is empty.</exception>
+        /// <exception cref="FileNotFoundException">textOrFile cannot be found.</exception>
+        /// <inheritdoc cref="Encrypt(byte[])"/>
+        void Encrypt(string textOrFile, bool strIsFilePath);
+
         /// <summary>Encrypts the specified string.</summary>
         /// <param name="text">The string to encrypt.</param>
         /// <exception cref="ArgumentNullException">text is null.</exception>
