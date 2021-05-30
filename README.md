@@ -28,9 +28,16 @@ You can easily create instances of any type to translate `Stream`, `byte[]` or `
 | Name | Hash Size | Algorithm | HMAC |
 | ---- | ---- | ---- | ---- |
 | Adler32 | 32 | Standard | unsupported |
-| CRC16 | 16 | AUG-CCITT | unsupported |
-| CRC32 | 32 | Standard | unsupported |
-| CRC64 | 64 | ECMA | unsupported |
+| CRC16 | 16 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
+| CRC17 | 17 | CAN-FD | unsupported |
+| CRC21 | 21 | CAN-FD | unsupported |
+| CRC24 | 24 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
+| CRC30 | 30 | CDMA | unsupported |
+| CRC31 | 31 | PHILIPS | unsupported |
+| CRC32 | 32 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
+| CRC40 | 40 | GSM | unsupported |
+| CRC64 | 64 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
+| CRC82 | 82 | DARC | unsupported |
 | MD5 | 128 | Standard | optional |
 | SHA1 | 160 | Standard | optional |
 | SHA256 | 256 | SHA-2 Standard | optional |
