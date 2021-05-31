@@ -10,7 +10,7 @@
         private static readonly CrcConfig<BigInteger> Current = CrcPreset.GetConfig(Crc82Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc82"/> class.</summary>
-        public Crc82() : base(82) { }
+        public Crc82() : base(82, 21) { }
 
         /// <summary>Initializes a new instance of the <see cref="Crc82"/> class and encrypts the specified stream.</summary>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>

@@ -29,8 +29,9 @@
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="bits">The hash size in bits.</param>
+        /// <param name="size">The string size to enforce. This is useful to prevent zero padding for algorithms with odd bits.</param>
         /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 512.</exception>
-        protected ChecksumAlgorithm(int bits)
+        protected ChecksumAlgorithm(int bits, int size = default)
         {
             if (bits is < 8 or > 512)
                 throw new ArgumentOutOfRangeException(nameof(bits));
@@ -41,6 +42,8 @@
             if (HashSize < 2)
                 HashSize = 2;
             RawHashSize = (int)MathF.Ceiling(HashSize / 2f);
+            if (size > 0)
+                HashSize = size;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
@@ -231,7 +234,7 @@
     {
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits) : base(bits) { }
+        protected ChecksumAlgorithm(int bits, int size = default) : base(bits, size) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc/>

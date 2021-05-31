@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
     using System.Runtime.InteropServices;
@@ -14,7 +15,10 @@
         /// <summary>Gets the hash size in bits.</summary>
         public int Bits { get; }
 
-        /// <summary>Gets the mask of <typeparamref name="TValue"/>.</summary>
+        /// <summary>Gets the test value that is used to check whether the algorithm is working correctly.</summary>
+        public TValue Check { get; }
+
+        /// <summary>Gets the mask, which is mostly the maximum value of <typeparamref name="TValue"/>.</summary>
         public TValue Mask { get; }
 
         /// <summary>Gets the polynomial used to generate the CRC hash table.</summary>
@@ -48,10 +52,14 @@
         /// <param name="refIn"><see langword="true"/> to process the input bytes in big-endian bit order for the calculation; otherwise, <see langword="false"/>.</param>
         /// <param name="refOut"><see langword="true"/> to process the final output in big-endian bit order; otherwise, <see langword="false"/>.</param>
         /// <param name="xorOut">The value to xor with the final output.</param>
+        /// <param name="check">The test value that is used to check whether the algorithm is working correctly.</param>
+        /// <param name="mask">The mask, which is mostly the maximum value of <typeparamref name="TValue"/>.</param>
+        /// <param name="skipValidation"><see langword="true"/> to skip the automated CRC validation (<b>not</b> recommended); otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 82.</exception>
         /// <exception cref="ArgumentException">bits are larger than the size of the TValue type allows.</exception>
-        /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported</exception>
-        public CrcConfig(int bits, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default)
+        /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported.</exception>
+        /// <exception cref="InvalidDataException">The CRC validation failed.</exception>
+        public CrcConfig(int bits, TValue check, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default, TValue mask = default, bool skipValidation = false)
         {
             if (bits is < 8 or > 82)
                 throw new ArgumentOutOfRangeException(nameof(bits));
@@ -69,15 +77,19 @@
                 default:
                     throw new InvalidOperationException(ExceptionMessages.TypeInvalid);
             }
-            var mask = CreateMask<TValue>(bits);
+            if (EqualityComparer<TValue>.Default.Equals(mask, default))
+                mask = CreateMask<TValue>(bits);
             Bits = bits;
-            Mask = mask;
+            Check = check;
             Poly = poly;
             Init = init;
             RefIn = refIn;
             RefOut = refOut;
             XorOut = xorOut;
+            Mask = mask;
             Table = CreateTable(bits, poly, mask, refIn);
+            if (!skipValidation)
+                ThrowIfInvalid();
         }
 
         /// <summary>Computes the hash of stream data using the configured CRC algorithm.</summary>
@@ -125,6 +137,47 @@
             if (RefIn ^ RefOut)
                 hash = (TValue)~(dynamic)hash;
             hash ^= (dynamic)XorOut;
+        }
+
+        /// <summary>Check whether the current algorithm is working correctly.</summary>
+        /// <param name="current">The computed value that is compared to <see cref="Check"/>.</param>
+        /// <remarks>For more information, see <see cref="Check">Check</see>.</remarks>
+        public bool IsValid(out TValue current)
+        {
+            using var ms = new MemoryStream(new byte[]
+            {
+                0x31, 0x32, 0x33,
+                0x34, 0x35, 0x36, 
+                0x37, 0x38, 0x39
+            });
+            ComputeHash(ms, out current);
+            return EqualityComparer<TValue>.Default.Equals(current, Check);
+        }
+
+        /// <summary>Check whether the current algorithm is working correctly.</summary>
+        /// <remarks>For more information, see <see cref="Check">Check</see>.</remarks>
+        public bool IsValid() =>
+            IsValid(out _);
+
+        private void ThrowIfInvalid()
+        {
+            if (IsValid(out var current))
+                return;
+            var sa = new string[3];
+            var i = 0;
+            foreach (var item in new[] { current, Check, Mask })
+            {
+                sa[i++] = item switch
+                {
+                    byte x => $"0x{x:x}",
+                    ushort x => $"0x{x:x}",
+                    uint x => $"0x{x:x}",
+                    ulong x => $"0x{x:x}",
+                    BigInteger x => $"0x{x:x}",
+                    _ => throw new InvalidCastException()
+                };
+            }
+            throw new InvalidDataException(string.Format(ExceptionMessages.CrcValidationFailed, sa[0], sa[1], sa[2]));
         }
 
         private static T CreateMask<T>(int bits)

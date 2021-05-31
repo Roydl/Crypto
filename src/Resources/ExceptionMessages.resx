@@ -120,6 +120,9 @@
   <data name="BitsLargerThanType" xml:space="preserve">
     <value>The size in bits is too large for the specified type.</value>
   </data>
+  <data name="CrcValidationFailed" xml:space="preserve">
+    <value>The CRC validation failed. (Computed check: '{0}'; expected: '{1}'; mask: '{2}')</value>
+  </data>
   <data name="DestPathNotValid" xml:space="preserve">
     <value>The destination path is invalid.</value>
   </data>

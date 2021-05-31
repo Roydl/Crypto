@@ -9,7 +9,7 @@
         private static readonly CrcConfig<uint> Current = CrcPreset.GetConfig(Crc30Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc30"/> class.</summary>
-        public Crc30() : base(30) { }
+        public Crc30() : base(30, 6) { }
 
         /// <summary>Initializes a new instance of the <see cref="Crc30"/> class and encrypts the specified stream.</summary>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>

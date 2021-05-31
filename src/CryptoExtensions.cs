@@ -227,7 +227,12 @@
         Crc32Iscsi = Crc32C,
 
         /// <summary>CRC-32/D.</summary>
+        /// <remarks>Equal to <see cref="Base91D"/>.</remarks>
         Crc32D,
+
+        /// <summary>CRC-32/BASE91-D.</summary>
+        /// <remarks>Equal to <see cref="Crc32D"/>.</remarks>
+        Base91D = Crc32D,
 
         /// <summary>CRC-32/JAMCRC.</summary>
         Crc32JamCrc,

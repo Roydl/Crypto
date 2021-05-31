@@ -70,6 +70,15 @@ namespace Roydl.Crypto.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The CRC validation failed. (Computed check: &apos;{0}&apos;; expected: &apos;{1}&apos;; mask: &apos;{2}&apos;).
+        /// </summary>
+        internal static string CrcValidationFailed {
+            get {
+                return ResourceManager.GetString("CrcValidationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The destination path is invalid..
         /// </summary>
         internal static string DestPathNotValid {
