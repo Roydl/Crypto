@@ -91,12 +91,13 @@ bool neq = (instance1 != instance2);
 
 #### CRC customization:
 
-If you need a different CRC algorithm, you can easily create your own variations. This is an example for `CRC-32/POSIX`, but it should support many others between 8 and 64 bits.
+If you need a different CRC algorithm, you can easily create your own variations. This is an example for `CRC-32/POSIX`, but it should support many others between 8 and 82 bits.
 
 ```cs
 public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
 {
     private const int Bits = 32;
+    private const uint Check = 0x765e7680u;
     private const uint Poly = 0x04c11db7u;
     private const uint Init = 0x00000000u;
     private const bool RefIn = false;
@@ -104,7 +105,7 @@ public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
     private const uint XorOut = 0xffffffffu;
 
     // Sets a new `CrcConfig` with the constants from above.
-    private static readonly CrcConfig<uint> Current = new(Bits, Poly, Init, RefIn, RefOut, XorOut);
+    private static readonly CrcConfig<uint> Current = new(Bits, Check, Poly, Init, RefIn, RefOut, XorOut);
 
     // At least one constructor is required because `base(bits)` has to
     // be called.
