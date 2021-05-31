@@ -18,8 +18,8 @@
             public CrcCustom(CrcConfig<T> config) : base(config.Bits) =>
                 Current = config;
 
-            public CrcCustom(int bits, T poly, T init = default, bool refIn = false, bool refOut = false, T xorOut = default) : base(bits) =>
-                Current = new CrcConfig<T>(bits, poly, init, refIn, refOut, xorOut);
+            public CrcCustom(int bits, T check, T poly, T init = default, bool refIn = false, bool refOut = false, T xorOut = default, T mask = default) : base(bits) =>
+                Current = new CrcConfig<T>(bits, check, poly, init, refIn, refOut, xorOut, mask);
 
             public override void Encrypt(Stream stream)
             {
@@ -155,25 +155,25 @@
             new(CrcCustomPreset.Crc08, TestVarsType.TestString, "77"),
             new(CrcCustomPreset.Crc08, TestVarsType.RangeString, "a8"),
 
-            new(CrcCustomPreset.Crc10, TestVarsType.TestString, "f030"),
-            new(CrcCustomPreset.Crc10, TestVarsType.RangeString, "36f5"),
+            new(CrcCustomPreset.Crc10, TestVarsType.TestString, "0030"),
+            new(CrcCustomPreset.Crc10, TestVarsType.RangeString, "06f5"),
 
             new(CrcCustomPreset.Crc11, TestVarsType.TestString, "cbbf"),
             new(CrcCustomPreset.Crc11, TestVarsType.RangeString, "350f"),
 
-            new(CrcCustomPreset.Crc12Dect, TestVarsType.TestString, "5b5e"),
-            new(CrcCustomPreset.Crc12Dect, TestVarsType.RangeString, "c25c"),
+            new(CrcCustomPreset.Crc12Dect, TestVarsType.TestString, "0b5e"),
+            new(CrcCustomPreset.Crc12Dect, TestVarsType.RangeString, "025c"),
 
-            new(CrcCustomPreset.Crc13Bbc, TestVarsType.TestString, "6566"),
+            new(CrcCustomPreset.Crc13Bbc, TestVarsType.TestString, "0566"),
             new(CrcCustomPreset.Crc13Bbc, TestVarsType.RangeString, "1672"),
 
             new(CrcCustomPreset.Crc14Darc, TestVarsType.TestString, "30aa"),
             new(CrcCustomPreset.Crc14Darc, TestVarsType.RangeString, "30d9"),
 
-            new(CrcCustomPreset.Crc15, TestVarsType.TestString, "ab53"),
+            new(CrcCustomPreset.Crc15, TestVarsType.TestString, "2b53"),
             new(CrcCustomPreset.Crc15, TestVarsType.RangeString, "77dc"),
 
-            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.TestString, "920f"),
+            new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.TestString, "120f"),
             new(CrcCustomPreset.Crc15Mpt1327, TestVarsType.RangeString, "4bf8"),
 
             #endregion
@@ -253,11 +253,11 @@
 
             #region CRC-17 and CRC-21
 
-            new(CrcCustomPreset.Crc17, TestVarsType.TestString, "c6c38d"),
-            new(CrcCustomPreset.Crc17, TestVarsType.RangeString, "f582d1"),
+            new(CrcCustomPreset.Crc17, TestVarsType.TestString, "02c38d"),
+            new(CrcCustomPreset.Crc17, TestVarsType.RangeString, "3182d1"),
 
-            new(CrcCustomPreset.Crc21, TestVarsType.TestString, "d28a0d"),
-            new(CrcCustomPreset.Crc21, TestVarsType.RangeString, "d6c0c0"),
+            new(CrcCustomPreset.Crc21, TestVarsType.TestString, "128a0d"),
+            new(CrcCustomPreset.Crc21, TestVarsType.RangeString, "16c0c0"),
 
             #endregion
 
@@ -275,8 +275,8 @@
             new(CrcCustomPreset.Crc24FlexRayB, TestVarsType.TestString, "0e3a1d"),
             new(CrcCustomPreset.Crc24FlexRayB, TestVarsType.RangeString, "d5ee31"),
 
-            new(CrcCustomPreset.Crc24Interlaken, TestVarsType.TestString, "a2acfd"),
-            new(CrcCustomPreset.Crc24Interlaken, TestVarsType.RangeString, "c626e2"),
+            new(CrcCustomPreset.Crc24Interlaken, TestVarsType.TestString, "5d5302"),
+            new(CrcCustomPreset.Crc24Interlaken, TestVarsType.RangeString, "39d91d"),
 
             new(CrcCustomPreset.Crc24LteA, TestVarsType.TestString, "d62e8f"),
             new(CrcCustomPreset.Crc24LteA, TestVarsType.RangeString, "b1f403"),
@@ -284,15 +284,15 @@
             new(CrcCustomPreset.Crc24LteB, TestVarsType.TestString, "137ceb"),
             new(CrcCustomPreset.Crc24LteB, TestVarsType.RangeString, "da2736"),
 
-            new(CrcCustomPreset.Crc24Os9, TestVarsType.TestString, "9cbeca"),
-            new(CrcCustomPreset.Crc24Os9, TestVarsType.RangeString, "4999f3"),
+            new(CrcCustomPreset.Crc24Os9, TestVarsType.TestString, "634135"),
+            new(CrcCustomPreset.Crc24Os9, TestVarsType.RangeString, "b6660c"),
 
             #endregion
 
             #region CRC-30 and CRC-31
 
-            new(CrcCustomPreset.Crc30, TestVarsType.TestString, "09fc8f98"),
-            new(CrcCustomPreset.Crc30, TestVarsType.RangeString, "a74e1078"),
+            new(CrcCustomPreset.Crc30, TestVarsType.TestString, "36037067"),
+            new(CrcCustomPreset.Crc30, TestVarsType.RangeString, "18b1ef87"),
 
             new(CrcCustomPreset.Crc31Philips, TestVarsType.TestString, "1a76718d"),
             new(CrcCustomPreset.Crc31Philips, TestVarsType.RangeString, "37e0c69c"),
@@ -361,9 +361,8 @@
 
             #region CRC-82
 
-            // ***WIP: Hashes still unconfirmed.
-            new(CrcCustomPreset.Crc82, TestVarsType.TestString, "0003c97c1a9a92d954cf37"),
-            new(CrcCustomPreset.Crc82, TestVarsType.RangeString, "0005d9765b4f8f041e644d")
+            new(CrcCustomPreset.Crc82, TestVarsType.TestString, "016348ec7ea7f602abd024"),
+            new(CrcCustomPreset.Crc82, TestVarsType.RangeString, "03dff868d831e5a22b515a")
 
             #endregion
         };
@@ -377,14 +376,14 @@
 
             #region CRC-8 to CRC-15
 
-            _instances[(int)CrcCustomPreset.Crc08] = new CrcCustom<byte>(8, 0x07);
-            _instances[(int)CrcCustomPreset.Crc10] = new CrcCustom<ushort>(10, 0x233);
-            _instances[(int)CrcCustomPreset.Crc11] = new CrcCustom<ushort>(11, 0x385, 0x1a);
-            _instances[(int)CrcCustomPreset.Crc12Dect] = new CrcCustom<ushort>(12, 0x80f);
-            _instances[(int)CrcCustomPreset.Crc13Bbc] = new CrcCustom<ushort>(13, 0x1cf5);
-            _instances[(int)CrcCustomPreset.Crc14Darc] = new CrcCustom<ushort>(14, 0x2804, default, true, true);
-            _instances[(int)CrcCustomPreset.Crc15] = new CrcCustom<ushort>(15, 0x4599);
-            _instances[(int)CrcCustomPreset.Crc15Mpt1327] = new CrcCustom<ushort>(15, 0x6815, default, false, false, 0x01);
+            _instances[(int)CrcCustomPreset.Crc08] = new CrcCustom<byte>(8, 0xf4, 0x07);
+            _instances[(int)CrcCustomPreset.Crc10] = new CrcCustom<ushort>(10, 0x199, 0x233, default, false, false, default, 0x7ff);
+            _instances[(int)CrcCustomPreset.Crc11] = new CrcCustom<ushort>(11, 0x5a3, 0x385, 0x1a);
+            _instances[(int)CrcCustomPreset.Crc12Dect] = new CrcCustom<ushort>(12, 0xf5b, 0x80f, default, false, false, default, 0xfff);
+            _instances[(int)CrcCustomPreset.Crc13Bbc] = new CrcCustom<ushort>(13, 0x04fa, 0x1cf5, default, false, false, default, 0x1fff);
+            _instances[(int)CrcCustomPreset.Crc14Darc] = new CrcCustom<ushort>(14, 0x082d, 0x2804, default, true, true);
+            _instances[(int)CrcCustomPreset.Crc15] = new CrcCustom<ushort>(15, 0x059e, 0x4599, default, false, false, default, 0x7fff);
+            _instances[(int)CrcCustomPreset.Crc15Mpt1327] = new CrcCustom<ushort>(15, 0x2566, 0x6815, default, false, false, 0x01, 0x7fff);
 
             #endregion
 

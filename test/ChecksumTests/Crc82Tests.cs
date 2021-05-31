@@ -12,10 +12,10 @@
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Crc82;
         private const int HashBits = 82;
-        private const int HashSize = 22;
+        private const int HashSize = 21;
         private const int RawHashSize = 11;
-        private const string ExpectedTestHash = "0003c97c1a9a92d954cf37"; // ***WIP: Hash still unconfirmed.
-        private const string ExpectedRangeHash = "0005d9765b4f8f041e644d"; // ***WIP: Hash still unconfirmed.
+        private const string ExpectedTestHash = "16348ec7ea7f602abd024";
+        private const string ExpectedRangeHash = "3dff868d831e5a22b515a";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
