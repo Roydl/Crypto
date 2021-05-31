@@ -124,7 +124,7 @@ public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
 }
 ```
 
-Check out the [CRC custom test cases](https://github.com/Roydl/Crypto/blob/master/test/ChecksumTests/CrcCustomTests.cs) to see more examples.
+Check out the [CRC preset test cases](https://github.com/Roydl/Crypto/blob/master/test/ChecksumTests/CrcPresetTests.cs) to see more examples.
 
 ---
 
