@@ -147,15 +147,14 @@
             using var ms = new MemoryStream(new byte[]
             {
                 0x31, 0x32, 0x33,
-                0x34, 0x35, 0x36, 
+                0x34, 0x35, 0x36,
                 0x37, 0x38, 0x39
             });
             ComputeHash(ms, out current);
             return EqualityComparer<TValue>.Default.Equals(current, Check);
         }
 
-        /// <summary>Check whether the current algorithm is working correctly.</summary>
-        /// <remarks>For more information, see <see cref="Check">Check</see>.</remarks>
+        /// <inheritdoc cref="IsValid(out TValue)"/>
         public bool IsValid() =>
             IsValid(out _);
 
