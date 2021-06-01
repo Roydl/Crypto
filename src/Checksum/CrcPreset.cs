@@ -7,28 +7,21 @@
     /// <summary>Specifies enumerated constants used to define an CRC-16 preset.</summary>
     public enum Crc16Preset
     {
-        /// <summary>CRC-16/USB.</summary>
-        /// <remarks>Equal to <see cref="Usb"/>.</remarks>
+        /// <summary>CRC-16.
+        ///     <para><b>Alias:</b> ARC, IBM, LHA.</para>
+        /// </summary>
         Default,
-
-        /// <summary>CRC-16/USB.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Usb = Default,
 
         /// <summary>CRC-16/A.</summary>
         A,
 
-        /// <summary>CRC-16/ARC.</summary>
-        Arc,
-
-        /// <summary>CRC-16/AUG-CCITT.</summary>
-        AugCcitt,
-
         /// <summary>CRC-16/BUYPASS.</summary>
         Buypass,
 
-        /// <summary>CRC-16/CCITT-FALSE.</summary>
-        CcittFalse,
+        /// <summary>CRC-16/IBM-3740.
+        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
+        /// </summary>
+        Ibm3740,
 
         /// <summary>CRC-16/CDMA2000.</summary>
         Cdma2000,
@@ -36,10 +29,14 @@
         /// <summary>CRC-16/DDS-110.</summary>
         Dds110,
 
-        /// <summary>CRC-16/DECT-R.</summary>
+        /// <summary>CRC-16/DECT-R.
+        ///     <para><b>Alias:</b> R-CRC-16</para>
+        /// </summary>
         DectR,
 
-        /// <summary>CRC-16/DECT-X.</summary>
+        /// <summary>CRC-16/DECT-X.
+        ///     <para><b>Alias:</b> X-CRC-16</para>
+        /// </summary>
         DectX,
 
         /// <summary>CRC-16/DNP.</summary>
@@ -48,13 +45,16 @@
         /// <summary>CRC-16/EN-13757.</summary>
         En13757,
 
-        /// <summary>CRC-16/GENIBUS.</summary>
+        /// <summary>CRC-16/GENIBUS.
+        ///     <para><b>Alias:</b> DARC, EPC, EPC-C1G2, I-CODE</para>
+        /// </summary>
         Genibus,
 
         /// <summary>CRC-16/KERMIT.</summary>
         Kermit,
 
         /// <summary>CRC-16/MAXIM.</summary>
+        /// <para><b>Alias:</b> MAXIM-DOW</para>
         Maxim,
 
         /// <summary>CRC-16/MCRF4XX.</summary>
@@ -66,6 +66,11 @@
         /// <summary>CRC-16/RIELLO.</summary>
         Riello,
 
+        /// <summary>CRC-16/SPI-FUJITSU.
+        ///     <para><b>Alias:</b> AUG-CCITT</para>
+        /// </summary>
+        SpiFujitsu,
+
         /// <summary>CRC-16/T10-DIF.</summary>
         T10Dif,
 
@@ -74,6 +79,9 @@
 
         /// <summary>CRC-16/TMS37157.</summary>
         Tms37157,
+
+        /// <summary>CRC-16/USB.</summary>
+        Usb,
 
         /// <summary>CRC-16/XMODEM.</summary>
         XModem,
@@ -85,37 +93,28 @@
     /// <summary>Specifies enumerated constants used to define an CRC-17 preset.</summary>
     public enum Crc17Preset
     {
-        /// <summary>CRC-17/CAN-FD.</summary>
-        /// <remarks>Equal to <see cref="CanFd"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-17/CAN-FD.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        CanFd = Default
+        /// <summary>CRC-17.
+        ///     <para><b>Alias:</b> CAN-FD.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-21 preset.</summary>
     public enum Crc21Preset
     {
-        /// <summary>CRC-21/CAN-FD.</summary>
-        /// <remarks>Equal to <see cref="CanFd"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-21/CAN-FD.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        CanFd = Default
+        /// <summary>CRC-21.
+        ///     <para><b>Alias:</b> CAN-FD.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-24 preset.</summary>
     public enum Crc24Preset
     {
-        /// <summary>CRC-24/OPENPGP.</summary>
-        /// <remarks>Equal to <see cref="OpenPgp"/>.</remarks>
+        /// <summary>CRC-24.
+        ///     <para><b>Alias:</b> OPENPGP.</para>
+        /// </summary>
         Default,
-
-        /// <summary>CRC-24/OPENPGP.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        OpenPgp = Default,
 
         /// <summary>CRC-24/BLE.</summary>
         Ble,
@@ -142,53 +141,28 @@
     /// <summary>Specifies enumerated constants used to define an CRC-30 preset.</summary>
     public enum Crc30Preset
     {
-        /// <summary>CRC-30/CDMA.</summary>
-        /// <remarks>Equal to <see cref="Cdma"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-30/CDMA.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Cdma = Default
+        /// <summary>CRC-30.
+        ///     <para><b>Alias:</b> CDMA.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-31 preset.</summary>
     public enum Crc31Preset
     {
-        /// <summary>CRC-31/PHILIPS.</summary>
-        /// <remarks>Equal to <see cref="Philips"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-31/PHILIPS.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Philips = Default
+        /// <summary>CRC-31.
+        ///     <para><b>Alias:</b> PHILIPS.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-32 preset.</summary>
     public enum Crc32Preset
     {
-        /// <summary>CRC-32/ISO-HDLC.</summary>
-        /// <remarks>Equal to <see cref="Adccp"/>, <see cref="IsoHdlc"/>, <see cref="PkZip"/>, <see cref="V24"/> and <see cref="Xz"/>.</remarks>
+        /// <summary>CRC-32/ISO-HDLC.
+        ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24, XZ.</para>
+        /// </summary>
         Default,
-
-        /// <summary>CRC-32/ADCCP.</summary>
-        /// <remarks>Equal to <see cref="Default"/>, <see cref="PkZip"/>, <see cref="V24"/> and <see cref="Xz"/>.</remarks>
-        Adccp = Default,
-
-        /// <summary>CRC-32/ISO-HDLC.</summary>
-        /// <remarks>Equal to <see cref="Default"/>, <see cref="Adccp"/>, <see cref="PkZip"/>, <see cref="V24"/> and <see cref="Xz"/>.</remarks>
-        IsoHdlc = Default,
-
-        /// <summary>CRC-32/PKZip.</summary>
-        /// <remarks>Equal to <see cref="Default"/>, <see cref="Adccp"/>, <see cref="IsoHdlc"/>, <see cref="V24"/> and <see cref="Xz"/>.</remarks>
-        PkZip = Default,
-
-        /// <summary>CRC-32/V-24.</summary>
-        /// <remarks>Equal to <see cref="Default"/>, <see cref="Adccp"/>, <see cref="IsoHdlc"/>, <see cref="PkZip"/> and <see cref="Xz"/>.</remarks>
-        V24 = Default,
-
-        /// <summary>CRC-32/XZ.</summary>
-        /// <remarks>Equal to <see cref="Default"/>, <see cref="Adccp"/>, <see cref="IsoHdlc"/>, <see cref="PkZip"/> and <see cref="V24"/>.</remarks>
-        Xz = Default,
 
         /// <summary>CRC-32/AUTOSAR.</summary>
         Autosar,
@@ -196,57 +170,25 @@
         /// <summary>CRC-32/CD-ROM-EDC.</summary>
         CdRomEdc,
 
-        /// <summary>CRC-32/Q.</summary>
-        /// <remarks>Equal to <see cref="Aixm"/>.</remarks>
+        /// <summary>CRC-32/Q.
+        ///     <para><b>Alias:</b> AIXM.</para>
+        /// </summary>
         Q,
 
-        /// <summary>CRC-32/AIXM.</summary>
-        /// <remarks>Equal to <see cref="Q"/>.</remarks>
-        Aixm = Q,
-
-        /// <summary>CRC-32/BZIP2.</summary>
-        /// <remarks>Equal to <see cref="AaL5"/>, <see cref="DectB"/> and <see cref="BCrc"/>.</remarks>
+        /// <summary>CRC-32/BZIP2.
+        ///     <para><b>Alias:</b> AAL5, DECT-B, B-CRC.</para>
+        /// </summary>
         BZip2,
 
-        /// <summary>CRC-32/AAL5.</summary>
-        /// <remarks>Equal to <see cref="BZip2"/>, <see cref="DectB"/> and <see cref="BCrc"/>.</remarks>
-        AaL5 = BZip2,
-
-        /// <summary>CRC-32/DECT-B.</summary>
-        /// <remarks>Equal to <see cref="AaL5"/>, <see cref="BZip2"/> and <see cref="BCrc"/>.</remarks>
-        DectB = BZip2,
-
-        /// <summary>CRC-32/B-CRC.</summary>
-        /// <remarks>Equal to <see cref="AaL5"/>, <see cref="BZip2"/> and <see cref="DectB"/>.</remarks>
-        BCrc = BZip2,
-
-        /// <summary>CRC-32/C.</summary>
-        /// <remarks>Equal to <see cref="Base91C"/>, <see cref="Castagnoli"/>, <see cref="Interlaken"/> and <see cref="Iscsi"/>.</remarks>
+        /// <summary>CRC-32/C.
+        ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
+        /// </summary>
         C,
 
-        /// <summary>CRC-32/BASE91-C.</summary>
-        /// <remarks>Equal to <see cref="C"/>, <see cref="Castagnoli"/>, <see cref="Interlaken"/> and <see cref="Iscsi"/>.</remarks>
-        Base91C = C,
-
-        /// <summary>CRC-32/Castagnoli.</summary>
-        /// <remarks>Equal to <see cref="Base91C"/>, <see cref="C"/>, <see cref="Interlaken"/> and <see cref="Iscsi"/>.</remarks>
-        Castagnoli = C,
-
-        /// <summary>CRC-32/Interlaken.</summary>
-        /// <remarks>Equal to <see cref="Base91C"/>, <see cref="C"/>, <see cref="Castagnoli"/> and <see cref="Iscsi"/>.</remarks>
-        Interlaken = C,
-
-        /// <summary>CRC-32/ISCSI.</summary>
-        /// <remarks>Equal to <see cref="Base91C"/>, <see cref="C"/>, <see cref="Castagnoli"/> and <see cref="Interlaken"/>.</remarks>
-        Iscsi = C,
-
-        /// <summary>CRC-32/D.</summary>
-        /// <remarks>Equal to <see cref="Base91D"/>.</remarks>
+        /// <summary>CRC-32/D.
+        ///     <para><b>Alias:</b> BASE91-D.</para>
+        /// </summary>
         D,
-
-        /// <summary>CRC-32/BASE91-D.</summary>
-        /// <remarks>Equal to <see cref="D"/>.</remarks>
-        Base91D = D,
 
         /// <summary>CRC-32/JAMCRC.</summary>
         JamCrc,
@@ -254,13 +196,10 @@
         /// <summary>CRC-32/MPEG-2.</summary>
         Mpeg2,
 
-        /// <summary>CRC-32/POSIX.</summary>
-        /// <remarks>Equal to <see cref="CkSum"/>.</remarks>
+        /// <summary>CRC-32/POSIX.
+        ///     <para><b>Alias:</b> CKSUM.</para>
+        /// </summary>
         Posix,
-
-        /// <summary>CRC-32/CKSUM.</summary>
-        /// <remarks>Equal to <see cref="Posix"/>.</remarks>
-        CkSum = Posix,
 
         /// <summary>CRC-32/XFER.</summary>
         Xfer
@@ -269,36 +208,27 @@
     /// <summary>Specifies enumerated constants used to define an CRC-40 preset.</summary>
     public enum Crc40Preset
     {
-        /// <summary>CRC-40/GSM.</summary>
-        /// <remarks>Equal to <see cref="Gsm"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-40/GSM.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Gsm = Default
+        /// <summary>CRC-40.
+        ///     <para><b>Alias:</b> GSM.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-64 preset.</summary>
     public enum Crc64Preset
     {
-        /// <summary>CRC-64/ECMA-182.</summary>
-        /// <remarks>Equal to <see cref="Ecma"/>.</remarks>
+        /// <summary>CRC-64.
+        ///     <para><b>Alias:</b> ECMA-182.</para>
+        /// </summary>
         Default,
-
-        /// <summary>CRC-64/ECMA-182.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Ecma = Default,
 
         /// <summary>CRC-64/WE.</summary>
         We,
 
-        /// <summary>CRC-64/XZ.</summary>
-        /// <remarks>Equal to <see cref="GoEcma"/>.</remarks>
+        /// <summary>CRC-64/XZ.
+        ///     <para><b>Alias:</b> GO-ECMA.</para>
+        /// </summary>
         Xz,
-
-        /// <summary>CRC-64/GO-ECMA.</summary>
-        /// <remarks>Equal to <see cref="Xz"/>.</remarks>
-        GoEcma = Xz,
 
         /// <summary>CRC-64/GO-ISO.</summary>
         GoIso
@@ -307,13 +237,10 @@
     /// <summary>Specifies enumerated constants used to define an CRC-82 preset.</summary>
     public enum Crc82Preset
     {
-        /// <summary>CRC-82/DARC.</summary>
-        /// <remarks>Equal to <see cref="Darc"/>.</remarks>
-        Default,
-
-        /// <summary>CRC-82/DARC.</summary>
-        /// <remarks>Equal to <see cref="Default"/>.</remarks>
-        Darc = Default
+        /// <summary>CRC-82.
+        ///     <para><b>Alias:</b> DARC.</para>
+        /// </summary>
+        Default
     }
 
     /// <summary>Provides static functions for loading preset <see cref="CrcConfig{TValue}"/> structures.</summary>
@@ -327,21 +254,15 @@
             preset switch
             {
                 Crc16Preset.Default =>
-                    new(16, 0xb4c8, 0xa001, 0xffff, true, true, 0xffff),
+                    new(16, 0xbb3d, 0xa001, default, true, true),
 
                 Crc16Preset.A =>
                     new(16, 0xbf05, 0x8408, 0x6363, true, true),
 
-                Crc16Preset.Arc =>
-                    new(16, 0xbb3d, 0xa001, default, true, true),
-
-                Crc16Preset.AugCcitt =>
-                    new(16, 0xe5cc, 0x1021, 0x1d0f),
-
                 Crc16Preset.Buypass =>
                     new(16, 0xfee8, 0x8005),
 
-                Crc16Preset.CcittFalse =>
+                Crc16Preset.Ibm3740 =>
                     new(16, 0x29b1, 0x1021, 0xffff),
 
                 Crc16Preset.Cdma2000 =>
@@ -380,6 +301,9 @@
                 Crc16Preset.Riello =>
                     new(16, 0x63d0, 0x8408, 0x554d, true, true),
 
+                Crc16Preset.SpiFujitsu =>
+                    new(16, 0xe5cc, 0x1021, 0x1d0f),
+
                 Crc16Preset.T10Dif =>
                     new(16, 0xd0db, 0x8bb7),
 
@@ -388,6 +312,9 @@
 
                 Crc16Preset.Tms37157 =>
                     new(16, 0x26b1, 0x8408, 0x3791, true, true),
+
+                Crc16Preset.Usb =>
+                    new(16, 0xb4c8, 0xa001, 0xffff, true, true, 0xffff),
 
                 Crc16Preset.X25 =>
                     new(16, 0x906e, 0x8408, 0xffff, true, true, 0xffff),
