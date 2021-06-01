@@ -117,25 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BitsLargerThanType" xml:space="preserve">
+  <data name="ArgumentBitsTypeRatioInvalid" xml:space="preserve">
     <value>The size in bits is too large for the specified type.</value>
   </data>
-  <data name="CrcValidationFailed" xml:space="preserve">
-    <value>The CRC validation failed. (Computed check: '{0}'; expected: '{1}'; mask: '{2}')</value>
+  <data name="ArgumentEmpty" xml:space="preserve">
+    <value>Parameter is empty.</value>
   </data>
-  <data name="DestPathNotValid" xml:space="preserve">
+  <data name="ArgumentSizeTooSmall" xml:space="preserve">
+    <value>Parameter size is too small.</value>
+  </data>
+  <data name="DirectoryNotFoundDestPath" xml:space="preserve">
     <value>The destination path is invalid.</value>
   </data>
   <data name="FileNotFound" xml:space="preserve">
-    <value>Could not find file.</value>
+    <value>File could not be found.</value>
   </data>
-  <data name="IsEmpty" xml:space="preserve">
-    <value>Parameter is empty.</value>
+  <data name="InvalidDataCrcValidation" xml:space="preserve">
+    <value>The CRC validation failed. (Computed check: '{0}'; expected: '{1}'; mask: '{2}')</value>
+    <comment>format</comment>
   </data>
-  <data name="SizeTooSmall" xml:space="preserve">
-    <value>Parameter size is too small.</value>
-  </data>
-  <data name="TypeInvalid" xml:space="preserve">
+  <data name="InvalidOperationUnsupportedType" xml:space="preserve">
     <value>The specified type invalid.</value>
   </data>
 </root>

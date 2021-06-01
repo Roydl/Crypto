@@ -98,10 +98,10 @@
             if (salt == null)
                 throw new ArgumentNullException(nameof(salt));
             if (salt.Length < 8)
-                throw new ArgumentException(ExceptionMessages.SizeTooSmall, nameof(salt));
+                throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(salt));
             _salt = salt;
             if (iterations < 1)
-                throw new ArgumentOutOfRangeException(nameof(iterations));
+                throw new ArgumentOutOfRangeException(nameof(iterations), iterations, null);
             Iterations = iterations;
             BlockSize = blockSize;
             KeySize = keySize;
@@ -123,7 +123,7 @@
             if (bytes == null)
                 throw new ArgumentNullException(nameof(bytes));
             if (bytes.Length < 1)
-                throw new ArgumentException(ExceptionMessages.SizeTooSmall, nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(bytes));
             using var msi = new MemoryStream(bytes);
             using var mso = new MemoryStream();
             EncryptStream(msi, mso);
@@ -148,7 +148,7 @@
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, srcPath);
             var dir = Path.GetDirectoryName(destPath);
             if (!Directory.Exists(dir))
-                throw new DirectoryNotFoundException(ExceptionMessages.DestPathNotValid);
+                throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFoundDestPath);
             using var fsi = new FileStream(srcPath, FileMode.Open, FileAccess.Read);
             using var fso = new FileStream(destPath, overwrite ? FileMode.Create : FileMode.CreateNew);
             EncryptStream(fsi, fso);
@@ -188,7 +188,7 @@
             if (code == null)
                 throw new ArgumentNullException(nameof(code));
             if (code.Length < 1)
-                throw new ArgumentException(ExceptionMessages.SizeTooSmall, nameof(code));
+                throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(code));
             using var msi = new MemoryStream(code);
             using var mso = new MemoryStream();
             DecryptStream(msi, mso);

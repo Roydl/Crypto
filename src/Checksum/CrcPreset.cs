@@ -3,6 +3,7 @@
     using System;
     using System.Globalization;
     using System.Numerics;
+    using Internal;
 
     /// <summary>Specifies enumerated constants used to define an CRC-16 preset.</summary>
     public enum Crc16Preset
@@ -564,7 +565,7 @@
 
         /// <summary>Loads a predefined CRC-82 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
-        /// <returns>A predefined CRC-64 configuration structure.</returns>
+        /// <returns>A predefined CRC-82 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
         public static CrcConfig<BigInteger> GetConfig(Crc82Preset preset) =>
             preset switch

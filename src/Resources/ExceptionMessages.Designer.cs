@@ -63,32 +63,41 @@ namespace Roydl.Crypto.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The size in bits is too large for the specified type..
         /// </summary>
-        internal static string BitsLargerThanType {
+        internal static string ArgumentBitsTypeRatioInvalid {
             get {
-                return ResourceManager.GetString("BitsLargerThanType", resourceCulture);
+                return ResourceManager.GetString("ArgumentBitsTypeRatioInvalid", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The CRC validation failed. (Computed check: &apos;{0}&apos;; expected: &apos;{1}&apos;; mask: &apos;{2}&apos;).
+        ///   Looks up a localized string similar to Parameter is empty..
         /// </summary>
-        internal static string CrcValidationFailed {
+        internal static string ArgumentEmpty {
             get {
-                return ResourceManager.GetString("CrcValidationFailed", resourceCulture);
+                return ResourceManager.GetString("ArgumentEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter size is too small..
+        /// </summary>
+        internal static string ArgumentSizeTooSmall {
+            get {
+                return ResourceManager.GetString("ArgumentSizeTooSmall", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The destination path is invalid..
         /// </summary>
-        internal static string DestPathNotValid {
+        internal static string DirectoryNotFoundDestPath {
             get {
-                return ResourceManager.GetString("DestPathNotValid", resourceCulture);
+                return ResourceManager.GetString("DirectoryNotFoundDestPath", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find file..
+        ///   Looks up a localized string similar to File could not be found..
         /// </summary>
         internal static string FileNotFound {
             get {
@@ -97,29 +106,20 @@ namespace Roydl.Crypto.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter is empty..
+        ///   Looks up a localized string similar to The CRC validation failed. (Computed check: &apos;{0}&apos;; expected: &apos;{1}&apos;; mask: &apos;{2}&apos;).
         /// </summary>
-        internal static string IsEmpty {
+        internal static string InvalidDataCrcValidation {
             get {
-                return ResourceManager.GetString("IsEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter size is too small..
-        /// </summary>
-        internal static string SizeTooSmall {
-            get {
-                return ResourceManager.GetString("SizeTooSmall", resourceCulture);
+                return ResourceManager.GetString("InvalidDataCrcValidation", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The specified type invalid..
         /// </summary>
-        internal static string TypeInvalid {
+        internal static string InvalidOperationUnsupportedType {
             get {
-                return ResourceManager.GetString("TypeInvalid", resourceCulture);
+                return ResourceManager.GetString("InvalidOperationUnsupportedType", resourceCulture);
             }
         }
     }

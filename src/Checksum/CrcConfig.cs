@@ -47,22 +47,22 @@
 
         /// <summary>Creates a new configuration of the <see cref="CrcConfig{TValue}"/> struct.</summary>
         /// <param name="bits">The size in bits.</param>
+        /// <param name="check">The test value that is used to check whether the algorithm is working correctly.</param>
         /// <param name="poly">The polynomial used to generate CRC hash table.</param>
         /// <param name="init">The seed from which the CRC register should be initialized at beginning of the calculation.</param>
         /// <param name="refIn"><see langword="true"/> to process the input bytes in big-endian bit order for the calculation; otherwise, <see langword="false"/>.</param>
         /// <param name="refOut"><see langword="true"/> to process the final output in big-endian bit order; otherwise, <see langword="false"/>.</param>
         /// <param name="xorOut">The value to xor with the final output.</param>
-        /// <param name="check">The test value that is used to check whether the algorithm is working correctly.</param>
         /// <param name="mask">The mask, which is mostly the maximum value of <typeparamref name="TValue"/>.</param>
         /// <param name="skipValidation"><see langword="true"/> to skip the automated CRC validation (<b>not</b> recommended); otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 82.</exception>
-        /// <exception cref="ArgumentException">bits are larger than the size of the TValue type allows.</exception>
+        /// <exception cref="ArgumentException">bits are larger than TValue type allows.</exception>
         /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported.</exception>
         /// <exception cref="InvalidDataException">The CRC validation failed.</exception>
         public CrcConfig(int bits, TValue check, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default, TValue mask = default, bool skipValidation = false)
         {
             if (bits is < 8 or > 82)
-                throw new ArgumentOutOfRangeException(nameof(bits));
+                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
             switch (poly)
             {
                 case byte:
@@ -70,12 +70,12 @@
                 case uint:
                 case ulong:
                     if (Marshal.SizeOf(default(TValue)) < (int)MathF.Floor(bits / 8f))
-                        throw new ArgumentException(ExceptionMessages.BitsLargerThanType);
+                        throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
                     break;
                 case BigInteger:
                     break;
                 default:
-                    throw new InvalidOperationException(ExceptionMessages.TypeInvalid);
+                    throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType);
             }
             if (EqualityComparer<TValue>.Default.Equals(mask, default))
                 mask = CreateMask<TValue>(bits);
@@ -176,7 +176,7 @@
                     _ => throw new InvalidCastException()
                 };
             }
-            throw new InvalidDataException(string.Format(ExceptionMessages.CrcValidationFailed, sa[0], sa[1], sa[2]));
+            throw new InvalidDataException(string.Format(ExceptionMessages.InvalidDataCrcValidation, sa[0], sa[1], sa[2]));
         }
 
         private static T CreateMask<T>(int bits)

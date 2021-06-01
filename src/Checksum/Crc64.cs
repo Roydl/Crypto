@@ -10,7 +10,7 @@
         private CrcConfig<ulong> _current;
         private Crc64Preset _preset;
 
-        /// <summary>Gets or sets a CRC-32 preset.</summary>
+        /// <summary>Gets or sets a CRC-64 preset.</summary>
         public Crc64Preset Preset
         {
             get => _preset;

@@ -34,7 +34,7 @@
         protected ChecksumAlgorithm(int bits, int size = default)
         {
             if (bits is < 8 or > 512)
-                throw new ArgumentOutOfRangeException(nameof(bits));
+                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
             HashBits = bits;
             HashSize = (int)MathF.Ceiling(HashBits / 4f);
             if (HashSize % 2 != 0)
@@ -84,7 +84,7 @@
             if (bytes == null)
                 throw new ArgumentNullException(nameof(bytes));
             if (bytes.Length < 1)
-                throw new ArgumentException(ExceptionMessages.IsEmpty, nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             using var ms = new MemoryStream(bytes);
             Encrypt(ms);
         }
@@ -106,7 +106,7 @@
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
             if (text.Length < 1)
-                throw new ArgumentException(ExceptionMessages.IsEmpty, nameof(text));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
             Encrypt(Encoding.UTF8.GetBytes(text));
         }
 
@@ -127,7 +127,7 @@
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
             if (path.Length < 1)
-                throw new ArgumentException(ExceptionMessages.IsEmpty, nameof(path));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(path));
             if (!File.Exists(path))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = File.OpenRead(path);
