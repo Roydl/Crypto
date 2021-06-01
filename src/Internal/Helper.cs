@@ -2,7 +2,10 @@
 {
     using System;
     using System.Collections;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.IO;
+    using System.Numerics;
 
     internal static class Helper
     {
@@ -44,6 +47,13 @@
                 > kb8 => kb8,
                 _ => kb4
             };
+        }
+
+        internal static BigInteger ToBigInt([AllowNull] this string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex))
+                return BigInteger.Zero;
+            return BigInteger.TryParse(hex, NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out var result) ? result : BigInteger.Zero;
         }
     }
 }

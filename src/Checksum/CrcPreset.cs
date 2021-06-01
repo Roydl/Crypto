@@ -1,7 +1,6 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Globalization;
     using System.Numerics;
     using Internal;
 
@@ -571,10 +570,7 @@
             preset switch
             {
                 Crc82Preset.Default =>
-                    new(82,
-                        BigInteger.Parse("09ea83f625023801fd612", NumberStyles.AllowHexSpecifier),
-                        BigInteger.Parse("220808a00a2022200c430", NumberStyles.AllowHexSpecifier), default, true, true, default,
-                        BigInteger.Parse("3ffffffffffffffffffff", NumberStyles.AllowHexSpecifier)),
+                    new(82, "09ea83f625023801fd612".ToBigInt(), "220808a00a2022200c430".ToBigInt(), default, true, true, default, "3ffffffffffffffffffff".ToBigInt()),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
