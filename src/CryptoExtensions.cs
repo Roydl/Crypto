@@ -28,13 +28,11 @@
         /// <summary>CRC-16/BUYPASS.</summary>
         Crc16Buypass,
 
-        /// <summary>CRC-16/IBM-3740.
-        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
-        /// </summary>
-        Crc16Ibm3740,
-
         /// <summary>CRC-16/CDMA2000.</summary>
         Crc16Cdma2000,
+
+        /// <summary>CRC-16/CMS.</summary>
+        Crc16Cms,
 
         /// <summary>CRC-16/DDS-110.</summary>
         Crc16Dds110,
@@ -60,8 +58,24 @@
         /// </summary>
         Crc16Genibus,
 
+        /// <summary>CRC-16/GSM.</summary>
+        Crc16Gsm,
+
+        /// <summary>CRC-16/IBM-3740.
+        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
+        /// </summary>
+        Crc16Ibm3740,
+
+        /// <summary>CRC-16/IBM-SDLC.
+        ///     <para><b>Alias:</b> ISO-HDLC, ISO-IEC-14443-3-B, CRC-B, X-25</para>
+        /// </summary>
+        Crc16IbmSdlc,
+
         /// <summary>CRC-16/KERMIT.</summary>
         Crc16Kermit,
+
+        /// <summary>CRC-16/LJ1200.</summary>
+        Crc16Lj1200,
 
         /// <summary>CRC-16/MAXIM.</summary>
         /// <para><b>Alias:</b> MAXIM-DOW</para>
@@ -95,9 +109,6 @@
 
         /// <summary>CRC-16/XMODEM.</summary>
         Crc16XModem,
-
-        /// <summary>CRC-16/X-25.</summary>
-        Crc16X25,
 
         /// <summary>CRC-17.
         ///     <para><b>Alias:</b> CAN-FD.</para>
@@ -399,7 +410,9 @@
                 ChecksumAlgo.Crc16En13757 => new Crc16(Crc16Preset.En13757),
                 ChecksumAlgo.Crc16Genibus => new Crc16(Crc16Preset.Genibus),
                 ChecksumAlgo.Crc16Ibm3740 => new Crc16(Crc16Preset.Ibm3740),
+                ChecksumAlgo.Crc16IbmSdlc => new Crc16(Crc16Preset.IbmSdlc),
                 ChecksumAlgo.Crc16Kermit => new Crc16(Crc16Preset.Kermit),
+                ChecksumAlgo.Crc16Lj1200 => new Crc16(Crc16Preset.Lj1200),
                 ChecksumAlgo.Crc16Maxim => new Crc16(Crc16Preset.Maxim),
                 ChecksumAlgo.Crc16Mcrf4Xx => new Crc16(Crc16Preset.Mcrf4Xx),
                 ChecksumAlgo.Crc16ModBus => new Crc16(Crc16Preset.ModBus),
@@ -410,7 +423,6 @@
                 ChecksumAlgo.Crc16Tms37157 => new Crc16(Crc16Preset.Tms37157),
                 ChecksumAlgo.Crc16Usb => new Crc16(Crc16Preset.Usb),
                 ChecksumAlgo.Crc16XModem => new Crc16(Crc16Preset.A),
-                ChecksumAlgo.Crc16X25 => new Crc16(Crc16Preset.X25),
                 ChecksumAlgo.Crc17 => new Crc17(),
                 ChecksumAlgo.Crc21 => new Crc21(),
                 ChecksumAlgo.Crc24 => new Crc24(),

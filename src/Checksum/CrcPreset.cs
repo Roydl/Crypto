@@ -18,13 +18,11 @@
         /// <summary>CRC-16/BUYPASS.</summary>
         Buypass,
 
-        /// <summary>CRC-16/IBM-3740.
-        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
-        /// </summary>
-        Ibm3740,
-
         /// <summary>CRC-16/CDMA2000.</summary>
         Cdma2000,
+
+        /// <summary>CRC-16/CMS.</summary>
+        Cms,
 
         /// <summary>CRC-16/DDS-110.</summary>
         Dds110,
@@ -50,8 +48,24 @@
         /// </summary>
         Genibus,
 
+        /// <summary>CRC-16/GSM.</summary>
+        Gsm,
+
+        /// <summary>CRC-16/IBM-3740.
+        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
+        /// </summary>
+        Ibm3740,
+
+        /// <summary>CRC-16/IBM-SDLC.
+        ///     <para><b>Alias:</b> ISO-HDLC, ISO-IEC-14443-3-B, CRC-B, X-25</para>
+        /// </summary>
+        IbmSdlc,
+
         /// <summary>CRC-16/KERMIT.</summary>
         Kermit,
+
+        /// <summary>CRC-16/LJ1200.</summary>
+        Lj1200,
 
         /// <summary>CRC-16/MAXIM.</summary>
         /// <para><b>Alias:</b> MAXIM-DOW</para>
@@ -84,10 +98,7 @@
         Usb,
 
         /// <summary>CRC-16/XMODEM.</summary>
-        XModem,
-
-        /// <summary>CRC-16/X-25.</summary>
-        X25
+        XModem
     }
 
     /// <summary>Specifies enumerated constants used to define an CRC-17 preset.</summary>
@@ -262,11 +273,11 @@
                 Crc16Preset.Buypass =>
                     new(16, 0xfee8, 0x8005),
 
-                Crc16Preset.Ibm3740 =>
-                    new(16, 0x29b1, 0x1021, 0xffff),
-
                 Crc16Preset.Cdma2000 =>
                     new(16, 0x4c06, 0xc867, 0xffff),
+
+                Crc16Preset.Cms =>
+                    new(16, 0xaee7, 0x8005, 0xffff),
 
                 Crc16Preset.Dds110 =>
                     new(16, 0x9ecf, 0x8005, 0x800d),
@@ -286,8 +297,20 @@
                 Crc16Preset.Genibus =>
                     new(16, 0xd64e, 0x1021, 0xffff, false, false, 0xffff),
 
+                Crc16Preset.Gsm =>
+                    new(16, 0xce3c, 0x1021, default, false, false, 0xffff),
+
+                Crc16Preset.Ibm3740 =>
+                    new(16, 0x29b1, 0x1021, 0xffff),
+
+                Crc16Preset.IbmSdlc =>
+                    new(16, 0x906e, 0x8408, 0xffff, true, true, 0xffff),
+
                 Crc16Preset.Kermit =>
                     new(16, 0x2189, 0x8408, default, true, true),
+
+                Crc16Preset.Lj1200 =>
+                    new(16, 0xbdf4, 0x6f63),
 
                 Crc16Preset.Maxim =>
                     new(16, 0x44c2, 0xa001, default, true, true, 0xffff),
@@ -315,9 +338,6 @@
 
                 Crc16Preset.Usb =>
                     new(16, 0xb4c8, 0xa001, 0xffff, true, true, 0xffff),
-
-                Crc16Preset.X25 =>
-                    new(16, 0x906e, 0x8408, 0xffff, true, true, 0xffff),
 
                 Crc16Preset.XModem =>
                     new(16, 0x31c3, 0x1021),
