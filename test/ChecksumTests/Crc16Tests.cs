@@ -14,8 +14,8 @@
         private const int HashBits = 16;
         private const int HashSize = 4;
         private const int RawHashSize = 2;
-        private const string ExpectedTestHash = "e3da";
-        private const string ExpectedRangeHash = "9354";
+        private const string ExpectedTestHash = "3825";
+        private const string ExpectedRangeHash = "30f1";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
