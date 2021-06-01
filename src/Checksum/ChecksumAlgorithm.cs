@@ -30,10 +30,10 @@
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="bits">The hash size in bits.</param>
         /// <param name="size">The string size to enforce. This is useful to prevent zero padding for algorithms with odd bits.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 512.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8.</exception>
         protected ChecksumAlgorithm(int bits, int size = default)
         {
-            if (bits is < 8 or > 512)
+            if (bits < 8)
                 throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
             HashBits = bits;
             HashSize = (int)MathF.Ceiling(HashBits / 4f);

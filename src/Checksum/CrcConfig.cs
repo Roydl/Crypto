@@ -55,13 +55,13 @@
         /// <param name="xorOut">The value to xor with the final output.</param>
         /// <param name="mask">The mask, which is mostly the maximum value of <typeparamref name="TValue"/>.</param>
         /// <param name="skipValidation"><see langword="true"/> to skip the automated CRC validation (<b>not</b> recommended); otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8 or greater than 82.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8.</exception>
         /// <exception cref="ArgumentException">bits are larger than TValue type allows.</exception>
         /// <exception cref="InvalidOperationException">TValue type is invalid, i.e. not supported.</exception>
         /// <exception cref="InvalidDataException">The CRC validation failed.</exception>
         public CrcConfig(int bits, TValue check, TValue poly, TValue init = default, bool refIn = false, bool refOut = false, TValue xorOut = default, TValue mask = default, bool skipValidation = false)
         {
-            if (bits is < 8 or > 82)
+            if (bits < 8)
                 throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
             switch (poly)
             {
