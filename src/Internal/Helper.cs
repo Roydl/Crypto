@@ -49,7 +49,7 @@
             };
         }
 
-        internal static string ToHexStr<T>(this T num, int padding, bool prefix) where T : IComparable, IFormattable
+        internal static string ToHexStr<T>(this T num, int padding, bool prefix) where T : struct, IComparable, IFormattable
         {
             var str = num.ToString("x2", null);
             if (padding > 2)
