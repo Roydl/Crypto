@@ -25,6 +25,7 @@
         /// <summary>CRC-16/A.</summary>
         Crc16A,
 
+        /// ReSharper disable CommentTypo
         /// <summary>CRC-16/BUYPASS.</summary>
         Crc16Buypass,
 
@@ -225,21 +226,22 @@
         /// <summary>CRC-82.
         ///     <para><b>Alias:</b> DARC.</para>
         /// </summary>
+        /// ReSharper restore CommentTypo
         Crc82,
 
-        /// <summary>MD5 (Message-Digest 5).</summary>
+        /// <summary>MD5, 128-bit.</summary>
         Md5,
 
-        /// <summary>SHA-1 (Secure Hash Algorithm 1).</summary>
+        /// <summary>SHA-1, 160-bit.</summary>
         Sha1,
 
-        /// <summary>SHA-256 (Secure Hash Algorithm 2).</summary>
+        /// <summary>SHA-2, 256-bit.</summary>
         Sha256,
 
-        /// <summary>SHA-384 (Secure Hash Algorithm 2).</summary>
+        /// <summary>SHA-2, 384-bit.</summary>
         Sha384,
 
-        /// <summary>SHA-512 (Secure Hash Algorithm 2).</summary>
+        /// <summary>SHA-2, 512-bit.</summary>
         Sha512
     }
 
@@ -432,7 +434,7 @@
                 ChecksumAlgo.Crc16TeleDisk => new Crc16(Crc16Preset.TeleDisk),
                 ChecksumAlgo.Crc16Tms37157 => new Crc16(Crc16Preset.Tms37157),
                 ChecksumAlgo.Crc16Usb => new Crc16(Crc16Preset.Usb),
-                ChecksumAlgo.Crc16XModem => new Crc16(Crc16Preset.A),
+                ChecksumAlgo.Crc16XModem => new Crc16(Crc16Preset.XModem),
                 ChecksumAlgo.Crc17 => new Crc17(),
                 ChecksumAlgo.Crc21 => new Crc21(),
                 ChecksumAlgo.Crc24 => new Crc24(),
