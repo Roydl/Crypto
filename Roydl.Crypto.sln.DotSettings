@@ -321,7 +321,7 @@ This file is distributed under the MIT License&#xD;
 Filename: $FILENAME$&#xD;
 Version:  $CURRENT_YEAR$-$CURRENT_MONTH$-$CURRENT_DAY$ $CURRENT_TIME$&#xD;
 &#xD;
-Copyright (c) $CURRENT_YEAR$, Si13n7 Developments(tm)&#xD;
+Copyright (c) $CURRENT_YEAR$, Roy Schroedel.&#xD;
 All rights reserved.&#xD;
 ______________________________________________</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/Generate/=EqualityMembers/@KeyIndexDefined">True</s:Boolean>
@@ -428,60 +428,5 @@ ______________________________________________</s:String>
 	<s:Boolean x:Key="/Default/Environment/UpdatesManger/IsDownloadUpdateDataAllowed/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/Environment/UpdatesManger/LastUpdateCheck/@EntryValue">06/19/2017 02:21:24</s:String>
 	<s:Boolean x:Key="/Default/ReSpeller/CheckLocals/@EntryValue">False</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=ADCCP/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=AIXM/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=ARGB/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=AUTOSAR/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=blittable/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Borderless/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=BUYPASS/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Castagnoli/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=CCITT/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=CDMA/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=CKSUM/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Clickable/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=CSDAT/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=DARC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=DECT/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=endian/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=exabyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=exbibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=EZMA/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=FLEXRAY/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=GENIBUS/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=gibibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=HDLC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=ICMP/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=imageres/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Interlaken/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=ISCSI/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Itanium/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=JAMCRC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=kibibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Klang/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Matsushita/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=MCRF/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=mebibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=misallocated/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=MKLINK/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=MODBUS/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=OPENPGP/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=pebibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=petabyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=QWORD/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=RIELLO/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=RISC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=ROBOCOPY/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Sandboxie/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=SDLC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=subkey/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=subkeys/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=Suppressions/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=taskbar/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=taskkill/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=tebibyte/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=TELEDISK/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=UMTS/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=unmute/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=XFER/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=XMODEM/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=endian/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
