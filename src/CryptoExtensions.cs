@@ -256,7 +256,15 @@
         /// <returns>A 64-bit unsigned integer that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm, false).HashNumber;
+            InternalGenericEncrypt(source, algorithm, false) switch
+            {
+                IChecksumResult<byte> x => x.HashNumber,
+                IChecksumResult<ushort> x => x.HashNumber,
+                IChecksumResult<uint> x => x.HashNumber,
+                IChecksumResult<ulong> x => x.HashNumber,
+                IChecksumResult<BigInteger> x => (ulong)(x.HashNumber & ulong.MaxValue),
+                _ => default
+            };
 
         /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
         /// <returns>A string that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
@@ -403,12 +411,14 @@
                 ChecksumAlgo.Crc16A => new Crc16(Crc16Preset.A),
                 ChecksumAlgo.Crc16Buypass => new Crc16(Crc16Preset.Buypass),
                 ChecksumAlgo.Crc16Cdma2000 => new Crc16(Crc16Preset.Cdma2000),
+                ChecksumAlgo.Crc16Cms => new Crc16(Crc16Preset.Cms),
                 ChecksumAlgo.Crc16Dds110 => new Crc16(Crc16Preset.Dds110),
                 ChecksumAlgo.Crc16DectR => new Crc16(Crc16Preset.DectR),
                 ChecksumAlgo.Crc16DectX => new Crc16(Crc16Preset.DectX),
                 ChecksumAlgo.Crc16Dnp => new Crc16(Crc16Preset.Dnp),
                 ChecksumAlgo.Crc16En13757 => new Crc16(Crc16Preset.En13757),
                 ChecksumAlgo.Crc16Genibus => new Crc16(Crc16Preset.Genibus),
+                ChecksumAlgo.Crc16Gsm => new Crc16(Crc16Preset.Gsm),
                 ChecksumAlgo.Crc16Ibm3740 => new Crc16(Crc16Preset.Ibm3740),
                 ChecksumAlgo.Crc16IbmSdlc => new Crc16(Crc16Preset.IbmSdlc),
                 ChecksumAlgo.Crc16Kermit => new Crc16(Crc16Preset.Kermit),
@@ -427,30 +437,30 @@
                 ChecksumAlgo.Crc21 => new Crc21(),
                 ChecksumAlgo.Crc24 => new Crc24(),
                 ChecksumAlgo.Crc24Ble => new Crc24(Crc24Preset.Ble),
-                ChecksumAlgo.Crc24LteA => new Crc24(Crc24Preset.LteA),
-                ChecksumAlgo.Crc24LteB => new Crc24(Crc24Preset.LteB),
                 ChecksumAlgo.Crc24FlexRayA => new Crc24(Crc24Preset.FlexRayA),
                 ChecksumAlgo.Crc24FlexRayB => new Crc24(Crc24Preset.FlexRayB),
                 ChecksumAlgo.Crc24Interlaken => new Crc24(Crc24Preset.Interlaken),
+                ChecksumAlgo.Crc24LteA => new Crc24(Crc24Preset.LteA),
+                ChecksumAlgo.Crc24LteB => new Crc24(Crc24Preset.LteB),
                 ChecksumAlgo.Crc24Os9 => new Crc24(Crc24Preset.Os9),
                 ChecksumAlgo.Crc30 => new Crc30(),
                 ChecksumAlgo.Crc31 => new Crc31(),
                 ChecksumAlgo.Crc32 => new Crc32(),
                 ChecksumAlgo.Crc32Autosar => new Crc32(Crc32Preset.Autosar),
-                ChecksumAlgo.Crc32CdRomEdc => new Crc32(Crc32Preset.CdRomEdc),
-                ChecksumAlgo.Crc32Q => new Crc32(Crc32Preset.Q),
                 ChecksumAlgo.Crc32BZip2 => new Crc32(Crc32Preset.BZip2),
                 ChecksumAlgo.Crc32C => new Crc32(Crc32Preset.C),
+                ChecksumAlgo.Crc32CdRomEdc => new Crc32(Crc32Preset.CdRomEdc),
                 ChecksumAlgo.Crc32D => new Crc32(Crc32Preset.D),
                 ChecksumAlgo.Crc32JamCrc => new Crc32(Crc32Preset.JamCrc),
                 ChecksumAlgo.Crc32Mpeg2 => new Crc32(Crc32Preset.Mpeg2),
                 ChecksumAlgo.Crc32Posix => new Crc32(Crc32Preset.Posix),
+                ChecksumAlgo.Crc32Q => new Crc32(Crc32Preset.Q),
                 ChecksumAlgo.Crc32Xfer => new Crc32(Crc32Preset.Xfer),
                 ChecksumAlgo.Crc40 => new Crc40(),
                 ChecksumAlgo.Crc64 => new Crc64(),
+                ChecksumAlgo.Crc64GoIso => new Crc64(Crc64Preset.GoIso),
                 ChecksumAlgo.Crc64We => new Crc64(Crc64Preset.We),
                 ChecksumAlgo.Crc64Xz => new Crc64(Crc64Preset.Xz),
-                ChecksumAlgo.Crc64GoIso => new Crc64(Crc64Preset.GoIso),
                 ChecksumAlgo.Crc82 => new Crc82(),
                 ChecksumAlgo.Md5 => new Md5(),
                 ChecksumAlgo.Sha1 => new Sha1(),
@@ -460,7 +470,7 @@
                 _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
             };
 
-        private static IChecksumAlgorithm InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos)
+        private static IChecksumResult InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

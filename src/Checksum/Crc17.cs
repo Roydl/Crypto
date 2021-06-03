@@ -4,9 +4,9 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-17/CAN-FD hashes.</summary>
-    public sealed class Crc17 : ChecksumAlgorithm<Crc17>
+    public sealed class Crc17 : ChecksumAlgorithm<Crc17, uint>
     {
-        private static readonly CrcConfig<uint> Current = CrcPreset.GetConfig(Crc17Preset.Default);
+        private static readonly ICrcConfig<uint> Current = CrcPreset.GetConfig(Crc17Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc17"/> class.</summary>
         public Crc17() : base(17, 5) { }
@@ -39,6 +39,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);

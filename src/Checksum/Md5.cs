@@ -1,11 +1,12 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System.IO;
+    using System.Numerics;
     using System.Security.Cryptography;
     using Internal;
 
     /// <summary>Provides functionality to compute MD5 hashes.</summary>
-    public sealed class Md5 : ChecksumAlgorithm<Md5>
+    public sealed class Md5 : ChecksumAlgorithm<Md5, BigInteger>
     {
         private byte[] _secretKey;
 
@@ -52,12 +53,18 @@
             Encrypt(fileInfo);
 
         /// <inheritdoc/>
-        public override void Encrypt(Stream stream) =>
+        public override void Encrypt(Stream stream)
+        {
+            Reset();
             Encrypt(stream, (HashAlgorithm)(SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey)));
+        }
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public new void Encrypt(string text) =>
+        public new void Encrypt(string text)
+        {
+            Reset();
             Encrypt(text, (HashAlgorithm)(SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey)));
+        }
 
         /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>
         /// <remarks>Additional information:

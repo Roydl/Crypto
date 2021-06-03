@@ -4,12 +4,12 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-31/PHILIPS hashes.</summary>
-    public sealed class Crc31 : ChecksumAlgorithm<Crc31>
+    public sealed class Crc31 : ChecksumAlgorithm<Crc31, uint>
     {
-        private static readonly CrcConfig<uint> Current = CrcPreset.GetConfig(Crc31Preset.Default);
+        private static readonly ICrcConfig<uint> Current = CrcPreset.GetConfig(Crc31Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc31"/> class.</summary>
-        public Crc31() : base(31, 6) { }
+        public Crc31() : base(31, 7) { }
 
         /// <summary>Initializes a new instance of the <see cref="Crc31"/> class and encrypts the specified stream.</summary>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
@@ -39,6 +39,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);

@@ -4,9 +4,9 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-30/CDMA hashes.</summary>
-    public sealed class Crc30 : ChecksumAlgorithm<Crc30>
+    public sealed class Crc30 : ChecksumAlgorithm<Crc30, uint>
     {
-        private static readonly CrcConfig<uint> Current = CrcPreset.GetConfig(Crc30Preset.Default);
+        private static readonly ICrcConfig<uint> Current = CrcPreset.GetConfig(Crc30Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc30"/> class.</summary>
         public Crc30() : base(30, 6) { }
@@ -39,6 +39,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);

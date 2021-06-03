@@ -1,7 +1,9 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Numerics;
     using System.Security.Cryptography;
     using System.Text;
     using Resources;
@@ -20,9 +22,6 @@
 
         /// <inheritdoc/>
         public string Hash => ToString();
-
-        /// <inheritdoc/>
-        public ulong HashNumber { get; protected set; }
 
         /// <inheritdoc/>
         public ReadOnlyMemory<byte> RawHash { get; protected set; }
@@ -135,10 +134,10 @@
         }
 
         /// <inheritdoc/>
-        public void Reset()
+        public virtual void Reset()
         {
-            RawHash = default;
-            HashNumber = default;
+            if (!RawHash.IsEmpty)
+                RawHash = default;
         }
 
         /// <summary>Determines whether this instance have same values as the specified <see cref="ChecksumAlgorithm"/> instance.</summary>
@@ -148,9 +147,7 @@
         {
             if (other == null || HashSize != other.HashSize)
                 return false;
-            if (RawHash.IsEmpty)
-                return other.RawHash.IsEmpty;
-            return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
+            return RawHash.IsEmpty ? other.RawHash.IsEmpty : RawHash.Span.SequenceEqual(other.RawHash.Span);
         }
 
         /// <inheritdoc/>
@@ -166,14 +163,12 @@
         {
             if (RawHash.IsEmpty)
                 return string.Empty;
-            var sb = new StringBuilder(HashSize);
+            var sb = new StringBuilder(RawHashSize * 2);
             foreach (var b in RawHash.Span)
                 sb.AppendFormat(uppercase ? "{0:X2}" : "{0:x2}", b);
             while (sb.Length < HashSize)
                 sb.Insert(0, '0');
-            var str = sb.ToString();
-            if (str.Length > HashSize)
-                str = str[^HashSize..];
+            var str = sb.Length > HashSize ? sb.ToString(sb.Length - HashSize, HashSize) : sb.ToString();
             sb.Clear();
             return str;
         }
@@ -195,7 +190,6 @@
                 throw new ArgumentNullException(nameof(algorithm));
             using var csp = algorithm;
             RawHash = csp.ComputeHash(stream);
-            HashNumber = BitConverter.ToUInt64(csp.Hash);
         }
 
         /// <summary>Encrypts the specified string with the specified <see cref="HashAlgorithm"/>.</summary>
@@ -212,7 +206,6 @@
             var ba = Encoding.UTF8.GetBytes(text);
             using var csp = algorithm;
             RawHash = csp.ComputeHash(ba);
-            HashNumber = BitConverter.ToUInt64(csp.Hash);
         }
 
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have same values.</summary>
@@ -221,6 +214,18 @@
         public static bool operator ==(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
             left?.Equals(right) ?? right is null;
 
+        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm"/> object to <see cref="string"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="string"/>.</param>
+        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
+        public static explicit operator string(ChecksumAlgorithm value) =>
+            value.ToString();
+
+        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm"/> object to <see cref="byte"/> array.</summary>
+        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
+        /// <returns>A copy of the last computed hash code.</returns>
+        public static explicit operator byte[](ChecksumAlgorithm value) =>
+            value.RawHash.Span!.ToArray();
+
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have different values.</summary>
         /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         /// <param name="right">The second <see cref="ChecksumAlgorithm"/> instance to compare.</param>
@@ -228,60 +233,114 @@
             !(left == right);
     }
 
-    /// <typeparam name="THashAlgo">The hash algorithm type.</typeparam>
+    /// <typeparam name="TAlgo">The hash algorithm type.</typeparam>
+    /// <typeparam name="TCipher">The integral type of <see cref="HashNumber"/>.</typeparam>
     /// <inheritdoc cref="ChecksumAlgorithm"/>
-    public abstract class ChecksumAlgorithm<THashAlgo> : ChecksumAlgorithm, IEquatable<THashAlgo> where THashAlgo : IChecksumAlgorithm
+    public abstract class ChecksumAlgorithm<TAlgo, TCipher> : ChecksumAlgorithm, IChecksumAlgorithm<TCipher>, IEquatable<TAlgo> where TAlgo : IChecksumAlgorithm<TCipher> where TCipher : struct, IComparable, IFormattable
     {
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class.</summary>
+        private TCipher _hashNumber;
+
+        /// <inheritdoc/>
+        public TCipher HashNumber
+        {
+            get
+            {
+                if (RawHash.IsEmpty)
+                    return default;
+                if (!EqualityComparer<TCipher>.Default.Equals(_hashNumber, default))
+                    return _hashNumber;
+
+                // Fallback (should be set from the underlying types if necessary)
+                var span = RawHash.Span;
+                _hashNumber = _hashNumber switch
+                {
+                    byte => (TCipher)(object)span[^1..][0],
+                    ushort => (TCipher)(object)CryptoUtils.GetUInt16(span),
+                    uint => (TCipher)(object)CryptoUtils.GetUInt32(span),
+                    ulong => (TCipher)(object)CryptoUtils.GetUInt64(span),
+                    BigInteger => (TCipher)(object)new BigInteger(span, true, !BitConverter.IsLittleEndian),
+                    _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
+                };
+                return _hashNumber;
+            }
+            protected set => _hashNumber = value;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, int size = default) : base(bits, size) { }
 
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified sequence of bytes.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, byte[] bytes) : base(bits, bytes) { }
 
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified text or file.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : base(bits, textOrFile, strIsFilePath) { }
 
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified text.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, string text) : base(bits, text) { }
 
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{THashAlgo}"/> class and encrypts the specified file.</summary>
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified file.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bits, FileInfo fileInfo) : base(bits, fileInfo) { }
 
-        /// <summary>Determines whether this instance have same values as the specified <typeparamref name="THashAlgo"/> instance.</summary>
-        /// <param name="other">The <typeparamref name="THashAlgo"/> instance to compare.</param>
+        /// <summary>Determines whether this instance have same values as the specified <typeparamref name="TAlgo"/> instance.</summary>
+        /// <param name="other">The <typeparamref name="TAlgo"/> instance to compare.</param>
         /// <inheritdoc/>
-        public bool Equals(THashAlgo other)
+        public bool Equals(TAlgo other)
         {
-            if (other == null || HashSize != other.HashSize)
+            if (other == null || HashSize != other.HashSize || HashNumber.GetType() != other.HashNumber.GetType())
                 return false;
             if (RawHash.IsEmpty)
                 return other.RawHash.IsEmpty;
-            return HashNumber == other.HashNumber && RawHash.Span.SequenceEqual(other.RawHash.Span);
+            return EqualityComparer<TCipher>.Default.Equals(HashNumber, other.HashNumber) && RawHash.Span.SequenceEqual(other.RawHash.Span);
         }
 
         /// <inheritdoc/>
         public override bool Equals(object other) =>
-            other is THashAlgo item && Equals(item);
+            other is TAlgo item && Equals(item);
 
         /// <inheritdoc cref="Type.GetHashCode()"/>
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        /// <summary>Determines whether two specified <typeparamref name="THashAlgo"/> instances have same values.</summary>
-        /// <param name="left">The first <typeparamref name="THashAlgo"/> instance to compare.</param>
-        /// <param name="right">The second <typeparamref name="THashAlgo"/> instance to compare.</param>
-        public static bool operator ==(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
+        /// <inheritdoc/>
+        public override void Reset()
+        {
+            base.Reset();
+            HashNumber = default;
+        }
+
+        /// <summary>Determines whether two specified <typeparamref name="TAlgo"/> instances have same values.</summary>
+        /// <param name="left">The first <typeparamref name="TAlgo"/> instance to compare.</param>
+        /// <param name="right">The second <typeparamref name="TAlgo"/> instance to compare.</param>
+        public static bool operator ==(ChecksumAlgorithm<TAlgo, TCipher> left, ChecksumAlgorithm<TAlgo, TCipher> right) =>
             left?.Equals(right) ?? right is null;
 
-        /// <summary>Determines whether two specified <typeparamref name="THashAlgo"/> instances have different values.</summary>
-        /// <param name="left">The first <typeparamref name="THashAlgo"/> instance to compare.</param>
-        /// <param name="right">The second <typeparamref name="THashAlgo"/> instance to compare.</param>
-        public static bool operator !=(ChecksumAlgorithm<THashAlgo> left, ChecksumAlgorithm<THashAlgo> right) =>
+        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <see cref="string"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="string"/>.</param>
+        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
+        public static explicit operator string(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.ToString();
+
+        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <typeparamref name="TCipher"/>.</summary>
+        /// <param name="value">The item to convert to <typeparamref name="TCipher"/>.</param>
+        /// <returns>The <typeparamref name="TCipher"/> representation of the last computed hash code.</returns>
+        public static explicit operator TCipher(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber;
+
+        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <see cref="byte"/> array.</summary>
+        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
+        /// <returns>A copy of the last computed hash code.</returns>
+        public static explicit operator byte[](ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.RawHash.Span!.ToArray();
+
+        /// <summary>Determines whether two specified <typeparamref name="TAlgo"/> instances have different values.</summary>
+        /// <param name="left">The first <typeparamref name="TAlgo"/> instance to compare.</param>
+        /// <param name="right">The second <typeparamref name="TAlgo"/> instance to compare.</param>
+        public static bool operator !=(ChecksumAlgorithm<TAlgo, TCipher> left, ChecksumAlgorithm<TAlgo, TCipher> right) =>
             !(left == right);
     }
 }

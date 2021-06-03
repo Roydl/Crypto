@@ -1,11 +1,12 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System.IO;
+    using System.Numerics;
     using System.Security.Cryptography;
     using Internal;
 
     /// <summary>Provides functionality to compute SHA-512 hashes.</summary>
-    public sealed class Sha512 : ChecksumAlgorithm<Sha512>
+    public sealed class Sha512 : ChecksumAlgorithm<Sha512, BigInteger>
     {
         private byte[] _secretKey;
 
@@ -52,12 +53,18 @@
             Encrypt(fileInfo);
 
         /// <inheritdoc/>
-        public override void Encrypt(Stream stream) =>
+        public override void Encrypt(Stream stream)
+        {
+            Reset();
             Encrypt(stream, (HashAlgorithm)(SecretKey == null ? SHA512.Create() : new HMACSHA512(SecretKey)));
+        }
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public new void Encrypt(string text) =>
+        public new void Encrypt(string text)
+        {
+            Reset();
             Encrypt(text, (HashAlgorithm)(SecretKey == null ? SHA512.Create() : new HMACSHA512(SecretKey)));
+        }
 
         /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>
         /// <inheritdoc cref="Md5.DestroySecretKey()"/>

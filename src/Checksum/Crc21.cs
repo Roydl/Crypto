@@ -4,9 +4,9 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-21/CAN-FD hashes.</summary>
-    public sealed class Crc21 : ChecksumAlgorithm<Crc21>
+    public sealed class Crc21 : ChecksumAlgorithm<Crc21, uint>
     {
-        private static readonly CrcConfig<uint> Current = CrcPreset.GetConfig(Crc21Preset.Default);
+        private static readonly ICrcConfig<uint> Current = CrcPreset.GetConfig(Crc21Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc21"/> class.</summary>
         public Crc21() : base(21, 5) { }
@@ -39,6 +39,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);

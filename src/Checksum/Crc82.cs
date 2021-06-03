@@ -5,9 +5,9 @@
     using System.Numerics;
 
     /// <summary>Provides functionality to compute CRC-82/DARC hashes.</summary>
-    public sealed class Crc82 : ChecksumAlgorithm<Crc82>
+    public sealed class Crc82 : ChecksumAlgorithm<Crc82, BigInteger>
     {
-        private static readonly CrcConfig<BigInteger> Current = CrcPreset.GetConfig(Crc82Preset.Default);
+        private static readonly ICrcConfig<BigInteger> Current = CrcPreset.GetConfig(Crc82Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc82"/> class.</summary>
         public Crc82() : base(82, 21) { }
@@ -40,14 +40,12 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);
-            HashNumber = (ulong)(num & 0xffffffffffffffffuL);
-            var ba = num.ToByteArray();
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(ba);
-            RawHash = ba;
+            HashNumber = num;
+            RawHash = num.ToByteArray(true, BitConverter.IsLittleEndian);
         }
     }
 }

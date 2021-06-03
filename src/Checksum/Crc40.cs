@@ -4,9 +4,9 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-40/GSM hashes.</summary>
-    public sealed class Crc40 : ChecksumAlgorithm<Crc40>
+    public sealed class Crc40 : ChecksumAlgorithm<Crc40, ulong>
     {
-        private static readonly CrcConfig<ulong> Current = CrcPreset.GetConfig(Crc40Preset.Default);
+        private static readonly ICrcConfig<ulong> Current = CrcPreset.GetConfig(Crc40Preset.Default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc40"/> class.</summary>
         public Crc40() : base(40) { }
@@ -39,6 +39,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var num);

@@ -5,7 +5,7 @@
     using Internal;
 
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
-    public sealed class Adler32 : ChecksumAlgorithm<Adler32>
+    public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
     {
         /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
         public Adler32() : base(32) { }
@@ -34,9 +34,10 @@
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            var ba = new byte[Helper.GetBufferSize(stream)].AsSpan();
+            var ba = new byte[stream.GetBufferSize()].AsSpan();
             var uia = new[] { 1u, 0u }.AsSpan();
             int len;
             while ((len = stream.Read(ba)) > 0)
