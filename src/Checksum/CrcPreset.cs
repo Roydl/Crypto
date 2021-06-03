@@ -4,6 +4,166 @@
     using System.Numerics;
     using Internal;
 
+    /// <summary>Specifies enumerated constants used to define an CRC-8 preset.</summary>
+    public enum Crc08Preset
+    {
+        /// ReSharper disable CommentTypo
+        /// <summary>CRC-8.
+        ///     <para><b>Alias:</b> SMBUS.</para>
+        /// </summary>
+        Default,
+
+        /// <summary>CRC-8/AUTOSAR.</summary>
+        Autosar,
+
+        /// <summary>CRC-8/BLUETOOTH.</summary>
+        Bluetooth,
+
+        /// <summary>CRC-8/CDMA2000.</summary>
+        Cdma2000,
+
+        /// <summary>CRC-8/DARC.</summary>
+        Darc,
+
+        /// <summary>CRC-8/DVB-S2.</summary>
+        DvbS2,
+
+        /// <summary>CRC-8/GSM-A.</summary>
+        GsmA,
+
+        /// <summary>CRC-8/GSM-B.</summary>
+        GsmB,
+
+        /// <summary>CRC-8/I-432-1.
+        ///     <para><b>Alias:</b> ITU.</para>
+        /// </summary>
+        I4321,
+
+        /// ReSharper disable once InconsistentNaming
+        /// <summary>CRC-8/I-CODE.</summary>
+        ICode,
+
+        /// <summary>CRC-8/LTE.</summary>
+        Lte,
+
+        /// <summary>CRC-8/MAXIM.
+        ///     <para><b>Alias:</b> MAXIM-DOW, DOW-CRC.</para>
+        /// </summary>
+        Maxim,
+
+        /// <summary>CRC-8/MIFARE-MAD.</summary>
+        MifareMad,
+
+        /// <summary>CRC-8/NRSC-5.</summary>
+        Nrsc5,
+
+        /// <summary>CRC-8/OPENSAFETY.</summary>
+        OpenSafety,
+
+        /// <summary>CRC-8/ROHC.</summary>
+        Rohc,
+
+        /// <summary>CRC-8/SAE-J1850.</summary>
+        SaeJ1850,
+
+        /// <summary>CRC-8/TECH-3250.</summary>
+        Tech3250,
+
+        /// <summary>CRC-8/WCDMA.</summary>
+        /// ReSharper restore CommentTypo
+        Wcdma
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-10 preset.</summary>
+    public enum Crc10Preset
+    {
+        /// <summary>CRC-10.
+        ///     <para><b>Alias:</b> ATM, I-610.</para>
+        /// </summary>
+        Default,
+
+        /// ReSharper disable once CommentTypo
+        /// <summary>CRC-10/CDMA2000.</summary>
+        Cdma2000,
+
+        /// <summary>CRC-10/GSM.</summary>
+        Gsm
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-11 preset.</summary>
+    public enum Crc11Preset
+    {
+        /// ReSharper disable CommentTypo
+        /// <summary>CRC-11.
+        ///     <para><b>Alias:</b> FLEXRAY.</para>
+        /// </summary>
+        Default,
+
+        /// <summary>CRC-11/UMTS.</summary>
+        /// ReSharper restore CommentTypo
+        Umts
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-12 preset.</summary>
+    public enum Crc12Preset
+    {
+        /// ReSharper disable CommentTypo
+        /// <summary>CRC-12.
+        ///     <para><b>Alias:</b> CDMA2000.</para>
+        /// </summary>
+        Default,
+
+        /// <summary>CRC-12/DECT.
+        ///     <para><b>Alias:</b> X-CRC-12.</para>
+        /// </summary>
+        Dect,
+
+        /// <summary>CRC-12/GSM.
+        ///     <para><b>Alias:</b> DECT.</para>
+        /// </summary>
+        Gsm,
+
+        /// <summary>CRC-12/UMTS.
+        ///     <para><b>Alias:</b> 3GPP.</para>
+        /// </summary>
+        /// ReSharper restore CommentTypo
+        Umts
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-13 preset.</summary>
+    public enum Crc13Preset
+    {
+        /// <summary>CRC-13.
+        ///     <para><b>Alias:</b> BBC.</para>
+        /// </summary>
+        Default
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-14 preset.</summary>
+    public enum Crc14Preset
+    {
+        /// ReSharper disable once CommentTypo
+        /// <summary>CRC-14.
+        ///     <para><b>Alias:</b> DARC.</para>
+        /// </summary>
+        Default,
+
+        /// <summary>CRC-14/GSM.</summary>
+        Gsm
+    }
+
+    /// <summary>Specifies enumerated constants used to define an CRC-15 preset.</summary>
+    public enum Crc15Preset
+    {
+        /// <summary>CRC-15.
+        ///     <para><b>Alias:</b> CAN.</para>
+        /// </summary>
+        Default,
+
+        /// <summary>CRC-15/MPT1327.</summary>
+        Mpt1327
+    }
+
     /// <summary>Specifies enumerated constants used to define an CRC-16 preset.</summary>
     public enum Crc16Preset
     {
@@ -15,6 +175,7 @@
         /// <summary>CRC-16/A.</summary>
         A,
 
+        /// ReSharper disable CommentTypo
         /// <summary>CRC-16/BUYPASS.</summary>
         Buypass,
 
@@ -98,6 +259,7 @@
         Usb,
 
         /// <summary>CRC-16/XMODEM.</summary>
+        /// ReSharper restore CommentTypo
         XModem
     }
 
@@ -122,6 +284,7 @@
     /// <summary>Specifies enumerated constants used to define an CRC-24 preset.</summary>
     public enum Crc24Preset
     {
+        /// ReSharper disable CommentTypo
         /// <summary>CRC-24.
         ///     <para><b>Alias:</b> OPENPGP.</para>
         /// </summary>
@@ -143,6 +306,7 @@
         FlexRayB,
 
         /// <summary>CRC-24/INTERLAKEN.</summary>
+        /// ReSharper restore CommentTypo
         Interlaken,
 
         /// <summary>CRC-24/OS-9.</summary>
@@ -152,6 +316,7 @@
     /// <summary>Specifies enumerated constants used to define an CRC-30 preset.</summary>
     public enum Crc30Preset
     {
+        /// ReSharper disable once CommentTypo
         /// <summary>CRC-30.
         ///     <para><b>Alias:</b> CDMA.</para>
         /// </summary>
@@ -170,6 +335,7 @@
     /// <summary>Specifies enumerated constants used to define an CRC-32 preset.</summary>
     public enum Crc32Preset
     {
+        /// ReSharper disable CommentTypo
         /// <summary>CRC-32/ISO-HDLC.
         ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24, XZ.</para>
         /// </summary>
@@ -213,6 +379,7 @@
         Posix,
 
         /// <summary>CRC-32/XFER.</summary>
+        /// ReSharper restore CommentTypo
         Xfer
     }
 
@@ -248,6 +415,7 @@
     /// <summary>Specifies enumerated constants used to define an CRC-82 preset.</summary>
     public enum Crc82Preset
     {
+        /// ReSharper disable once CommentTypo
         /// <summary>CRC-82.
         ///     <para><b>Alias:</b> DARC.</para>
         /// </summary>
@@ -257,6 +425,175 @@
     /// <summary>Provides static functions for loading preset <see cref="ICrcConfig{TValue}"/> structures.</summary>
     public static class CrcPreset
     {
+        /// <summary>Loads a predefined CRC-8 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-8 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<byte> GetConfig(Crc08Preset preset) =>
+            preset switch
+            {
+                Crc08Preset.Default =>
+                    new CrcConfig(8, 0xf4, 0x07),
+
+                Crc08Preset.Autosar =>
+                    new CrcConfig(8, 0xdf, 0x2f, 0xff, false, false, 0xff),
+
+                Crc08Preset.Bluetooth =>
+                    new CrcConfig(8, 0x26, 0xe5, default, true, true),
+
+                Crc08Preset.Cdma2000 =>
+                    new CrcConfig(8, 0xda, 0x9b, 0xff),
+
+                Crc08Preset.Darc =>
+                    new CrcConfig(8, 0x15, 0b_10011100, default, true, true),
+
+                Crc08Preset.DvbS2 =>
+                    new CrcConfig(8, 0xbc, 0xd5),
+
+                Crc08Preset.GsmA =>
+                    new CrcConfig(8, 0x37, 0x1d),
+
+                Crc08Preset.GsmB =>
+                    new CrcConfig(8, 0x94, 0x49, default, false, false, 0xff),
+
+                Crc08Preset.I4321 =>
+                    new CrcConfig(8, 0xa1, 0x07, default, false, false, 0x55),
+
+                Crc08Preset.ICode =>
+                    new CrcConfig(8, 0x7e, 0x1d, 0xfd),
+
+                Crc08Preset.Lte =>
+                    new CrcConfig(8, 0xea, 0x9b),
+
+                Crc08Preset.Maxim =>
+                    new CrcConfig(8, 0xa1, 0x8c, default, true, true),
+
+                Crc08Preset.MifareMad =>
+                    new CrcConfig(8, 0x99, 0x1d, 0xc7),
+
+                Crc08Preset.Nrsc5 =>
+                    new CrcConfig(8, 0xf7, 0x31, 0xff),
+
+                Crc08Preset.OpenSafety =>
+                    new CrcConfig(8, 0x3e, 0x2f),
+
+                Crc08Preset.Rohc =>
+                    new CrcConfig(8, 0xd0, 0xe0, 0xff, true, true),
+
+                Crc08Preset.SaeJ1850 =>
+                    new CrcConfig(8, 0x4b, 0x1d, 0xff, false, false, 0xff),
+
+                Crc08Preset.Tech3250 =>
+                    new CrcConfig(8, 0x97, 0xb8, 0xff, true, true),
+
+                Crc08Preset.Wcdma =>
+                    new CrcConfig(8, 0x25, 0xd9, default, true, true),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-10 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-10 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc10Preset preset) =>
+            preset switch
+            {
+                Crc10Preset.Default =>
+                    new CrcConfig16(10, 0x199, 0x233, default, false, false, default, 0x3ff),
+
+                Crc10Preset.Cdma2000 =>
+                    new CrcConfig16(10, 0x233, 0x3d9, 0x3ff, false, false, default, 0x3ff),
+
+                Crc10Preset.Gsm =>
+                    new CrcConfig16(10, 0x12a, 0x175, default, false, false, 0x3ff, 0x3ff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-11 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-11 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc11Preset preset) =>
+            preset switch
+            {
+                Crc11Preset.Default =>
+                    new CrcConfig16(11, 0x5a3, 0x385, 0x01a),
+
+                Crc11Preset.Umts =>
+                    new CrcConfig16(11, 0x061, 0x307, default, false, false, default, 0x7ff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-12 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-12 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc12Preset preset) =>
+            preset switch
+            {
+                Crc12Preset.Default =>
+                    new CrcConfig16(12, 0xd4d, 0xf13, 0xfff, false, false, default, 0xfff),
+
+                Crc12Preset.Dect =>
+                    new CrcConfig16(12, 0xf5b, 0x80f, default, false, false, default, 0xfff),
+
+                Crc12Preset.Gsm =>
+                    new CrcConfig16(12, 0xb34, 0xd31, default, false, false, 0xfff, 0xfff),
+
+                Crc12Preset.Umts =>
+                    new CrcConfig16(12, 0xdaf, 0x80f, default, false, true, default, 0xfff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-13 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-13 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc13Preset preset) =>
+            preset switch
+            {
+                Crc13Preset.Default =>
+                    new CrcConfig16(13, 0x04fa, 0x1cf5, default, false, false, default, 0x1fff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-14 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-14 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc14Preset preset) =>
+            preset switch
+            {
+                Crc14Preset.Default =>
+                    new CrcConfig16(14, 0x082d, 0x2804, default, true, true, default, 0x3fff),
+
+                Crc14Preset.Gsm =>
+                    new CrcConfig16(14, 0x30ae, 0x202d, default, false, false, 0x3fff, 0x3fff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
+        /// <summary>Loads a predefined CRC-15 configuration structure.</summary>
+        /// <param name="preset">The preset to be loaded.</param>
+        /// <returns>A predefined CRC-15 configuration structure.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
+        public static ICrcConfig<ushort> GetConfig(Crc15Preset preset) =>
+            preset switch
+            {
+                Crc15Preset.Default =>
+                    new CrcConfig16(15, 0x059e, 0x4599),
+
+                Crc15Preset.Mpt1327 =>
+                    new CrcConfig16(15, 0x2566, 0x6815, default, false, false, 0x0001, 0x7fff),
+
+                _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
+            };
+
         /// <summary>Loads a predefined CRC-16 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-16 configuration structure.</returns>
