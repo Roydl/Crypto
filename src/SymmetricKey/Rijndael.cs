@@ -48,7 +48,7 @@
             }
             try
             {
-                var ba = new byte[Helper.GetBufferSize(inputStream)];
+                var ba = new byte[inputStream.GetBufferSize()];
                 int len;
                 using var cs = new CryptoStream(outputStream, encrypt ? rm.CreateEncryptor() : rm.CreateDecryptor(), CryptoStreamMode.Write);
                 while ((len = inputStream.Read(ba)) > 0)

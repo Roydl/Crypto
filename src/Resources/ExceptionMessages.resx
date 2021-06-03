@@ -133,10 +133,9 @@
     <value>File could not be found.</value>
   </data>
   <data name="InvalidDataCrcValidation" xml:space="preserve">
-    <value>The CRC validation failed. (Computed check: '{0}'; expected: '{1}'; mask: '{2}')</value>
-    <comment>format</comment>
+    <value>The CRC validation failed.</value>
   </data>
   <data name="InvalidOperationUnsupportedType" xml:space="preserve">
-    <value>The specified type invalid.</value>
+    <value>The specified type is invalid.</value>
   </data>
 </root>

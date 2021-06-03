@@ -30,7 +30,7 @@
                 GC.Collect();
         }
 
-        internal static int GetBufferSize(Stream stream)
+        internal static int GetBufferSize(this Stream stream)
         {
             const int kb128 = 0x20000;
             const int kb64 = 0x10000;
@@ -49,11 +49,21 @@
             };
         }
 
+        internal static string ToHexStr<T>(this T num, int padding, bool prefix) where T : IComparable, IFormattable
+        {
+            var str = num.ToString("x2", null);
+            if (padding > 2)
+                str = str.PadLeft(padding, '0');
+            if (prefix)
+                str = "0x" + str;
+            return str;
+        }
+
         internal static BigInteger ToBigInt([AllowNull] this string hex)
         {
             if (string.IsNullOrWhiteSpace(hex))
                 return BigInteger.Zero;
-            return BigInteger.TryParse(hex, NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out var result) ? result : BigInteger.Zero;
+            return BigInteger.TryParse(hex, NumberStyles.AllowHexSpecifier, null, out var result) ? result : BigInteger.Zero;
         }
     }
 }

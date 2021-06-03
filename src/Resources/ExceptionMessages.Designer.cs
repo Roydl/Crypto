@@ -106,7 +106,7 @@ namespace Roydl.Crypto.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The CRC validation failed. (Computed check: &apos;{0}&apos;; expected: &apos;{1}&apos;; mask: &apos;{2}&apos;).
+        ///   Looks up a localized string similar to The CRC validation failed..
         /// </summary>
         internal static string InvalidDataCrcValidation {
             get {
@@ -115,7 +115,7 @@ namespace Roydl.Crypto.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified type invalid..
+        ///   Looks up a localized string similar to The specified type is invalid..
         /// </summary>
         internal static string InvalidOperationUnsupportedType {
             get {
