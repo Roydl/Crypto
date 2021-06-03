@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using Internal;
     using Resources;
 
@@ -87,9 +88,12 @@
         /// <inheritdoc/>
         public void FinalizeHash(ref ushort hash)
         {
-            if (RefIn ^ RefOut)
+            if (!RefIn && RefOut)
+                BitsReverseSlow(ref hash);
+            else if (RefIn ^ RefOut)
                 hash = (ushort)~hash;
-            hash ^= XorOut;
+            if (XorOut > 0)
+                hash ^= XorOut;
         }
 
         /// <inheritdoc/>
@@ -99,6 +103,18 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
+
+        private void BitsReverseSlow(ref ushort hash)
+        {
+            var bitstr = Convert.ToString(hash, 2);
+            var size = bitstr.Length;
+            while (size % 4 != 0)
+                size++;
+            if (bitstr.Length < size)
+                bitstr = bitstr.PadLeft(size, '0');
+            bitstr = new string(bitstr.Reverse().ToArray());
+            hash = (ushort)(Convert.ToUInt16(bitstr, 2) & Mask);
+        }
 
         private static ushort CreateMask(int bits)
         {
