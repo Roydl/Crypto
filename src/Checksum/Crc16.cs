@@ -4,10 +4,10 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-16 hashes.</summary>
-    public sealed class Crc16 : ChecksumAlgorithm<Crc16>
+    public sealed class Crc16 : ChecksumAlgorithm<Crc16, ushort>
     {
-        private static Memory<CrcConfig<ushort>?> _configCache;
-        private CrcConfig<ushort> _current;
+        private static Memory<ICrcConfig<ushort>> _configCache;
+        private ICrcConfig<ushort> _current;
         private Crc16Preset _preset;
 
         /// <summary>Gets or sets a CRC-16 preset.</summary>
@@ -16,12 +16,14 @@
             get => _preset;
             set
             {
+                if (_preset != value)
+                    Reset();
                 _preset = value;
                 if (_configCache.IsEmpty)
-                    _configCache = new CrcConfig<ushort>?[Enum.GetValues(typeof(Crc16Preset)).Length].AsMemory();
+                    _configCache = new ICrcConfig<ushort>[Enum.GetValues(typeof(Crc16Preset)).Length].AsMemory();
                 ref var item = ref _configCache.Span[(int)value];
                 item ??= CrcPreset.GetConfig(value);
-                _current = item.Value;
+                _current = item;
             }
         }
 
@@ -57,6 +59,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             _current.ComputeHash(stream, out var num);

@@ -4,10 +4,10 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-32 hashes.</summary>
-    public sealed class Crc32 : ChecksumAlgorithm<Crc32>
+    public sealed class Crc32 : ChecksumAlgorithm<Crc32, uint>
     {
-        private static Memory<CrcConfig<uint>?> _configCache;
-        private CrcConfig<uint> _current;
+        private static Memory<ICrcConfig<uint>> _configCache;
+        private ICrcConfig<uint> _current;
         private Crc32Preset _preset;
 
         /// <summary>Gets or sets a CRC-32 preset.</summary>
@@ -16,12 +16,14 @@
             get => _preset;
             set
             {
+                if (_preset != value)
+                    Reset();
                 _preset = value;
                 if (_configCache.IsEmpty)
-                    _configCache = new CrcConfig<uint>?[Enum.GetValues(typeof(Crc32Preset)).Length].AsMemory();
+                    _configCache = new ICrcConfig<uint>[Enum.GetValues(typeof(Crc32Preset)).Length].AsMemory();
                 ref var item = ref _configCache.Span[(int)value];
                 item ??= CrcPreset.GetConfig(value);
-                _current = item.Value;
+                _current = item;
             }
         }
 
@@ -57,6 +59,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             _current.ComputeHash(stream, out var num);

@@ -254,93 +254,93 @@
         Default
     }
 
-    /// <summary>Provides static functions for loading preset <see cref="CrcConfig{TValue}"/> structures.</summary>
+    /// <summary>Provides static functions for loading preset <see cref="ICrcConfig{TValue}"/> structures.</summary>
     public static class CrcPreset
     {
         /// <summary>Loads a predefined CRC-16 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-16 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<ushort> GetConfig(Crc16Preset preset) =>
+        public static ICrcConfig<ushort> GetConfig(Crc16Preset preset) =>
             preset switch
             {
                 Crc16Preset.Default =>
-                    new(16, 0xbb3d, 0xa001, default, true, true),
+                    new CrcConfig16(16, 0xbb3d, 0xa001, default, true, true),
 
                 Crc16Preset.A =>
-                    new(16, 0xbf05, 0x8408, 0x6363, true, true),
+                    new CrcConfig16(16, 0xbf05, 0x8408, 0x6363, true, true),
 
                 Crc16Preset.Buypass =>
-                    new(16, 0xfee8, 0x8005),
+                    new CrcConfig16(16, 0xfee8, 0x8005),
 
                 Crc16Preset.Cdma2000 =>
-                    new(16, 0x4c06, 0xc867, 0xffff),
+                    new CrcConfig16(16, 0x4c06, 0xc867, 0xffff),
 
                 Crc16Preset.Cms =>
-                    new(16, 0xaee7, 0x8005, 0xffff),
+                    new CrcConfig16(16, 0xaee7, 0x8005, 0xffff),
 
                 Crc16Preset.Dds110 =>
-                    new(16, 0x9ecf, 0x8005, 0x800d),
+                    new CrcConfig16(16, 0x9ecf, 0x8005, 0x800d),
 
                 Crc16Preset.DectR =>
-                    new(16, 0x007e, 0x0589, default, false, false, 0x0001),
+                    new CrcConfig16(16, 0x007e, 0x0589, default, false, false, 0x0001),
 
                 Crc16Preset.DectX =>
-                    new(16, 0x007f, 0x0589),
+                    new CrcConfig16(16, 0x007f, 0x0589),
 
                 Crc16Preset.Dnp =>
-                    new(16, 0xea82, 0xa6bc, default, true, true, 0xffff),
+                    new CrcConfig16(16, 0xea82, 0xa6bc, default, true, true, 0xffff),
 
                 Crc16Preset.En13757 =>
-                    new(16, 0xc2b7, 0x3d65, default, false, false, 0xffff),
+                    new CrcConfig16(16, 0xc2b7, 0x3d65, default, false, false, 0xffff),
 
                 Crc16Preset.Genibus =>
-                    new(16, 0xd64e, 0x1021, 0xffff, false, false, 0xffff),
+                    new CrcConfig16(16, 0xd64e, 0x1021, 0xffff, false, false, 0xffff),
 
                 Crc16Preset.Gsm =>
-                    new(16, 0xce3c, 0x1021, default, false, false, 0xffff),
+                    new CrcConfig16(16, 0xce3c, 0x1021, default, false, false, 0xffff),
 
                 Crc16Preset.Ibm3740 =>
-                    new(16, 0x29b1, 0x1021, 0xffff),
+                    new CrcConfig16(16, 0x29b1, 0x1021, 0xffff),
 
                 Crc16Preset.IbmSdlc =>
-                    new(16, 0x906e, 0x8408, 0xffff, true, true, 0xffff),
+                    new CrcConfig16(16, 0x906e, 0x8408, 0xffff, true, true, 0xffff),
 
                 Crc16Preset.Kermit =>
-                    new(16, 0x2189, 0x8408, default, true, true),
+                    new CrcConfig16(16, 0x2189, 0x8408, default, true, true),
 
                 Crc16Preset.Lj1200 =>
-                    new(16, 0xbdf4, 0x6f63),
+                    new CrcConfig16(16, 0xbdf4, 0x6f63),
 
                 Crc16Preset.Maxim =>
-                    new(16, 0x44c2, 0xa001, default, true, true, 0xffff),
+                    new CrcConfig16(16, 0x44c2, 0xa001, default, true, true, 0xffff),
 
                 Crc16Preset.Mcrf4Xx =>
-                    new(16, 0x6f91, 0x8408, 0xffff, true, true),
+                    new CrcConfig16(16, 0x6f91, 0x8408, 0xffff, true, true),
 
                 Crc16Preset.ModBus =>
-                    new(16, 0x4b37, 0xa001, 0xffff, true, true),
+                    new CrcConfig16(16, 0x4b37, 0xa001, 0xffff, true, true),
 
                 Crc16Preset.Riello =>
-                    new(16, 0x63d0, 0x8408, 0x554d, true, true),
+                    new CrcConfig16(16, 0x63d0, 0x8408, 0x554d, true, true),
 
                 Crc16Preset.SpiFujitsu =>
-                    new(16, 0xe5cc, 0x1021, 0x1d0f),
+                    new CrcConfig16(16, 0xe5cc, 0x1021, 0x1d0f),
 
                 Crc16Preset.T10Dif =>
-                    new(16, 0xd0db, 0x8bb7),
+                    new CrcConfig16(16, 0xd0db, 0x8bb7),
 
                 Crc16Preset.TeleDisk =>
-                    new(16, 0x0fb3, 0xa097),
+                    new CrcConfig16(16, 0x0fb3, 0xa097),
 
                 Crc16Preset.Tms37157 =>
-                    new(16, 0x26b1, 0x8408, 0x3791, true, true),
+                    new CrcConfig16(16, 0x26b1, 0x8408, 0x3791, true, true),
 
                 Crc16Preset.Usb =>
-                    new(16, 0xb4c8, 0xa001, 0xffff, true, true, 0xffff),
+                    new CrcConfig16(16, 0xb4c8, 0xa001, 0xffff, true, true, 0xffff),
 
                 Crc16Preset.XModem =>
-                    new(16, 0x31c3, 0x1021),
+                    new CrcConfig16(16, 0x31c3, 0x1021),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -349,11 +349,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-17 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc17Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc17Preset preset) =>
             preset switch
             {
                 Crc17Preset.Default =>
-                    new(17, 0x04f03u, 0x1685bu, default, false, false, default, 0x33ffffu),
+                    new CrcConfig32(17, 0x04f03u, 0x1685bu, default, false, false, default, 0x33ffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -362,11 +362,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-21 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc21Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc21Preset preset) =>
             preset switch
             {
                 Crc21Preset.Default =>
-                    new(21, 0x0ed841u, 0x102899u, default, false, false, default, 0x1fffffu),
+                    new CrcConfig32(21, 0x0ed841u, 0x102899u, default, false, false, default, 0x1fffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -375,32 +375,32 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-24 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc24Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc24Preset preset) =>
             preset switch
             {
                 Crc24Preset.Default =>
-                    new(24, 0x21cf02u, 0x864cfbu, 0xb704ceu),
+                    new CrcConfig32(24, 0x21cf02u, 0x864cfbu, 0xb704ceu),
 
                 Crc24Preset.Ble =>
-                    new(24, 0xc25a56u, 0xda6000u, 0xaaaaaau, true, true),
+                    new CrcConfig32(24, 0xc25a56u, 0xda6000u, 0xaaaaaau, true, true),
 
                 Crc24Preset.LteA =>
-                    new(24, 0xcde703u, 0x864cfbu),
+                    new CrcConfig32(24, 0xcde703u, 0x864cfbu),
 
                 Crc24Preset.LteB =>
-                    new(24, 0x23ef52u, 0x800063u),
+                    new CrcConfig32(24, 0x23ef52u, 0x800063u),
 
                 Crc24Preset.FlexRayA =>
-                    new(24, 0x7979bdu, 0x5d6dcbu, 0xfedcbau),
+                    new CrcConfig32(24, 0x7979bdu, 0x5d6dcbu, 0xfedcbau),
 
                 Crc24Preset.FlexRayB =>
-                    new(24, 0x1f23b8u, 0x5d6dcbu, 0xabcdefu),
+                    new CrcConfig32(24, 0x1f23b8u, 0x5d6dcbu, 0xabcdefu),
 
                 Crc24Preset.Interlaken =>
-                    new(24, 0xb4f3e6u, 0x328b63u, 0xffffffu, false, false, 0xffffffu),
+                    new CrcConfig32(24, 0xb4f3e6u, 0x328b63u, 0xffffffu, false, false, 0xffffffu),
 
                 Crc24Preset.Os9 =>
-                    new(24, 0x200fa5u, 0x800063u, 0xffffffu, false, false, 0xffffffu),
+                    new CrcConfig32(24, 0x200fa5u, 0x800063u, 0xffffffu, false, false, 0xffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -409,11 +409,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-30 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc30Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc30Preset preset) =>
             preset switch
             {
                 Crc30Preset.Default =>
-                    new(30, 0x04c34abfu, 0x2030b9c7u, 0x3fffffffu, false, false, 0x3fffffffu, 0x3fffffffu),
+                    new CrcConfig32(30, 0x04c34abfu, 0x2030b9c7u, 0x3fffffffu, false, false, 0x3fffffffu, 0x3fffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -422,11 +422,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-31 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc31Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc31Preset preset) =>
             preset switch
             {
                 Crc31Preset.Default =>
-                    new(31, 0x0ce9e46cu, 0x4c11db7u, 0x7fffffffu, false, false, 0x7fffffffu, 0x7fffffffu),
+                    new CrcConfig32(31, 0x0ce9e46cu, 0x4c11db7u, 0x7fffffffu, false, false, 0x7fffffffu, 0x7fffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -435,41 +435,41 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-32 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<uint> GetConfig(Crc32Preset preset) =>
+        public static ICrcConfig<uint> GetConfig(Crc32Preset preset) =>
             preset switch
             {
                 Crc32Preset.Default =>
-                    new(32, 0xcbf43926u, 0xedb88320u, 0xffffffffu, true, true, 0xffffffffu),
+                    new CrcConfig32(32, 0xcbf43926u, 0xedb88320u, 0xffffffffu, true, true, 0xffffffffu),
 
                 Crc32Preset.Autosar =>
-                    new(32, 0x1697d06au, 0xc8df352fu, 0xffffffffu, true, true, 0xffffffffu),
+                    new CrcConfig32(32, 0x1697d06au, 0xc8df352fu, 0xffffffffu, true, true, 0xffffffffu),
 
                 Crc32Preset.CdRomEdc =>
-                    new(32, 0x6ec2edc4u, 0xd8018001u, default, true, true),
+                    new CrcConfig32(32, 0x6ec2edc4u, 0xd8018001u, default, true, true),
 
                 Crc32Preset.Q =>
-                    new(32, 0x3010bf7fu, 0x814141abu),
+                    new CrcConfig32(32, 0x3010bf7fu, 0x814141abu),
 
                 Crc32Preset.BZip2 =>
-                    new(32, 0xfc891918u, 0x04c11db7u, 0xffffffffu, false, false, 0xffffffffu),
+                    new CrcConfig32(32, 0xfc891918u, 0x04c11db7u, 0xffffffffu, false, false, 0xffffffffu),
 
                 Crc32Preset.C =>
-                    new(32, 0xe3069283u, 0x82f63b78u, 0xffffffffu, true, true, 0xffffffffu),
+                    new CrcConfig32(32, 0xe3069283u, 0x82f63b78u, 0xffffffffu, true, true, 0xffffffffu),
 
                 Crc32Preset.D =>
-                    new(32, 0x87315576u, 0xd419cc15u, 0xffffffffu, true, true, 0xffffffffu),
+                    new CrcConfig32(32, 0x87315576u, 0xd419cc15u, 0xffffffffu, true, true, 0xffffffffu),
 
                 Crc32Preset.JamCrc =>
-                    new(32, 0x340bc6d9u, 0xedb88320u, 0xffffffffu, true, true),
+                    new CrcConfig32(32, 0x340bc6d9u, 0xedb88320u, 0xffffffffu, true, true),
 
                 Crc32Preset.Mpeg2 =>
-                    new(32, 0x0376e6e7u, 0x04c11db7u, 0xffffffffu),
+                    new CrcConfig32(32, 0x0376e6e7u, 0x04c11db7u, 0xffffffffu),
 
                 Crc32Preset.Posix =>
-                    new(32, 0x765e7680u, 0x04c11db7u, default, false, false, 0xffffffffu),
+                    new CrcConfig32(32, 0x765e7680u, 0x04c11db7u, default, false, false, 0xffffffffu),
 
                 Crc32Preset.Xfer =>
-                    new(32, 0xbd0be338u, 0x000000afu),
+                    new CrcConfig32(32, 0xbd0be338u, 0x000000afu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -478,11 +478,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-40 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<ulong> GetConfig(Crc40Preset preset) =>
+        public static ICrcConfig<ulong> GetConfig(Crc40Preset preset) =>
             preset switch
             {
                 Crc40Preset.Default =>
-                    new(40, 0xd4164fc646uL, 0x0004820009uL, default, false, false, 0xffffffffffuL),
+                    new CrcConfig64(40, 0xd4164fc646uL, 0x0004820009uL, default, false, false, 0xffffffffffuL),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -491,20 +491,20 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-64 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<ulong> GetConfig(Crc64Preset preset) =>
+        public static ICrcConfig<ulong> GetConfig(Crc64Preset preset) =>
             preset switch
             {
                 Crc64Preset.Default =>
-                    new(64, 0x6c40df5f0b497347uL, 0x42f0e1eba9ea3693uL),
+                    new CrcConfig64(64, 0x6c40df5f0b497347uL, 0x42f0e1eba9ea3693uL),
 
                 Crc64Preset.We =>
-                    new(64, 0x62ec59e3f1a4f00auL, 0x42f0e1eba9ea3693uL, 0xffffffffffffffffuL, false, false, 0xffffffffffffffffuL),
+                    new CrcConfig64(64, 0x62ec59e3f1a4f00auL, 0x42f0e1eba9ea3693uL, 0xffffffffffffffffuL, false, false, 0xffffffffffffffffuL),
 
                 Crc64Preset.Xz =>
-                    new(64, 0x995dc9bbdf1939fauL, 0xc96c5795d7870f42uL, 0xffffffffffffffffuL, true, true, 0xffffffffffffffffuL),
+                    new CrcConfig64(64, 0x995dc9bbdf1939fauL, 0xc96c5795d7870f42uL, 0xffffffffffffffffuL, true, true, 0xffffffffffffffffuL),
 
                 Crc64Preset.GoIso =>
-                    new(64, 0xb90956c775a41001uL, 0xd800000000000000uL, 0xffffffffffffffffuL, true, true, 0xffffffffffffffffuL),
+                    new CrcConfig64(64, 0xb90956c775a41001uL, 0xd800000000000000uL, 0xffffffffffffffffuL, true, true, 0xffffffffffffffffuL),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
@@ -513,11 +513,11 @@
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-82 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static CrcConfig<BigInteger> GetConfig(Crc82Preset preset) =>
+        public static ICrcConfig<BigInteger> GetConfig(Crc82Preset preset) =>
             preset switch
             {
                 Crc82Preset.Default =>
-                    new(82, "09ea83f625023801fd612".ToBigInt(), "220808a00a2022200c430".ToBigInt(), default, true, true, default, "3ffffffffffffffffffff".ToBigInt()),
+                    new CrcConfigBeyond(82, "09ea83f625023801fd612".ToBigInt(), "220808a00a2022200c430".ToBigInt(), default, true, true, default, "3ffffffffffffffffffff".ToBigInt()),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };

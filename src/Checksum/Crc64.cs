@@ -4,10 +4,10 @@
     using System.IO;
 
     /// <summary>Provides functionality to compute CRC-64 hashes.</summary>
-    public sealed class Crc64 : ChecksumAlgorithm<Crc64>
+    public sealed class Crc64 : ChecksumAlgorithm<Crc64, ulong>
     {
-        private static Memory<CrcConfig<ulong>?> _configCache;
-        private CrcConfig<ulong> _current;
+        private static Memory<ICrcConfig<ulong>> _configCache;
+        private ICrcConfig<ulong> _current;
         private Crc64Preset _preset;
 
         /// <summary>Gets or sets a CRC-64 preset.</summary>
@@ -16,12 +16,14 @@
             get => _preset;
             set
             {
+                if (_preset != value)
+                    Reset();
                 _preset = value;
                 if (_configCache.IsEmpty)
-                    _configCache = new CrcConfig<ulong>?[Enum.GetValues(typeof(Crc64Preset)).Length].AsMemory();
+                    _configCache = new ICrcConfig<ulong>[Enum.GetValues(typeof(Crc64Preset)).Length].AsMemory();
                 ref var item = ref _configCache.Span[(int)value];
                 item ??= CrcPreset.GetConfig(value);
-                _current = item.Value;
+                _current = item;
             }
         }
 
@@ -57,6 +59,7 @@
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             _current.ComputeHash(stream, out var num);
