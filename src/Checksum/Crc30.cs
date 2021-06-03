@@ -3,6 +3,7 @@
     using System;
     using System.IO;
 
+    /// ReSharper disable once CommentTypo
     /// <summary>Provides functionality to compute CRC-30/CDMA hashes.</summary>
     public sealed class Crc30 : ChecksumAlgorithm<Crc30, uint>
     {

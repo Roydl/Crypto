@@ -4,6 +4,7 @@
     using System.IO;
     using System.Numerics;
 
+    /// ReSharper disable once CommentTypo
     /// <summary>Provides functionality to compute CRC-82/DARC hashes.</summary>
     public sealed class Crc82 : ChecksumAlgorithm<Crc82, BigInteger>
     {
