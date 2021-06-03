@@ -1,8 +1,10 @@
-﻿namespace Roydl.Crypto.Test.ChecksumTests
+﻿#undef PERF
+namespace Roydl.Crypto.Test.ChecksumTests
 {
     using System;
     using System.IO;
     using System.Numerics;
+    using System.Text;
     using Checksum;
     using NUnit.Framework;
 
@@ -12,11 +14,11 @@
     public class CrcPresetTests
     {
         // Because we're using generic here, some hashes are padded.
-        public sealed class CrcCustom<T> : ChecksumAlgorithm<CrcCustom<T>> where T : IFormattable
+        public sealed class CrcCustom<TResult> : ChecksumAlgorithm<CrcCustom<TResult>, TResult> where TResult : struct, IComparable, IFormattable
         {
-            private CrcConfig<T> Current { get; }
+            private ICrcConfig<TResult> Current { get; }
 
-            public CrcCustom(CrcConfig<T> config) : base(config.Bits) =>
+            public CrcCustom(ICrcConfig<TResult> config) : base(config.Bits) =>
                 Current = config;
 
             public override void Encrypt(Stream stream)
@@ -24,17 +26,30 @@
                 if (stream == null)
                     throw new ArgumentNullException(nameof(stream));
                 Current.ComputeHash(stream, out var num);
-                if (num is BigInteger bi)
+                HashNumber = num;
+                switch (num)
                 {
-                    HashNumber = (ulong)(bi & 0xffffffffffffffffuL);
-                    var ba = bi.ToByteArray();
-                    if (BitConverter.IsLittleEndian)
-                        Array.Reverse(ba);
-                    RawHash = ba;
-                    return;
+                    case byte x:
+                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
+                        break;
+                    case ushort x:
+                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
+                        break;
+                    case uint x:
+                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
+                        break;
+                    case ulong x:
+                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
+                        break;
+                    case BigInteger x:
+                        var ba = x.ToByteArray();
+                        if (BitConverter.IsLittleEndian)
+                            Array.Reverse(ba);
+                        RawHash = ba;
+                        break;
+                    default:
+                        throw new InvalidCastException();
                 }
-                HashNumber = (ulong)(dynamic)num;
-                RawHash = CryptoUtils.GetByteArray(HashNumber, RawHashSize);
             }
         }
 
@@ -252,12 +267,8 @@
             #endregion
         };
 
-        [Test]
-        [TestCaseSource(nameof(PresetTestData))]
-        [Category("Method")]
-        public void InstanceEncrypt(CrcType crcType, Enum algorithm, TestVarsType varsType, string expectedHash)
-        {
-            dynamic instance = crcType switch
+        private static dynamic CreateInstance(CrcType crcType, Enum algorithm) =>
+            crcType switch
             {
                 CrcType.Crc16 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc16Preset)algorithm)),
                 CrcType.Crc17 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc17Preset)algorithm)),
@@ -271,6 +282,13 @@
                 CrcType.Crc82 => new CrcCustom<BigInteger>(CrcPreset.GetConfig((Crc82Preset)algorithm)),
                 _ => throw new ArgumentOutOfRangeException(nameof(crcType), crcType, null)
             };
+
+        [Test]
+        [TestCaseSource(nameof(PresetTestData))]
+        [Category("Method")]
+        public void InstanceEncrypt(CrcType crcType, Enum algorithm, TestVarsType varsType, string expectedHash)
+        {
+            var instance = CreateInstance(crcType, algorithm);
             switch (varsType)
             {
                 case TestVarsType.TestString:
@@ -283,6 +301,52 @@
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
             }
             Assert.AreEqual(expectedHash, instance.Hash);
+
+            var sb = new StringBuilder(instance.HashSize);
+            sb.AppendFormat($"{{0:x{instance.HashSize}}}", instance.HashNumber);
+            Assert.AreEqual(expectedHash, sb.ToString());
         }
+
+#if NET5_0_OR_GREATER && RELEASE && PERF
+        private static readonly TestCaseData[] PerfTestData =
+        {
+            new(CrcType.Crc16, Crc16Preset.Default),
+            new(CrcType.Crc32, Crc32Preset.Default),
+            new(CrcType.Crc64, Crc64Preset.Default),
+            new(CrcType.Crc82, Crc82Preset.Default)
+        };
+
+        [Test]
+        [Explicit]
+        [NonParallelizable]
+        [TestCaseSource(nameof(PerfTestData))]
+        public void Throughput(CrcType crcType, Enum algorithm)
+        {
+            const int cycles = 3;
+
+            var instance = (IChecksumAlgorithm)CreateInstance(crcType, algorithm);
+
+            var data = new byte[ushort.MaxValue];
+            TestVars.Randomizer.NextBytes(data);
+
+            var sw = TestVars.StopWatch;
+            var rate = 0d;
+
+            for (var i = 0; i < cycles; i++)
+            {
+                var total = 0L;
+                sw.Restart();
+                while (sw.Elapsed < TimeSpan.FromSeconds(cycles))
+                {
+                    instance.Encrypt(data);
+                    total += data.Length;
+                }
+                sw.Stop();
+                rate = Math.Max(total / sw.Elapsed.TotalSeconds / 1024 / 1024, rate);
+            }
+
+            TestContext.WriteLine(@"Throughput: {0:0.0} MiB/s", rate);
+        }
+#endif
     }
 }

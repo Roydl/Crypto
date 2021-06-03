@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto.Test
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
 
@@ -39,7 +40,9 @@
             0xfe, 0x44, 0xa4, 0x41, 0x8c, 0x9b, 0xad, 0x01
         };
 
-        private static readonly Random Randomizer = new();
+        public static Random Randomizer => new();
+
+        public static Stopwatch StopWatch => new();
 
         public static string RangeStr { get; } = new(Enumerable.Range(byte.MinValue, byte.MaxValue).Select(i => (char)i).ToArray());
 

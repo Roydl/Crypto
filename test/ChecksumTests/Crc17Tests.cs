@@ -211,6 +211,10 @@
             Assert.IsFalse(_instanceStream != _instanceByteArray);
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
+
+            Assert.AreEqual(_instanceStream.RawHash.Span.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual(_instanceStream.HashNumber, (uint)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 
         [Test]

@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Numerics;
     using System.Threading.Tasks;
     using Checksum;
     using NUnit.Framework;
@@ -259,6 +260,10 @@
             Assert.IsFalse(_instanceStream != _instanceByteArray);
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
+
+            Assert.AreEqual(_instanceStream.RawHash.Span.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual(_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 
         [Test]

@@ -12,10 +12,10 @@
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Crc31;
         private const int HashBits = 31;
-        private const int HashSize = 6;
+        private const int HashSize = 7;
         private const int RawHashSize = 4;
-        private const string ExpectedTestHash = "76718d";
-        private const string ExpectedRangeHash = "e0c69c";
+        private const string ExpectedTestHash = "a76718d";
+        private const string ExpectedRangeHash = "7e0c69c";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
@@ -211,6 +211,10 @@
             Assert.IsFalse(_instanceStream != _instanceByteArray);
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
+
+            Assert.AreEqual(_instanceStream.RawHash.Span.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual(_instanceStream.HashNumber, (uint)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 
         [Test]
