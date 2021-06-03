@@ -92,8 +92,7 @@
                 BitsReverseSlow(ref hash);
             else if (RefIn ^ RefOut)
                 hash = ~hash;
-            if (XorOut > 0)
-                hash ^= XorOut;
+            hash ^= XorOut;
         }
 
         /// <inheritdoc/>
