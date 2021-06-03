@@ -13,6 +13,7 @@
 
     public enum TestVarsType
     {
+        InitOnly,
         TestStream,
         TestBytes,
         TestString,

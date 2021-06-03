@@ -55,6 +55,13 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
         public enum CrcType
         {
+            Crc08,
+            Crc10,
+            Crc11,
+            Crc12,
+            Crc13,
+            Crc14,
+            Crc15,
             Crc16,
             Crc17,
             Crc21,
@@ -69,6 +76,50 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
         private static readonly TestCaseData[] PresetTestData =
         {
+            #region CRC-8 to CRC-15
+
+            new(CrcType.Crc08, Crc08Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Autosar, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Bluetooth, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Cdma2000, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Darc, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.DvbS2, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.GsmA, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.GsmB, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.I4321, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.ICode, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Lte, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Maxim, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.MifareMad, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Nrsc5, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.OpenSafety, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Rohc, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.SaeJ1850, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Tech3250, TestVarsType.InitOnly, null),
+            new(CrcType.Crc08, Crc08Preset.Wcdma, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc10, Crc10Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc10, Crc10Preset.Cdma2000, TestVarsType.InitOnly, null),
+            new(CrcType.Crc10, Crc10Preset.Gsm, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc11, Crc11Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc11, Crc11Preset.Umts, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc12, Crc12Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc12, Crc12Preset.Dect, TestVarsType.InitOnly, null),
+            new(CrcType.Crc12, Crc12Preset.Gsm, TestVarsType.InitOnly, null),
+            new(CrcType.Crc12, Crc12Preset.Umts, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc13, Crc13Preset.Default, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc14, Crc14Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc14, Crc14Preset.Gsm, TestVarsType.InitOnly, null),
+
+            new(CrcType.Crc15, Crc15Preset.Default, TestVarsType.InitOnly, null),
+            new(CrcType.Crc15, Crc15Preset.Mpt1327, TestVarsType.InitOnly, null),
+
+            #endregion
+
             #region CRC-16
 
             new(CrcType.Crc16, Crc16Preset.Default, TestVarsType.TestString, "3825"),
@@ -270,6 +321,13 @@ namespace Roydl.Crypto.Test.ChecksumTests
         private static dynamic CreateInstance(CrcType crcType, Enum algorithm) =>
             crcType switch
             {
+                CrcType.Crc08 => new CrcCustom<byte>(CrcPreset.GetConfig((Crc08Preset)algorithm)),
+                CrcType.Crc10 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc10Preset)algorithm)),
+                CrcType.Crc11 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc11Preset)algorithm)),
+                CrcType.Crc12 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc12Preset)algorithm)),
+                CrcType.Crc13 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc13Preset)algorithm)),
+                CrcType.Crc14 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc14Preset)algorithm)),
+                CrcType.Crc15 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc15Preset)algorithm)),
                 CrcType.Crc16 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc16Preset)algorithm)),
                 CrcType.Crc17 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc17Preset)algorithm)),
                 CrcType.Crc21 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc21Preset)algorithm)),
@@ -291,6 +349,8 @@ namespace Roydl.Crypto.Test.ChecksumTests
             var instance = CreateInstance(crcType, algorithm);
             switch (varsType)
             {
+                case TestVarsType.InitOnly:
+                    return;
                 case TestVarsType.TestString:
                     instance.Encrypt(TestVars.TestStr);
                     break;
