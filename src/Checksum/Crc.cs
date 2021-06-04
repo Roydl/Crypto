@@ -10,11 +10,11 @@
     /// <summary>Provides functionality to compute CRC hashes.</summary>
     /// <remarks>Generic type usage:
     ///     <list type="bullet">
-    ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="Crc08Preset.Default">Default</see></description></item>
-    ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="Crc16Preset.Default">Default</see></description></item>
-    ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="Crc32Preset.Default">Default</see></description></item>
-    ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="Crc64Preset.Default">Default</see></description></item>
-    ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="Crc82Preset.Default">Default</see></description></item>
+    ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="Crc08Preset">Preset</see></description></item>
+    ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="Crc16Preset">Preset</see></description></item>
+    ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="Crc32Preset">Preset</see></description></item>
+    ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="Crc64Preset">Preset</see></description></item>
+    ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="Crc82Preset">Preset</see></description></item>
     ///     </list>
     /// </remarks>
     /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, or <see cref="BigInteger"/>.</typeparam>
@@ -27,8 +27,16 @@
         private ICrcConfig<TValue> Current { get; }
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
+        /// <remarks>Generic type usage:
+        ///     <list type="bullet">
+        ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="Crc08Preset.Default">Default</see></description></item>
+        ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="Crc16Preset.Default">Default</see></description></item>
+        ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="Crc32Preset.Default">Default</see></description></item>
+        ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="Crc64Preset.Default">Default</see></description></item>
+        ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="Crc82Preset.Default">Default</see></description></item>
+        ///     </list>
+        /// </remarks>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
-        /// <inheritdoc cref="Crc{TValue}"/>
         public Crc() : base(GetBitsByType(default), GetStringHashSize(GetBitsByType(default))) =>
             Current = GetConfig(default, default);
 
@@ -118,6 +126,7 @@
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <param name="config">The CRC config.</param>
+        /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
         public Crc(ICrcConfig<TValue> config) : base(config.Bits, GetStringHashSize(config.Bits))
         {
             switch (default(TValue))
