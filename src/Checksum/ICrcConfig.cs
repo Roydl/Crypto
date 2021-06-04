@@ -4,7 +4,7 @@
     using System.IO;
     using System.Numerics;
 
-    /// <summary>Represents a CRC configuration structure.</summary>
+    /// <summary>Represents the interface for CRC configuration structures.</summary>
     /// <typeparam name="TValue">The integral type of the hash code. Should be <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, or <see cref="BigInteger"/>.</typeparam>
     public interface ICrcConfig<TValue> where TValue : struct, IComparable, IFormattable
     {
