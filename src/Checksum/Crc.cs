@@ -37,7 +37,7 @@
         /// </summary>
         /// <param name="preset">The config preset.</param>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
-        public Crc(Crc08Preset preset) : base(8, GetStringHashSize(8)) =>
+        public Crc(Crc08Preset preset) : base(8) =>
             Current = GetConfig(8, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
@@ -56,19 +56,19 @@
             Current = GetConfig(12, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc13Preset preset) : base(13, GetStringHashSize(13)) =>
+        public Crc(Crc13Preset preset) : base(13) =>
             Current = GetConfig(13, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc14Preset preset) : base(14, GetStringHashSize(14)) =>
+        public Crc(Crc14Preset preset) : base(14) =>
             Current = GetConfig(14, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc15Preset preset) : base(15, GetStringHashSize(15)) =>
+        public Crc(Crc15Preset preset) : base(15) =>
             Current = GetConfig(15, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc16Preset preset) : base(16, GetStringHashSize(16)) =>
+        public Crc(Crc16Preset preset) : base(16) =>
             Current = GetConfig(16, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
@@ -79,34 +79,34 @@
             Current = GetConfig(17, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc21Preset preset) : base(21, GetStringHashSize(21)) =>
+        public Crc(Crc21Preset preset) : base(21) =>
             Current = GetConfig(21, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc24Preset preset) : base(24, GetStringHashSize(24)) =>
+        public Crc(Crc24Preset preset) : base(24) =>
             Current = GetConfig(24, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc30Preset preset) : base(30, GetStringHashSize(30)) =>
+        public Crc(Crc30Preset preset) : base(30) =>
             Current = GetConfig(30, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc31Preset preset) : base(31, GetStringHashSize(31)) =>
+        public Crc(Crc31Preset preset) : base(31) =>
             Current = GetConfig(31, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc32Preset preset) : base(32, GetStringHashSize(32)) =>
+        public Crc(Crc32Preset preset) : base(32) =>
             Current = GetConfig(32, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="ulong"/>.</para>
         /// </summary>
         /// <inheritdoc cref="Crc{TValue}(Crc08Preset)"/>
-        public Crc(Crc40Preset preset) : base(40, GetStringHashSize(40)) =>
+        public Crc(Crc40Preset preset) : base(40) =>
             Current = GetConfig(40, preset);
 
         /// <inheritdoc cref="Crc{TValue}(Crc40Preset)"/>
-        public Crc(Crc64Preset preset) : base(64, GetStringHashSize(64)) =>
+        public Crc(Crc64Preset preset) : base(64) =>
             Current = GetConfig(64, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
@@ -231,26 +231,12 @@
         {
             switch (bits)
             {
-                case 8:
-                    return 2;
                 case 10:
                 case 11:
                 case 12:
-                case 13:
                     return 3;
-                case 14:
-                case 15:
-                    return 4;
                 case 17:
-                case 21:
                     return 5;
-                case 24:
-                case 30:
-                    return 6;
-                case 31:
-                    return 7;
-                case 32:
-                    return 8;
                 case 82:
                     return 21;
                 default:

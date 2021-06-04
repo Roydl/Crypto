@@ -165,8 +165,8 @@ namespace Roydl.Crypto.Test.ChecksumTests
             new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.TestString, "2c38d"),
             new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.RangeString, "182d1"),
 
-            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.TestString, "28a0d"),
-            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.RangeString, "6c0c0"),
+            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.TestString, "128a0d"),
+            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.RangeString, "16c0c0"),
 
             #endregion
 
@@ -200,11 +200,11 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
             #region CRC-30 and CRC-31
 
-            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.TestString, "037067"),
-            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.RangeString, "b1ef87"),
+            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.TestString, "36037067"),
+            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.RangeString, "18b1ef87"),
 
-            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.TestString, "a76718d"),
-            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.RangeString, "7e0c69c"),
+            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.TestString, "1a76718d"),
+            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.RangeString, "37e0c69c"),
 
             #endregion
 
@@ -324,6 +324,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
 #if NET5_0_OR_GREATER && RELEASE && PERF
         private static readonly TestCaseData[] PerfTestData =
         {
+            new(CrcType.Crc08, Crc08Preset.Default),
             new(CrcType.Crc16, Crc16Preset.Default),
             new(CrcType.Crc32, Crc32Preset.Default),
             new(CrcType.Crc64, Crc64Preset.Default),
