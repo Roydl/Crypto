@@ -52,6 +52,13 @@
         public Sha384(FileInfo fileInfo) : this() =>
             Encrypt(fileInfo);
 
+        /// <summary>Initializes a new instance of the <see cref="Sha384"/> class.</summary>
+        /// <param name="secretKey">The secret key for <see cref="HMAC"/> encryption.</param>
+        /// <remarks>For more information, see <see cref="SecretKey">here</see>.</remarks>
+        /// <returns>A newly created <see cref="Sha384"/> instance.</returns>
+        public static Sha384 Create(byte[] secretKey = null) =>
+            new() { SecretKey = secretKey };
+
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {

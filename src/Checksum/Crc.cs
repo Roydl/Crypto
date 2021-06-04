@@ -7,14 +7,88 @@
     using System.Numerics;
     using Resources;
 
+    /// <summary>Provides functions for loading instances to compute CRC hashes.</summary>
+    public static class Crc
+    {
+        /// <summary>Initializes a new instance of the <see cref="Crc"/> class with the specified configuration preset.</summary>
+        /// <param name="preset">The config preset.</param>
+        /// <returns>A newly created <see cref="Crc"/> instance.</returns>
+        public static Crc<byte> Create(CrcOptions.Crc preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc10 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc11 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc12 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc13 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc14 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc15 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ushort> Create(CrcOptions.Crc16 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc17 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc21 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc24 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc30 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc31 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<uint> Create(CrcOptions.Crc32 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ulong> Create(CrcOptions.Crc40 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<ulong> Create(CrcOptions.Crc64 preset) =>
+            new(preset);
+
+        /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
+        public static Crc<BigInteger> Create(CrcOptions.Crc82 preset) =>
+            new(preset);
+    }
+
     /// <summary>Provides functionality to compute CRC hashes.</summary>
     /// <remarks>Generic type usage:
     ///     <list type="bullet">
-    ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="Crc08Preset">Preset</see></description></item>
-    ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="Crc16Preset">Preset</see></description></item>
-    ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="Crc32Preset">Preset</see></description></item>
-    ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="Crc64Preset">Preset</see></description></item>
-    ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="Crc82Preset">Preset</see></description></item>
+    ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="CrcOptions.Crc">Preset</see></description></item>
+    ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="CrcOptions.Crc16">Preset</see></description></item>
+    ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="CrcOptions.Crc32">Preset</see></description></item>
+    ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="CrcOptions.Crc64">Preset</see></description></item>
+    ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="CrcOptions.Crc82">Preset</see></description></item>
     ///     </list>
     /// </remarks>
     /// <typeparam name="TValue">The integral type of the hash code. Must be <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, or <see cref="BigInteger"/>.</typeparam>
@@ -29,11 +103,11 @@
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <remarks>Generic type usage:
         ///     <list type="bullet">
-        ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="Crc08Preset.Default">Default</see></description></item>
-        ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="Crc16Preset.Default">Default</see></description></item>
-        ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="Crc32Preset.Default">Default</see></description></item>
-        ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="Crc64Preset.Default">Default</see></description></item>
-        ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="Crc82Preset.Default">Default</see></description></item>
+        ///         <item><term><see cref="byte"/></term> <description>CRC-8/<see cref="CrcOptions.Crc.Default">Default</see></description></item>
+        ///         <item><term><see cref="ushort"/></term> <description>CRC-16/<see cref="CrcOptions.Crc16.Default">Default</see></description></item>
+        ///         <item><term><see cref="uint"/></term> <description>CRC-32/<see cref="CrcOptions.Crc32.Default">Default</see></description></item>
+        ///         <item><term><see cref="ulong"/></term> <description>CRC-64/<see cref="CrcOptions.Crc64.Default">Default</see></description></item>
+        ///         <item><term><see cref="BigInteger"/></term> <description>CRC-82/<see cref="CrcOptions.Crc82.Default">Default</see></description></item>
         ///     </list>
         /// </remarks>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
@@ -45,83 +119,83 @@
         /// </summary>
         /// <param name="preset">The config preset.</param>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
-        public Crc(Crc08Preset preset) : base(8) =>
+        public Crc(CrcOptions.Crc preset) : base(8) =>
             Current = GetConfig(8, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="ushort"/>.</para>
         /// </summary>
-        /// <inheritdoc cref="Crc{TValue}(Crc08Preset)"/>
-        public Crc(Crc10Preset preset) : base(10, GetStringHashSize(10)) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
+        public Crc(CrcOptions.Crc10 preset) : base(10, GetStringHashSize(10)) =>
             Current = GetConfig(10, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc11Preset preset) : base(11, GetStringHashSize(11)) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc11 preset) : base(11, GetStringHashSize(11)) =>
             Current = GetConfig(11, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc12Preset preset) : base(12, GetStringHashSize(12)) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc12 preset) : base(12, GetStringHashSize(12)) =>
             Current = GetConfig(12, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc13Preset preset) : base(13) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc13 preset) : base(13) =>
             Current = GetConfig(13, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc14Preset preset) : base(14) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc14 preset) : base(14) =>
             Current = GetConfig(14, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc15Preset preset) : base(15) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc15 preset) : base(15) =>
             Current = GetConfig(15, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc10Preset)"/>
-        public Crc(Crc16Preset preset) : base(16) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
+        public Crc(CrcOptions.Crc16 preset) : base(16) =>
             Current = GetConfig(16, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="uint"/>.</para>
         /// </summary>
-        /// <inheritdoc cref="Crc{TValue}(Crc08Preset)"/>
-        public Crc(Crc17Preset preset) : base(17, GetStringHashSize(17)) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
+        public Crc(CrcOptions.Crc17 preset) : base(17, GetStringHashSize(17)) =>
             Current = GetConfig(17, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc21Preset preset) : base(21) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
+        public Crc(CrcOptions.Crc21 preset) : base(21) =>
             Current = GetConfig(21, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc24Preset preset) : base(24) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
+        public Crc(CrcOptions.Crc24 preset) : base(24) =>
             Current = GetConfig(24, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc30Preset preset) : base(30) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
+        public Crc(CrcOptions.Crc30 preset) : base(30) =>
             Current = GetConfig(30, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc31Preset preset) : base(31) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
+        public Crc(CrcOptions.Crc31 preset) : base(31) =>
             Current = GetConfig(31, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc17Preset)"/>
-        public Crc(Crc32Preset preset) : base(32) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
+        public Crc(CrcOptions.Crc32 preset) : base(32) =>
             Current = GetConfig(32, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="ulong"/>.</para>
         /// </summary>
-        /// <inheritdoc cref="Crc{TValue}(Crc08Preset)"/>
-        public Crc(Crc40Preset preset) : base(40) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
+        public Crc(CrcOptions.Crc40 preset) : base(40) =>
             Current = GetConfig(40, preset);
 
-        /// <inheritdoc cref="Crc{TValue}(Crc40Preset)"/>
-        public Crc(Crc64Preset preset) : base(64) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc40)"/>
+        public Crc(CrcOptions.Crc64 preset) : base(64) =>
             Current = GetConfig(64, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="BigInteger"/>.</para>
         /// </summary>
-        /// <inheritdoc cref="Crc{TValue}(Crc08Preset)"/>
-        public Crc(Crc82Preset preset) : base(82, GetStringHashSize(82)) =>
+        /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
+        public Crc(CrcOptions.Crc82 preset) : base(82, GetStringHashSize(82)) =>
             Current = GetConfig(82, preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
@@ -195,30 +269,30 @@
         {
             var config = bits switch
             {
-                08 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc08Preset)preset),
-                10 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc10Preset)preset),
-                11 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc11Preset)preset),
-                12 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc12Preset)preset),
-                13 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc13Preset)preset),
-                14 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc14Preset)preset),
-                15 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc15Preset)preset),
-                16 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc16Preset)preset),
-                17 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc17Preset)preset),
-                21 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc21Preset)preset),
-                24 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc24Preset)preset),
-                30 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc30Preset)preset),
-                31 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc31Preset)preset),
-                32 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc32Preset)preset),
-                40 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc40Preset)preset),
-                64 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc64Preset)preset),
-                82 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcPreset.GetConfig((Crc82Preset)preset),
+                08 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc)preset),
+                10 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc10)preset),
+                11 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc11)preset),
+                12 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc12)preset),
+                13 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc13)preset),
+                14 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc14)preset),
+                15 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc15)preset),
+                16 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc16)preset),
+                17 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc17)preset),
+                21 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc21)preset),
+                24 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc24)preset),
+                30 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc30)preset),
+                31 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc31)preset),
+                32 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc32)preset),
+                40 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc40)preset),
+                64 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc64)preset),
+                82 => ConfigCache.TryGetValue(preset, out var x) ? x : ConfigCache[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc82)preset),
                 _ => default(TValue) switch
                 {
-                    byte => ConfigCache.TryGetValue(Crc08Preset.Default, out var x) ? x : ConfigCache[Crc08Preset.Default] = CrcPreset.GetConfig(Crc08Preset.Default),
-                    ushort => ConfigCache.TryGetValue(Crc16Preset.Default, out var x) ? x : ConfigCache[Crc16Preset.Default] = CrcPreset.GetConfig(Crc16Preset.Default),
-                    uint => ConfigCache.TryGetValue(Crc32Preset.Default, out var x) ? x : ConfigCache[Crc32Preset.Default] = CrcPreset.GetConfig(Crc32Preset.Default),
-                    ulong => ConfigCache.TryGetValue(Crc64Preset.Default, out var x) ? x : ConfigCache[Crc64Preset.Default] = CrcPreset.GetConfig(Crc64Preset.Default),
-                    BigInteger => ConfigCache.TryGetValue(Crc82Preset.Default, out var x) ? x : ConfigCache[Crc82Preset.Default] = CrcPreset.GetConfig(Crc82Preset.Default),
+                    byte => ConfigCache.TryGetValue(CrcOptions.Crc.Default, out var x) ? x : ConfigCache[CrcOptions.Crc.Default] = CrcConfigManager.GetConfig(CrcOptions.Crc.Default),
+                    ushort => ConfigCache.TryGetValue(CrcOptions.Crc16.Default, out var x) ? x : ConfigCache[CrcOptions.Crc16.Default] = CrcConfigManager.GetConfig(CrcOptions.Crc16.Default),
+                    uint => ConfigCache.TryGetValue(CrcOptions.Crc32.Default, out var x) ? x : ConfigCache[CrcOptions.Crc32.Default] = CrcConfigManager.GetConfig(CrcOptions.Crc32.Default),
+                    ulong => ConfigCache.TryGetValue(CrcOptions.Crc64.Default, out var x) ? x : ConfigCache[CrcOptions.Crc64.Default] = CrcConfigManager.GetConfig(CrcOptions.Crc64.Default),
+                    BigInteger => ConfigCache.TryGetValue(CrcOptions.Crc82.Default, out var x) ? x : ConfigCache[CrcOptions.Crc82.Default] = CrcConfigManager.GetConfig(CrcOptions.Crc82.Default),
                     _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
                 }
             };
