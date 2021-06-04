@@ -66,7 +66,9 @@
         /// <summary>CRC-8/SAE-J1850.</summary>
         SaeJ1850,
 
-        /// <summary>CRC-8/TECH-3250.</summary>
+        /// <summary>CRC-8/TECH-3250.
+        ///     <para><b>Alias:</b> AES, EBU.</para>
+        /// </summary>
         Tech3250,
 
         /// <summary>CRC-8/WCDMA.</summary>

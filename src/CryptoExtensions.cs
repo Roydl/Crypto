@@ -14,8 +14,134 @@
     /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
     public enum ChecksumAlgo
     {
+        /// ReSharper disable CommentTypo
         /// <summary>Adler-32.</summary>
         Adler32,
+
+        /// <summary>CRC-8.
+        ///     <para><b>Alias:</b> SMBUS.</para>
+        /// </summary>
+        Crc08,
+
+        /// <summary>CRC-8/AUTOSAR.</summary>
+        Crc08Autosar,
+
+        /// <summary>CRC-8/BLUETOOTH.</summary>
+        Crc08Bluetooth,
+
+        /// <summary>CRC-8/CDMA2000.</summary>
+        Crc08Cdma2000,
+
+        /// <summary>CRC-8/DARC.</summary>
+        Crc08Darc,
+
+        /// <summary>CRC-8/DVB-S2.</summary>
+        Crc08DvbS2,
+
+        /// <summary>CRC-8/GSM-A.</summary>
+        Crc08GsmA,
+
+        /// <summary>CRC-8/GSM-B.</summary>
+        Crc08GsmB,
+
+        /// <summary>CRC-8/I-432-1.
+        ///     <para><b>Alias:</b> ITU.</para>
+        /// </summary>
+        Crc08I4321,
+
+        /// <summary>CRC-8/I-CODE.</summary>
+        Crc08ICode,
+
+        /// <summary>CRC-8/LTE.</summary>
+        Crc08Lte,
+
+        /// <summary>CRC-8/MAXIM.
+        ///     <para><b>Alias:</b> MAXIM-DOW, DOW-CRC.</para>
+        /// </summary>
+        Crc08Maxim,
+
+        /// <summary>CRC-8/MIFARE-MAD.</summary>
+        Crc08MifareMad,
+
+        /// <summary>CRC-8/NRSC-5.</summary>
+        Crc08Nrsc5,
+
+        /// <summary>CRC-8/OPENSAFETY.</summary>
+        Crc08OpenSafety,
+
+        /// <summary>CRC-8/ROHC.</summary>
+        Crc08Rohc,
+
+        /// <summary>CRC-8/SAE-J1850.</summary>
+        Crc08SaeJ1850,
+
+        /// <summary>CRC-8/TECH-3250.
+        ///     <para><b>Alias:</b> AES, EBU.</para>
+        /// </summary>
+        Crc08Tech3250,
+
+        /// <summary>CRC-8/WCDMA.</summary>
+        Crc08Wcdma,
+
+        /// <summary>CRC-10.
+        ///     <para><b>Alias:</b> ATM, I-610.</para>
+        /// </summary>
+        Crc10,
+
+        /// <summary>CRC-10/CDMA2000.</summary>
+        Crc10Cdma2000,
+
+        /// <summary>CRC-10/GSM.</summary>
+        Crc10Gsm,
+
+        /// <summary>CRC-11.
+        ///     <para><b>Alias:</b> FLEXRAY.</para>
+        /// </summary>
+        Crc11,
+
+        /// <summary>CRC-11/UMTS.</summary>
+        Crc11Umts,
+
+        /// <summary>CRC-12.
+        ///     <para><b>Alias:</b> CDMA2000.</para>
+        /// </summary>
+        Crc12,
+
+        /// <summary>CRC-12/DECT.
+        ///     <para><b>Alias:</b> X-CRC-12.</para>
+        /// </summary>
+        Crc12Dect,
+
+        /// <summary>CRC-12/GSM.
+        ///     <para><b>Alias:</b> DECT.</para>
+        /// </summary>
+        Crc12Gsm,
+
+        /// <summary>CRC-12/UMTS.
+        ///     <para><b>Alias:</b> 3GPP.</para>
+        /// </summary>
+        Crc12Umts,
+
+        /// <summary>CRC-13.
+        ///     <para><b>Alias:</b> BBC.</para>
+        /// </summary>
+        Crc13,
+
+        /// <summary>CRC-14.
+        ///     <para><b>Alias:</b> DARC.</para>
+        /// </summary>
+        Crc14,
+
+        /// <summary>CRC-14/GSM.</summary>
+        Crc14Gsm,
+
+        /// <summary>CRC-15.
+        ///     <para><b>Alias:</b> CAN.</para>
+        /// </summary>
+        Crc15,
+
+        /// <summary>CRC-15/MPT1327.</summary>
+        Crc15Mpt1327,
 
         /// <summary>CRC-16.
         ///     <para><b>Alias:</b> ARC, IBM, LHA.</para>
@@ -25,7 +151,6 @@
         /// <summary>CRC-16/A.</summary>
         Crc16A,
 
-        /// ReSharper disable CommentTypo
         /// <summary>CRC-16/BUYPASS.</summary>
         Crc16Buypass,
 
@@ -226,7 +351,6 @@
         /// <summary>CRC-82.
         ///     <para><b>Alias:</b> DARC.</para>
         /// </summary>
-        /// ReSharper restore CommentTypo
         Crc82,
 
         /// <summary>MD5, 128-bit.</summary>
@@ -242,6 +366,7 @@
         Sha384,
 
         /// <summary>SHA-2, 512-bit.</summary>
+        /// ReSharper restore CommentTypo
         Sha512
     }
 
@@ -409,61 +534,94 @@
             algorithm switch
             {
                 ChecksumAlgo.Adler32 => new Adler32(),
-                ChecksumAlgo.Crc16 => new Crc16(),
-                ChecksumAlgo.Crc16A => new Crc16(Crc16Preset.A),
-                ChecksumAlgo.Crc16Buypass => new Crc16(Crc16Preset.Buypass),
-                ChecksumAlgo.Crc16Cdma2000 => new Crc16(Crc16Preset.Cdma2000),
-                ChecksumAlgo.Crc16Cms => new Crc16(Crc16Preset.Cms),
-                ChecksumAlgo.Crc16Dds110 => new Crc16(Crc16Preset.Dds110),
-                ChecksumAlgo.Crc16DectR => new Crc16(Crc16Preset.DectR),
-                ChecksumAlgo.Crc16DectX => new Crc16(Crc16Preset.DectX),
-                ChecksumAlgo.Crc16Dnp => new Crc16(Crc16Preset.Dnp),
-                ChecksumAlgo.Crc16En13757 => new Crc16(Crc16Preset.En13757),
-                ChecksumAlgo.Crc16Genibus => new Crc16(Crc16Preset.Genibus),
-                ChecksumAlgo.Crc16Gsm => new Crc16(Crc16Preset.Gsm),
-                ChecksumAlgo.Crc16Ibm3740 => new Crc16(Crc16Preset.Ibm3740),
-                ChecksumAlgo.Crc16IbmSdlc => new Crc16(Crc16Preset.IbmSdlc),
-                ChecksumAlgo.Crc16Kermit => new Crc16(Crc16Preset.Kermit),
-                ChecksumAlgo.Crc16Lj1200 => new Crc16(Crc16Preset.Lj1200),
-                ChecksumAlgo.Crc16Maxim => new Crc16(Crc16Preset.Maxim),
-                ChecksumAlgo.Crc16Mcrf4Xx => new Crc16(Crc16Preset.Mcrf4Xx),
-                ChecksumAlgo.Crc16ModBus => new Crc16(Crc16Preset.ModBus),
-                ChecksumAlgo.Crc16Riello => new Crc16(Crc16Preset.Riello),
-                ChecksumAlgo.Crc16SpiFujitsu => new Crc16(Crc16Preset.SpiFujitsu),
-                ChecksumAlgo.Crc16T10Dif => new Crc16(Crc16Preset.T10Dif),
-                ChecksumAlgo.Crc16TeleDisk => new Crc16(Crc16Preset.TeleDisk),
-                ChecksumAlgo.Crc16Tms37157 => new Crc16(Crc16Preset.Tms37157),
-                ChecksumAlgo.Crc16Usb => new Crc16(Crc16Preset.Usb),
-                ChecksumAlgo.Crc16XModem => new Crc16(Crc16Preset.XModem),
-                ChecksumAlgo.Crc17 => new Crc17(),
-                ChecksumAlgo.Crc21 => new Crc21(),
-                ChecksumAlgo.Crc24 => new Crc24(),
-                ChecksumAlgo.Crc24Ble => new Crc24(Crc24Preset.Ble),
-                ChecksumAlgo.Crc24FlexRayA => new Crc24(Crc24Preset.FlexRayA),
-                ChecksumAlgo.Crc24FlexRayB => new Crc24(Crc24Preset.FlexRayB),
-                ChecksumAlgo.Crc24Interlaken => new Crc24(Crc24Preset.Interlaken),
-                ChecksumAlgo.Crc24LteA => new Crc24(Crc24Preset.LteA),
-                ChecksumAlgo.Crc24LteB => new Crc24(Crc24Preset.LteB),
-                ChecksumAlgo.Crc24Os9 => new Crc24(Crc24Preset.Os9),
-                ChecksumAlgo.Crc30 => new Crc30(),
-                ChecksumAlgo.Crc31 => new Crc31(),
-                ChecksumAlgo.Crc32 => new Crc32(),
-                ChecksumAlgo.Crc32Autosar => new Crc32(Crc32Preset.Autosar),
-                ChecksumAlgo.Crc32BZip2 => new Crc32(Crc32Preset.BZip2),
-                ChecksumAlgo.Crc32C => new Crc32(Crc32Preset.C),
-                ChecksumAlgo.Crc32CdRomEdc => new Crc32(Crc32Preset.CdRomEdc),
-                ChecksumAlgo.Crc32D => new Crc32(Crc32Preset.D),
-                ChecksumAlgo.Crc32JamCrc => new Crc32(Crc32Preset.JamCrc),
-                ChecksumAlgo.Crc32Mpeg2 => new Crc32(Crc32Preset.Mpeg2),
-                ChecksumAlgo.Crc32Posix => new Crc32(Crc32Preset.Posix),
-                ChecksumAlgo.Crc32Q => new Crc32(Crc32Preset.Q),
-                ChecksumAlgo.Crc32Xfer => new Crc32(Crc32Preset.Xfer),
-                ChecksumAlgo.Crc40 => new Crc40(),
-                ChecksumAlgo.Crc64 => new Crc64(),
-                ChecksumAlgo.Crc64GoIso => new Crc64(Crc64Preset.GoIso),
-                ChecksumAlgo.Crc64We => new Crc64(Crc64Preset.We),
-                ChecksumAlgo.Crc64Xz => new Crc64(Crc64Preset.Xz),
-                ChecksumAlgo.Crc82 => new Crc82(),
+                ChecksumAlgo.Crc08 => new Crc<byte>(Crc08Preset.Default),
+                ChecksumAlgo.Crc08Autosar => new Crc<byte>(Crc08Preset.Autosar),
+                ChecksumAlgo.Crc08Bluetooth => new Crc<byte>(Crc08Preset.Bluetooth),
+                ChecksumAlgo.Crc08Cdma2000 => new Crc<byte>(Crc08Preset.Cdma2000),
+                ChecksumAlgo.Crc08Darc => new Crc<byte>(Crc08Preset.Darc),
+                ChecksumAlgo.Crc08DvbS2 => new Crc<byte>(Crc08Preset.DvbS2),
+                ChecksumAlgo.Crc08GsmA => new Crc<byte>(Crc08Preset.GsmA),
+                ChecksumAlgo.Crc08GsmB => new Crc<byte>(Crc08Preset.GsmB),
+                ChecksumAlgo.Crc08I4321 => new Crc<byte>(Crc08Preset.I4321),
+                ChecksumAlgo.Crc08ICode => new Crc<byte>(Crc08Preset.ICode),
+                ChecksumAlgo.Crc08Lte => new Crc<byte>(Crc08Preset.Lte),
+                ChecksumAlgo.Crc08Maxim => new Crc<byte>(Crc08Preset.Maxim),
+                ChecksumAlgo.Crc08MifareMad => new Crc<byte>(Crc08Preset.MifareMad),
+                ChecksumAlgo.Crc08Nrsc5 => new Crc<byte>(Crc08Preset.Nrsc5),
+                ChecksumAlgo.Crc08OpenSafety => new Crc<byte>(Crc08Preset.OpenSafety),
+                ChecksumAlgo.Crc08Rohc => new Crc<byte>(Crc08Preset.Rohc),
+                ChecksumAlgo.Crc08SaeJ1850 => new Crc<byte>(Crc08Preset.SaeJ1850),
+                ChecksumAlgo.Crc08Tech3250 => new Crc<byte>(Crc08Preset.Tech3250),
+                ChecksumAlgo.Crc08Wcdma => new Crc<byte>(Crc08Preset.Wcdma),
+                ChecksumAlgo.Crc10 => new Crc<ushort>(Crc10Preset.Default),
+                ChecksumAlgo.Crc10Cdma2000 => new Crc<ushort>(Crc10Preset.Cdma2000),
+                ChecksumAlgo.Crc10Gsm => new Crc<ushort>(Crc10Preset.Gsm),
+                ChecksumAlgo.Crc11 => new Crc<ushort>(Crc11Preset.Default),
+                ChecksumAlgo.Crc11Umts => new Crc<ushort>(Crc11Preset.Umts),
+                ChecksumAlgo.Crc12 => new Crc<ushort>(Crc12Preset.Default),
+                ChecksumAlgo.Crc12Dect => new Crc<ushort>(Crc12Preset.Dect),
+                ChecksumAlgo.Crc12Gsm => new Crc<ushort>(Crc12Preset.Gsm),
+                ChecksumAlgo.Crc12Umts => new Crc<ushort>(Crc12Preset.Umts),
+                ChecksumAlgo.Crc13 => new Crc<ushort>(Crc13Preset.Default),
+                ChecksumAlgo.Crc14 => new Crc<ushort>(Crc14Preset.Default),
+                ChecksumAlgo.Crc14Gsm => new Crc<ushort>(Crc14Preset.Gsm),
+                ChecksumAlgo.Crc15 => new Crc<ushort>(Crc15Preset.Default),
+                ChecksumAlgo.Crc15Mpt1327 => new Crc<ushort>(Crc15Preset.Mpt1327),
+                ChecksumAlgo.Crc16 => new Crc<ushort>(),
+                ChecksumAlgo.Crc16A => new Crc<ushort>(Crc16Preset.A),
+                ChecksumAlgo.Crc16Buypass => new Crc<ushort>(Crc16Preset.Buypass),
+                ChecksumAlgo.Crc16Cdma2000 => new Crc<ushort>(Crc16Preset.Cdma2000),
+                ChecksumAlgo.Crc16Cms => new Crc<ushort>(Crc16Preset.Cms),
+                ChecksumAlgo.Crc16Dds110 => new Crc<ushort>(Crc16Preset.Dds110),
+                ChecksumAlgo.Crc16DectR => new Crc<ushort>(Crc16Preset.DectR),
+                ChecksumAlgo.Crc16DectX => new Crc<ushort>(Crc16Preset.DectX),
+                ChecksumAlgo.Crc16Dnp => new Crc<ushort>(Crc16Preset.Dnp),
+                ChecksumAlgo.Crc16En13757 => new Crc<ushort>(Crc16Preset.En13757),
+                ChecksumAlgo.Crc16Genibus => new Crc<ushort>(Crc16Preset.Genibus),
+                ChecksumAlgo.Crc16Gsm => new Crc<ushort>(Crc16Preset.Gsm),
+                ChecksumAlgo.Crc16Ibm3740 => new Crc<ushort>(Crc16Preset.Ibm3740),
+                ChecksumAlgo.Crc16IbmSdlc => new Crc<ushort>(Crc16Preset.IbmSdlc),
+                ChecksumAlgo.Crc16Kermit => new Crc<ushort>(Crc16Preset.Kermit),
+                ChecksumAlgo.Crc16Lj1200 => new Crc<ushort>(Crc16Preset.Lj1200),
+                ChecksumAlgo.Crc16Maxim => new Crc<ushort>(Crc16Preset.Maxim),
+                ChecksumAlgo.Crc16Mcrf4Xx => new Crc<ushort>(Crc16Preset.Mcrf4Xx),
+                ChecksumAlgo.Crc16ModBus => new Crc<ushort>(Crc16Preset.ModBus),
+                ChecksumAlgo.Crc16Riello => new Crc<ushort>(Crc16Preset.Riello),
+                ChecksumAlgo.Crc16SpiFujitsu => new Crc<ushort>(Crc16Preset.SpiFujitsu),
+                ChecksumAlgo.Crc16T10Dif => new Crc<ushort>(Crc16Preset.T10Dif),
+                ChecksumAlgo.Crc16TeleDisk => new Crc<ushort>(Crc16Preset.TeleDisk),
+                ChecksumAlgo.Crc16Tms37157 => new Crc<ushort>(Crc16Preset.Tms37157),
+                ChecksumAlgo.Crc16Usb => new Crc<ushort>(Crc16Preset.Usb),
+                ChecksumAlgo.Crc16XModem => new Crc<ushort>(Crc16Preset.XModem),
+                ChecksumAlgo.Crc17 => new Crc<uint>(Crc17Preset.Default),
+                ChecksumAlgo.Crc21 => new Crc<uint>(Crc21Preset.Default),
+                ChecksumAlgo.Crc24 => new Crc<uint>(Crc24Preset.Default),
+                ChecksumAlgo.Crc24Ble => new Crc<uint>(Crc24Preset.Ble),
+                ChecksumAlgo.Crc24FlexRayA => new Crc<uint>(Crc24Preset.FlexRayA),
+                ChecksumAlgo.Crc24FlexRayB => new Crc<uint>(Crc24Preset.FlexRayB),
+                ChecksumAlgo.Crc24Interlaken => new Crc<uint>(Crc24Preset.Interlaken),
+                ChecksumAlgo.Crc24LteA => new Crc<uint>(Crc24Preset.LteA),
+                ChecksumAlgo.Crc24LteB => new Crc<uint>(Crc24Preset.LteB),
+                ChecksumAlgo.Crc24Os9 => new Crc<uint>(Crc24Preset.Os9),
+                ChecksumAlgo.Crc30 => new Crc<uint>(Crc30Preset.Default),
+                ChecksumAlgo.Crc31 => new Crc<uint>(Crc31Preset.Default),
+                ChecksumAlgo.Crc32 => new Crc<uint>(),
+                ChecksumAlgo.Crc32Autosar => new Crc<uint>(Crc32Preset.Autosar),
+                ChecksumAlgo.Crc32BZip2 => new Crc<uint>(Crc32Preset.BZip2),
+                ChecksumAlgo.Crc32C => new Crc<uint>(Crc32Preset.C),
+                ChecksumAlgo.Crc32CdRomEdc => new Crc<uint>(Crc32Preset.CdRomEdc),
+                ChecksumAlgo.Crc32D => new Crc<uint>(Crc32Preset.D),
+                ChecksumAlgo.Crc32JamCrc => new Crc<uint>(Crc32Preset.JamCrc),
+                ChecksumAlgo.Crc32Mpeg2 => new Crc<uint>(Crc32Preset.Mpeg2),
+                ChecksumAlgo.Crc32Posix => new Crc<uint>(Crc32Preset.Posix),
+                ChecksumAlgo.Crc32Q => new Crc<uint>(Crc32Preset.Q),
+                ChecksumAlgo.Crc32Xfer => new Crc<uint>(Crc32Preset.Xfer),
+                ChecksumAlgo.Crc40 => new Crc<ulong>(Crc40Preset.Default),
+                ChecksumAlgo.Crc64 => new Crc<ulong>(),
+                ChecksumAlgo.Crc64GoIso => new Crc<ulong>(Crc64Preset.GoIso),
+                ChecksumAlgo.Crc64We => new Crc<ulong>(Crc64Preset.We),
+                ChecksumAlgo.Crc64Xz => new Crc<ulong>(Crc64Preset.Xz),
+                ChecksumAlgo.Crc82 => new Crc<BigInteger>(),
                 ChecksumAlgo.Md5 => new Md5(),
                 ChecksumAlgo.Sha1 => new Sha1(),
                 ChecksumAlgo.Sha256 => new Sha256(),

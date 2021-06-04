@@ -2,57 +2,15 @@
 namespace Roydl.Crypto.Test.ChecksumTests
 {
     using System;
-    using System.IO;
     using System.Numerics;
-    using System.Text;
     using Checksum;
     using NUnit.Framework;
 
     [TestFixture]
     [Parallelizable]
     [Platform(Include = TestVars.PlatformInclude)]
-    public class CrcPresetTests
+    public class CrcTests
     {
-        // Because we're using generic here, some hashes are padded.
-        public sealed class CrcCustom<TResult> : ChecksumAlgorithm<CrcCustom<TResult>, TResult> where TResult : struct, IComparable, IFormattable
-        {
-            private ICrcConfig<TResult> Current { get; }
-
-            public CrcCustom(ICrcConfig<TResult> config) : base(config.Bits) =>
-                Current = config;
-
-            public override void Encrypt(Stream stream)
-            {
-                if (stream == null)
-                    throw new ArgumentNullException(nameof(stream));
-                Current.ComputeHash(stream, out var num);
-                HashNumber = num;
-                switch (num)
-                {
-                    case byte x:
-                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
-                        break;
-                    case ushort x:
-                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
-                        break;
-                    case uint x:
-                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
-                        break;
-                    case ulong x:
-                        RawHash = CryptoUtils.GetByteArray(x, RawHashSize);
-                        break;
-                    case BigInteger x:
-                        var ba = x.ToByteArray();
-                        if (BitConverter.IsLittleEndian)
-                            Array.Reverse(ba);
-                        RawHash = ba;
-                        break;
-                    default:
-                        throw new InvalidCastException();
-                }
-            }
-        }
-
         public enum CrcType
         {
             Crc08,
@@ -202,13 +160,13 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
             #endregion
 
-            #region CRC-17 and CRC-21 (padded)
+            #region CRC-17 and CRC-21
 
-            new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.TestString, "02c38d"),
-            new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.RangeString, "3182d1"),
+            new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.TestString, "2c38d"),
+            new(CrcType.Crc17, Crc17Preset.Default, TestVarsType.RangeString, "182d1"),
 
-            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.TestString, "128a0d"),
-            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.RangeString, "16c0c0"),
+            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.TestString, "28a0d"),
+            new(CrcType.Crc21, Crc21Preset.Default, TestVarsType.RangeString, "6c0c0"),
 
             #endregion
 
@@ -240,13 +198,13 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
             #endregion
 
-            #region CRC-30 and CRC-31 (padded)
+            #region CRC-30 and CRC-31
 
-            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.TestString, "36037067"),
-            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.RangeString, "18b1ef87"),
+            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.TestString, "037067"),
+            new(CrcType.Crc30, Crc30Preset.Default, TestVarsType.RangeString, "b1ef87"),
 
-            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.TestString, "1a76718d"),
-            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.RangeString, "37e0c69c"),
+            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.TestString, "a76718d"),
+            new(CrcType.Crc31, Crc31Preset.Default, TestVarsType.RangeString, "7e0c69c"),
 
             #endregion
 
@@ -310,10 +268,10 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
             #endregion
 
-            #region CRC-82 (padded)
+            #region CRC-82
 
-            new(CrcType.Crc82, Crc82Preset.Default, TestVarsType.TestString, "016348ec7ea7f602abd024"),
-            new(CrcType.Crc82, Crc82Preset.Default, TestVarsType.RangeString, "03dff868d831e5a22b515a"),
+            new(CrcType.Crc82, Crc82Preset.Default, TestVarsType.TestString, "16348ec7ea7f602abd024"),
+            new(CrcType.Crc82, Crc82Preset.Default, TestVarsType.RangeString, "3dff868d831e5a22b515a"),
 
             #endregion
         };
@@ -321,23 +279,23 @@ namespace Roydl.Crypto.Test.ChecksumTests
         private static dynamic CreateInstance(CrcType crcType, Enum algorithm) =>
             crcType switch
             {
-                CrcType.Crc08 => new CrcCustom<byte>(CrcPreset.GetConfig((Crc08Preset)algorithm)),
-                CrcType.Crc10 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc10Preset)algorithm)),
-                CrcType.Crc11 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc11Preset)algorithm)),
-                CrcType.Crc12 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc12Preset)algorithm)),
-                CrcType.Crc13 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc13Preset)algorithm)),
-                CrcType.Crc14 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc14Preset)algorithm)),
-                CrcType.Crc15 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc15Preset)algorithm)),
-                CrcType.Crc16 => new CrcCustom<ushort>(CrcPreset.GetConfig((Crc16Preset)algorithm)),
-                CrcType.Crc17 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc17Preset)algorithm)),
-                CrcType.Crc21 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc21Preset)algorithm)),
-                CrcType.Crc24 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc24Preset)algorithm)),
-                CrcType.Crc30 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc30Preset)algorithm)),
-                CrcType.Crc31 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc31Preset)algorithm)),
-                CrcType.Crc32 => new CrcCustom<uint>(CrcPreset.GetConfig((Crc32Preset)algorithm)),
-                CrcType.Crc40 => new CrcCustom<ulong>(CrcPreset.GetConfig((Crc40Preset)algorithm)),
-                CrcType.Crc64 => new CrcCustom<ulong>(CrcPreset.GetConfig((Crc64Preset)algorithm)),
-                CrcType.Crc82 => new CrcCustom<BigInteger>(CrcPreset.GetConfig((Crc82Preset)algorithm)),
+                CrcType.Crc08 => new Crc<byte>((Crc08Preset)algorithm),
+                CrcType.Crc10 => new Crc<ushort>((Crc10Preset)algorithm),
+                CrcType.Crc11 => new Crc<ushort>((Crc11Preset)algorithm),
+                CrcType.Crc12 => new Crc<ushort>((Crc12Preset)algorithm),
+                CrcType.Crc13 => new Crc<ushort>((Crc13Preset)algorithm),
+                CrcType.Crc14 => new Crc<ushort>((Crc14Preset)algorithm),
+                CrcType.Crc15 => new Crc<ushort>((Crc15Preset)algorithm),
+                CrcType.Crc16 => new Crc<ushort>((Crc16Preset)algorithm),
+                CrcType.Crc17 => new Crc<uint>((Crc17Preset)algorithm),
+                CrcType.Crc21 => new Crc<uint>((Crc21Preset)algorithm),
+                CrcType.Crc24 => new Crc<uint>((Crc24Preset)algorithm),
+                CrcType.Crc30 => new Crc<uint>((Crc30Preset)algorithm),
+                CrcType.Crc31 => new Crc<uint>((Crc31Preset)algorithm),
+                CrcType.Crc32 => new Crc<uint>((Crc32Preset)algorithm),
+                CrcType.Crc40 => new Crc<ulong>((Crc40Preset)algorithm),
+                CrcType.Crc64 => new Crc<ulong>((Crc64Preset)algorithm),
+                CrcType.Crc82 => new Crc<BigInteger>((Crc82Preset)algorithm),
                 _ => throw new ArgumentOutOfRangeException(nameof(crcType), crcType, null)
             };
 
@@ -361,10 +319,6 @@ namespace Roydl.Crypto.Test.ChecksumTests
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
             }
             Assert.AreEqual(expectedHash, instance.Hash);
-
-            var sb = new StringBuilder(instance.HashSize);
-            sb.AppendFormat($"{{0:x{instance.HashSize}}}", instance.HashNumber);
-            Assert.AreEqual(expectedHash, sb.ToString());
         }
 
 #if NET5_0_OR_GREATER && RELEASE && PERF
