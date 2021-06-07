@@ -320,6 +320,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
             }
             Assert.AreEqual(expectedHash, instance.Hash);
+            Assert.AreEqual(expectedHash, (string)instance);
         }
 
 #if NET5_0_OR_GREATER && RELEASE && PERF

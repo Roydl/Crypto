@@ -238,8 +238,18 @@
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
 
-            Assert.AreEqual(_instanceStream.RawHash.Span.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual(_instanceStream.RawHash.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual((sbyte)_instanceStream.HashNumber, (sbyte)_instanceByteArray);
+            Assert.AreEqual((byte)_instanceStream.HashNumber, (byte)_instanceByteArray);
+            Assert.AreEqual((short)_instanceStream.HashNumber, (short)_instanceByteArray);
+            Assert.AreEqual((ushort)_instanceStream.HashNumber, (ushort)_instanceByteArray);
+            Assert.AreEqual((int)_instanceStream.HashNumber, (int)_instanceByteArray);
             Assert.AreEqual(_instanceStream.HashNumber, (uint)_instanceByteArray);
+            Assert.AreEqual((long)_instanceStream.HashNumber, (long)_instanceByteArray);
+            Assert.AreEqual((ulong)_instanceStream.HashNumber, (ulong)_instanceByteArray);
+            Assert.AreEqual((nint)_instanceStream.HashNumber, (nint)_instanceByteArray);
+            Assert.AreEqual((nuint)_instanceStream.HashNumber, (nuint)_instanceByteArray);
+            Assert.AreEqual((BigInteger)_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
             Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 

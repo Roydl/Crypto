@@ -6,6 +6,7 @@
     using System.Numerics;
     using System.Security.Cryptography;
     using System.Text;
+    using Internal;
     using Resources;
 
     /// <summary>Represents the base class from which all implementations of checksum encryption algorithms must derive.</summary>
@@ -214,23 +215,23 @@
         public static bool operator ==(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
             left?.Equals(right) ?? right is null;
 
-        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm"/> object to <see cref="string"/>.</summary>
-        /// <param name="value">The item to convert to <see cref="string"/>.</param>
-        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
-        public static explicit operator string(ChecksumAlgorithm value) =>
-            value.ToString();
-
-        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm"/> object to <see cref="byte"/> array.</summary>
-        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
-        /// <returns>A copy of the last computed hash code.</returns>
-        public static explicit operator byte[](ChecksumAlgorithm value) =>
-            value.RawHash.Span!.ToArray();
-
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have different values.</summary>
         /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         /// <param name="right">The second <see cref="ChecksumAlgorithm"/> instance to compare.</param>
         public static bool operator !=(ChecksumAlgorithm left, ChecksumAlgorithm right) =>
             !(left == right);
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm"/> to <see cref="byte"/> array.</summary>
+        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
+        /// <returns>A <see cref="byte"/> array copy of the last computed hash code.</returns>
+        public static explicit operator byte[](ChecksumAlgorithm value) =>
+            value.RawHash.Span.ToArray();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm"/> to <see cref="string"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="string"/>.</param>
+        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
+        public static explicit operator string(ChecksumAlgorithm value) =>
+            value.ToString();
     }
 
     /// <typeparam name="TAlgo">The hash algorithm type.</typeparam>
@@ -319,28 +320,88 @@
         public static bool operator ==(ChecksumAlgorithm<TAlgo, TCipher> left, ChecksumAlgorithm<TAlgo, TCipher> right) =>
             left?.Equals(right) ?? right is null;
 
-        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <see cref="string"/>.</summary>
-        /// <param name="value">The item to convert to <see cref="string"/>.</param>
-        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
-        public static explicit operator string(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.ToString();
-
-        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <typeparamref name="TCipher"/>.</summary>
-        /// <param name="value">The item to convert to <typeparamref name="TCipher"/>.</param>
-        /// <returns>The <typeparamref name="TCipher"/> representation of the last computed hash code.</returns>
-        public static explicit operator TCipher(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber;
-
-        /// <summary>Defines an explicit conversion of <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> object to <see cref="byte"/> array.</summary>
-        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
-        /// <returns>A copy of the last computed hash code.</returns>
-        public static explicit operator byte[](ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.RawHash.Span!.ToArray();
-
         /// <summary>Determines whether two specified <typeparamref name="TAlgo"/> instances have different values.</summary>
         /// <param name="left">The first <typeparamref name="TAlgo"/> instance to compare.</param>
         /// <param name="right">The second <typeparamref name="TAlgo"/> instance to compare.</param>
         public static bool operator !=(ChecksumAlgorithm<TAlgo, TCipher> left, ChecksumAlgorithm<TAlgo, TCipher> right) =>
             !(left == right);
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="sbyte"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="sbyte"/>.</param>
+        /// <returns>The <see cref="sbyte"/> representation of the last computed hash code.</returns>
+        public static explicit operator sbyte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, sbyte>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="byte"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="byte"/>.</param>
+        /// <returns>The <see cref="byte"/> representation of the last computed hash code.</returns>
+        public static explicit operator byte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, byte>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="short"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="short"/>.</param>
+        /// <returns>The <see cref="short"/> representation of the last computed hash code.</returns>
+        public static explicit operator short(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, short>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="ushort"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="ushort"/>.</param>
+        /// <returns>The <see cref="ushort"/> representation of the last computed hash code.</returns>
+        public static explicit operator ushort(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, ushort>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="int"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="int"/>.</param>
+        /// <returns>The <see cref="int"/> representation of the last computed hash code.</returns>
+        public static explicit operator int(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, int>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="uint"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="uint"/>.</param>
+        /// <returns>The <see cref="uint"/> representation of the last computed hash code.</returns>
+        public static explicit operator uint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, uint>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="long"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="long"/>.</param>
+        /// <returns>The <see cref="long"/> representation of the last computed hash code.</returns>
+        public static explicit operator long(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, long>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="ulong"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="ulong"/>.</param>
+        /// <returns>The <see cref="ulong"/> representation of the last computed hash code.</returns>
+        public static explicit operator ulong(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, ulong>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="IntPtr"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="IntPtr"/>.</param>
+        /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
+        public static explicit operator nint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, nint>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="UIntPtr"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="UIntPtr"/>.</param>
+        /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
+        public static explicit operator nuint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, nuint>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="BigInteger"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="BigInteger"/>.</param>
+        /// <returns>The <see cref="BigInteger"/> representation of the last computed hash code.</returns>
+        public static explicit operator BigInteger(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.HashNumber.FromTo<TCipher, BigInteger>();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="byte"/> array.</summary>
+        /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
+        /// <returns>A <see cref="byte"/> array copy of the last computed hash code.</returns>
+        public static explicit operator byte[](ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.RawHash.ToArray();
+
+        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="string"/>.</summary>
+        /// <param name="value">The item to convert to <see cref="string"/>.</param>
+        /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
+        public static explicit operator string(ChecksumAlgorithm<TAlgo, TCipher> value) =>
+            value.Hash;
     }
 }

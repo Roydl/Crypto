@@ -469,7 +469,7 @@
         /// <returns>A 64-bit unsigned integer that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm, false) switch
+            algorithm.GetDefaultInstance().InternalEncrypt(source, false) switch
             {
                 IChecksumResult<byte> x => x.HashNumber,
                 IChecksumResult<ushort> x => x.HashNumber,
@@ -484,7 +484,7 @@
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            InternalGenericEncrypt(source, algorithm, false).Hash;
+            algorithm.GetDefaultInstance().InternalEncrypt(source, false).Hash;
 
         /// <summary>Encrypts the file at this <paramref name="path"/> with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
         /// <param name="path">The full path of the file to encrypt.</param>
@@ -511,8 +511,8 @@
             var sb = new StringBuilder(braces ? 38 : 36);
             if (braces)
                 sb.Append('{');
-            var raw1 = InternalGenericEncrypt(source, algorithm1, true).RawHash.Span;
-            var raw2 = InternalGenericEncrypt(source, algorithm2, false).RawHash.Span;
+            var raw1 = algorithm1.GetDefaultInstance().InternalEncrypt(source, true).RawHash.Span;
+            var raw2 = algorithm2.GetDefaultInstance().InternalEncrypt(source, false).RawHash.Span;
             var span = LocalCombineHashBytes(raw1, raw2, 16);
             var index = 0;
             for (var i = 0; i < 5; i++)
@@ -716,11 +716,12 @@
                 _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
             };
 
-        private static IChecksumResult InternalGenericEncrypt<TSource>(TSource source, ChecksumAlgo algorithm, bool ifStreamRestorePos)
+        internal static IChecksumResult InternalEncrypt<TSource>(this IChecksumAlgorithm instance, TSource source, bool restoreStreamPos)
         {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
-            var instance = algorithm.GetDefaultInstance();
             switch (source)
             {
                 case BigInteger x:
@@ -732,14 +733,20 @@
                 case IEnumerable<byte> x:
                     instance.Encrypt(x as byte[] ?? x.ToArray());
                     break;
+                case Memory<byte> x:
+                    instance.Encrypt(x.ToArray());
+                    break;
                 case IEnumerable<char> x:
                     instance.Encrypt(x as string ?? new string(x.ToArray()));
                     break;
+                case Memory<char> x:
+                    instance.Encrypt(new string(x.ToArray()));
+                    break;
                 case StreamReader x:
-                    LocalProcessStream(instance, x.BaseStream, ifStreamRestorePos);
+                    LocalProcessStream(instance, x.BaseStream, restoreStreamPos);
                     break;
                 case Stream x:
-                    LocalProcessStream(instance, x, ifStreamRestorePos);
+                    LocalProcessStream(instance, x, restoreStreamPos);
                     break;
                 case FileInfo x:
                     instance.Encrypt(x);
