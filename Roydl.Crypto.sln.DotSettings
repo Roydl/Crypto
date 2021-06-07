@@ -280,8 +280,7 @@
         &lt;Kind Is="Operator" /&gt;&#xD;
       &lt;/Entry.Match&gt;&#xD;
       &lt;Entry.SortBy&gt;&#xD;
-        &lt;Access Order="Public Internal ProtectedInternal Protected Private" /&gt;&#xD;
-        &lt;Name /&gt;&#xD;
+        &lt;Access /&gt;&#xD;
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
     &lt;Entry DisplayName="All other members"&gt;&#xD;
