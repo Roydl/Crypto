@@ -139,9 +139,7 @@
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         Crc12Dect,
 
-        /// <summary>CRC-12/GSM.
-        ///     <para><b>Alias:</b> DECT.</para>
-        /// </summary>
+        /// <summary>CRC-12/GSM.</summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         Crc12Gsm,
 
