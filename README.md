@@ -18,113 +18,132 @@
 
 # Roydl.Crypto
 
-The idea was to create a handy way to hash and encrypt data.
+The idea was to create a handy way to hash and encrypt data, which can be used in any situation.
 
-You can easily create instances of any type to translate `Stream`, `byte[]` or `string` data. With the exception of `Rijndael` encryption and decryption, extension methods are also provided for all types.
+### Checksum Algorithms:
 
-
-### Checksum Encryption:
-
-| Name | Hash Size | Algorithm | HMAC |
+| Name | Hash Size | Algorithm | Type |
 | ---- | ---- | ---- | ---- |
-| Adler32 | 32 | Standard | unsupported |
-| CRC16 | 16 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
-| CRC17 | 17 | CAN-FD | unsupported |
-| CRC21 | 21 | CAN-FD | unsupported |
-| CRC24 | 24 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
-| CRC30 | 30 | CDMA | unsupported |
-| CRC31 | 31 | PHILIPS | unsupported |
-| CRC32 | 32 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
-| CRC40 | 40 | GSM | unsupported |
-| CRC64 | 64 | [optional](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) | unsupported |
-| CRC82 | 82 | DARC | unsupported |
-| MD5 | 128 | Standard | optional |
-| SHA1 | 160 | Standard | optional |
-| SHA256 | 256 | SHA-2 Standard | optional |
-| SHA384 | 384 | SHA-2 Standard | optional |
-| SHA512 | 512 | SHA-2 Standard | optional |
-
-_I hope I don't have to say that checksums shouldn't be used to verify sensitive data!_
+| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) |
+| CRC | 8-bit to 82-bit (no limit for custom) | Choose from [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) or create your own | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) |
+| MD5 | 128-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
+| SHA-1 | 160-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
+| SHA-2 | 256-bit to 512-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
 
 #### Usage:
+
+The `GetChecksum` extension method retrieves a **string** representation of the computed hash.
+
+The **value** can be almost anything. No matter if it is **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**.
+
+Not every type makes sense, but is supported anyway.
+
 ```cs
-// The `value` can be almost anything.
-string strHash = value.GetChecksum(ChecksumAlgo.Sha512);
+string hash = value.GetChecksum(ChecksumAlgo.Sha1);
+Console.WriteLine(hash);
 
-// The file encryption has an additional method, where `value` must be a
-// `string` with a valid file path.
-string strHash = value.GetFileChecksum(); // SHA-256 is used by default.
+// Output:
+// 12a5ba5baa1664f73e6279f23354bd90c8981a81
+```
 
-// The `GetCipher` extension method retrieves an unsigned 64-bit integer
-// representation of the computed hash. It follows the same rules outlined
-// earlier.
-ulong numHash = value.GetCipher(ChecksumAlgo.Crc64);
+However, a **string** containing a file path has an additional method.
 
-// HMAC is supported via instances by setting the secret key. 
-Sha512 instance1 = new Sha512()
+```cs
+string hash = value.GetFileChecksum(); // SHA-256 is used when `ChecksumAlgo` is undefined
+```
+
+The `GetCipher` extension method retrieves an **unsigned 64-bit integer** representation of the computed hash. It follows the same rules outlined earlier. This can be useful with cyclic computed hashes.
+```cs
+ulong hash = value.GetCipher(ChecksumAlgo.Crc64);
+```
+
+Note that `HMAC` keyed-hashing is only supported for cryptographic algorithms via instances by setting a secret key.
+
+```cs
+Sha512 instance = new Sha512()
 {
     SecretKey = new byte[128] { /* some bytes */ }
 };
+```
 
-// Encryptions uses the secret key until `DestroySecretKey()` is called.
-instance1.Encrypt(value);
+The `Encrypt` methods uses the secret key until `DestroySecretKey` or `Dispose` is called.
 
-// `RawHash` stores the raw data of the last computed hash code.
-byte[] bytesHash = instance1.RawHash;
+```cs
+instance.Encrypt(value);
+```
 
-// `HashNumber` holds the 64-bit unsigned integer representation of the
-// last computed hash code. In case of CRC, this is the real raw hash code.
-ulong numHash = instance1.HashNumber;
+An instances provides a computed hash in several variants.
 
-// `Hash` returns the string representation of the last computed hash code
-// where letters are always in lowercase.
-string lowercase = instance1.Hash;
+```cs
+ReadOnlyMemory<byte> rawHash = instance.RawHash;
+BigInteger cipher = instance.HashNumber; // The type depends on the hash size in bits, e.g. CRC-32 is `UInt32`
+string lowercase = instance.Hash;
+string uppercase = instance.ToString(true);
+```
 
-// `Hash` corresponds to`ToString()` in which an additional boolean value
-// can be specified for uppercase letters.
-string uppercase = instance1.ToString(true);
+Casting is also supported to get a hash.
 
-// The last thing you need to know is that instances have equality operators.
+```cs
+byte[] copyOfRawHash = (byte[])instance;
+ulong cipher = (ulong)instance; // Numeric conversions are unchecked
+string lowercase = (string)instance;
+```
+
+Instances also provide equality operators.
+
+```cs
 bool equ = (instance1 == instance2);
 bool neq = (instance1 != instance2);
 ```
 
 #### CRC customization:
 
-If you need a different CRC algorithm, you can easily create your own variations. This is an example for `CRC-32/POSIX`, but it should support many others between 8 and 82 bits.
+If you need a different CRC algorithm, you can easily create your own variation.
+
+This is an example for `CRC-32/POSIX`, but it should support many others from 8-bit to almost infinite bits.
 
 ```cs
-public sealed class Crc32Posix : ChecksumAlgorithm<Crc32Posix>
-{
-    private const int Bits = 32;
-    private const uint Check = 0x765e7680u;
-    private const uint Poly = 0x04c11db7u;
-    private const uint Init = 0x00000000u;
-    private const bool RefIn = false;
-    private const bool RefOut = false;
-    private const uint XorOut = 0xffffffffu;
-
-    // Sets a new `CrcConfig` with the constants from above.
-    private static readonly CrcConfig<uint> Current = new(Bits, Check, Poly, Init, RefIn, RefOut, XorOut);
-
-    // At least one constructor is required because `base(bits)` has to
-    // be called.
-    public Crc32Posix() : base(Bits) { }
-
-    // Lets `CrcConfig` struct do the job. This method is the only one
-    // that needs to be overwritten.
-    public override void Encrypt(Stream stream)
-    {
-        if (stream == null)
-            throw new ArgumentNullException(nameof(stream));
-        Current.ComputeHash(stream, out var num);
-        HashNumber = num;
-        RawHash = CryptoUtils.GetByteArray(num, RawHashSize, true);
-    }
-}
+const int width = 32;
+const uint check = 0x765e7680u;
+const uint poly = 0x04c11db7u;
+const uint init = 0x00000000u;
+const bool refIn = false;
+const bool refOut = false;
+const uint xorOut = 0xffffffffu;
+const uint mask = 0xffffffffu;
+const bool skipValidation = false;
 ```
 
-Check out the [CRC presets](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcPreset.cs#L320) to see more config examples.
+Sets a new `CrcConfig` with the constants from above. The data are automatically validated with the given check.
+
+```cs
+var cfg = new CrcConfig32(width, check, poly, init, refIn, refOut, xorOut, mask, skipValidation);
+```
+
+Compute the hash directly via the configuration structure.
+
+```cs
+cfg.ComputeHash(stream, out uint cipher);
+```
+
+Or load it into the CRC class which has more features, and compute the hash code from there.
+
+The **value** can be from type **Stream**, **byte[]**, **string**, **FileInfo**, or a **string** containing a file path.
+
+```cs
+var crc = new Crc<uint>(config);
+crc.Encrypt(value);
+```
+
+As mentioned earlier, instances offer computed hashes in several variants. It follows the same rules that have already been explained above.
+
+```cs
+ReadOnlyMemory<byte> rawHash = crc.RawHash;
+uint cipher = crc.HashNumber;
+string lowercase = crc.Hash;
+```
+
+Check out the [CRC configuration manager](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfigManager.cs) to see more examples.
 
 ---
 
