@@ -119,9 +119,7 @@
             /// </summary>
             Dect,
 
-            /// <summary>CRC-12/GSM.
-            ///     <para><b>Alias:</b> DECT.</para>
-            /// </summary>
+            /// <summary>CRC-12/GSM.</summary>
             Gsm,
 
             /// <summary>CRC-12/UMTS.
