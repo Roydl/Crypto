@@ -2,7 +2,6 @@
 {
     using System;
     using System.Numerics;
-    using Internal;
 
     /// <summary>Provides static functions for loading preset <see cref="ICrcConfig{TValue}"/> structures.</summary>
     public static class CrcConfigManager
@@ -436,7 +435,7 @@
             preset switch
             {
                 CrcOptions.Crc82.Default =>
-                    new CrcConfigBeyond(82, "09ea83f625023801fd612".ToBigInt(), "220808a00a2022200c430".ToBigInt(), default, true, true, default, "3ffffffffffffffffffff".ToBigInt()),
+                    new CrcConfigBeyond(82, "0x09ea83f625023801fd612", "0x220808a00a2022200c430", default, true, true, default, "0x3ffffffffffffffffffff"),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };

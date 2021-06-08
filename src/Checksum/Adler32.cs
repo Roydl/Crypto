@@ -36,25 +36,33 @@
         public static Adler32 Create() => new();
 
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
-        public override void Encrypt(Stream stream)
+        public override unsafe void Encrypt(Stream stream)
         {
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            var ba = new byte[stream.GetBufferSize()].AsSpan();
-            var uia = new[] { 1u, 0u }.AsSpan();
-            int len;
-            while ((len = stream.Read(ba)) > 0)
+            uint sum = 0;
+            fixed (uint* sums = new[] { 1u, 0u })
             {
-                for (var i = 0; i < len; i++)
+                var size = stream.GetBufferSize();
+                var bytes = new byte[size];
+                fixed (byte* buffer = bytes)
                 {
-                    uia[0] = (uia[0] + ba[i]) % 0xfff1;
-                    uia[1] = (uia[1] + uia[0]) % 0xfff1;
+                    int len;
+                    while ((len = stream.Read(bytes, 0, size)) > 0)
+                    {
+                        for (var i = 0; i < len; i++)
+                        {
+                            var value = buffer[i];
+                            sums[0] = (sums[0] + value) % 0xfff1;
+                            sums[1] = (sums[1] + sums[0]) % 0xfff1;
+                        }
+                    }
                 }
+                sum = ((sums[1] << 16) | sums[0]) & uint.MaxValue;
             }
-            var num = ((uia[1] << 16) | uia[0]) & uint.MaxValue;
-            HashNumber = num;
-            RawHash = CryptoUtils.GetByteArray(num, RawHashSize);
+            HashNumber = sum;
+            RawHash = CryptoUtils.GetByteArray(sum, RawHashSize);
         }
     }
 }

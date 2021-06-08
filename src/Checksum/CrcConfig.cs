@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using Internal;
     using Resources;
 
@@ -72,17 +71,30 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(Stream stream, out byte hash)
+        public unsafe void ComputeHash(Stream stream, out byte hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            hash = Init;
-            var span = new byte[stream.GetBufferSize()].AsSpan();
-            int len;
-            while ((len = stream.Read(span)) > 0)
+            fixed (byte* table = Table.Span)
             {
-                for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], ref hash);
+                var bytes = new byte[stream.GetBufferSize()].AsSpan();
+                var sum = Init;
+                fixed (byte* buffer = bytes)
+                {
+                    int len;
+                    while ((len = stream.Read(bytes)) > 0)
+                    {
+                        for (var i = 0; i < len; i++)
+                        {
+                            var value = buffer[i];
+                            if (RefIn)
+                                sum = (byte)(((sum >> 8) ^ table[value ^ (sum & 0xff)]) & Mask);
+                            else
+                                sum = (byte)((table[((sum >> (Bits - 8)) ^ value) & 0xff] ^ (sum << 8)) & Mask);
+                        }
+                    }
+                }
+                hash = sum;
             }
             FinalizeHash(ref hash);
         }
@@ -101,7 +113,7 @@
         public void FinalizeHash(ref byte hash)
         {
             if (!RefIn && RefOut)
-                BitsReverseSlow(ref hash);
+                hash = hash.ReverseBits();
             else if (RefIn ^ RefOut)
                 hash = (byte)~hash;
             hash ^= XorOut;
@@ -114,18 +126,6 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
-
-        private void BitsReverseSlow(ref byte hash)
-        {
-            var bitstr = Convert.ToString(hash, 2);
-            var size = bitstr.Length;
-            while (size % 4 != 0)
-                size++;
-            if (bitstr.Length < size)
-                bitstr = bitstr.PadLeft(size, '0');
-            bitstr = new string(bitstr.Reverse().ToArray());
-            hash = (byte)(Convert.ToByte(bitstr, 2) & Mask);
-        }
 
         internal static bool IsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
         {
@@ -170,7 +170,7 @@
             var top = (byte)(1 << (bits - 1));
             var mem = new byte[1 << 8].AsMemory();
             var span = mem.Span;
-            for (var i = 0; i < span.Length; i++)
+            for (var i = 0; i < mem.Length; i++)
             {
                 var x = (byte)i;
                 if (refIn)

@@ -328,8 +328,11 @@ namespace Roydl.Crypto.Test.ChecksumTests
         {
             new(CrcType.Crc, CrcOptions.Crc.Default),
             new(CrcType.Crc16, CrcOptions.Crc16.Default),
+            new(CrcType.Crc16, CrcOptions.Crc16.Buypass),
             new(CrcType.Crc32, CrcOptions.Crc32.Default),
+            new(CrcType.Crc32, CrcOptions.Crc32.Xfer),
             new(CrcType.Crc64, CrcOptions.Crc64.Default),
+            new(CrcType.Crc64, CrcOptions.Crc64.GoIso),
             new(CrcType.Crc82, CrcOptions.Crc82.Default)
         };
 

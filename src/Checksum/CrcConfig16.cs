@@ -2,13 +2,15 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using Internal;
     using Resources;
 
     /// <summary>Represents a 16-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig16 : ICrcConfig<ushort>
     {
+        private const int Columns = 1 << 8;
+        private const int Rows = 1 << 3;
+
         /// <inheritdoc/>
         public int Bits { get; }
 
@@ -60,17 +62,53 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(Stream stream, out ushort hash)
+        public unsafe void ComputeHash(Stream stream, out ushort hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            hash = Init;
-            var span = new byte[stream.GetBufferSize()].AsSpan();
-            int len;
-            while ((len = stream.Read(span)) > 0)
+            fixed (ushort* table = Table.Span)
             {
-                for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], ref hash);
+                var bytes = new byte[stream.GetBufferSize()].AsSpan();
+                var sum = Init;
+                fixed (byte* buffer = bytes)
+                {
+                    int len;
+                    while ((len = stream.Read(bytes)) > 0)
+                    {
+                        var i = 0;
+                        while (RefIn && len >= Rows)
+                        {
+                            var x = sum;
+
+                            sum = (ushort)(
+                                table[5 * Columns + buffer[i + 2]] ^
+                                table[4 * Columns + buffer[i + 3]] ^
+                                table[3 * Columns + buffer[i + 4]] ^
+                                table[2 * Columns + buffer[i + 5]] ^
+                                table[1 * Columns + buffer[i + 6]] ^
+                                table[0 * Columns + buffer[i + 7]]
+                            );
+
+                            sum ^= (ushort)(
+                                table[7 * Columns + (((x >> 0) & 0xff) ^ buffer[i + 0])] ^
+                                table[6 * Columns + (((x >> 8) & 0xff) ^ buffer[i + 1])]
+                            );
+
+                            i += Rows;
+                            len -= Rows;
+                            sum &= Mask;
+                        }
+                        while (--len >= 0)
+                        {
+                            var value = buffer[i++];
+                            if (RefIn)
+                                sum = (ushort)(((sum >> 8) ^ table[value ^ (sum & 0xff)]) & Mask);
+                            else
+                                sum = (ushort)((table[((sum >> (Bits - 8)) ^ value) & 0xff] ^ (sum << 8)) & Mask);
+                        }
+                    }
+                }
+                hash = sum;
             }
             FinalizeHash(ref hash);
         }
@@ -89,7 +127,7 @@
         public void FinalizeHash(ref ushort hash)
         {
             if (!RefIn && RefOut)
-                BitsReverseSlow(ref hash);
+                hash = hash.ReverseBits();
             else if (RefIn ^ RefOut)
                 hash = (ushort)~hash;
             hash ^= XorOut;
@@ -103,18 +141,6 @@
         public bool IsValid() =>
             IsValid(out _);
 
-        private void BitsReverseSlow(ref ushort hash)
-        {
-            var bitstr = Convert.ToString(hash, 2);
-            var size = bitstr.Length;
-            while (size % 4 != 0)
-                size++;
-            if (bitstr.Length < size)
-                bitstr = bitstr.PadLeft(size, '0');
-            bitstr = new string(bitstr.Reverse().ToArray());
-            hash = (ushort)(Convert.ToUInt16(bitstr, 2) & Mask);
-        }
-
         private static ushort CreateMask(int bits)
         {
             var mask = (ushort)0xff;
@@ -127,22 +153,28 @@
         private static ReadOnlyMemory<ushort> CreateTable(int bits, ushort poly, ushort mask, bool refIn)
         {
             var top = (ushort)(1 << (bits - 1));
-            var mem = new ushort[1 << 8].AsMemory();
+            var rows = refIn ? Rows : 1;
+            var mem = new ushort[rows * Columns].AsMemory();
             var span = mem.Span;
-            for (var i = 0; i < span.Length; i++)
+            for (var i = 0; i < Columns; i++)
             {
                 var x = (ushort)i;
-                if (refIn)
+                for (var j = 0; j < rows; j++)
                 {
-                    for (var k = 0; k < 8; k++)
-                        x = (ushort)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
-                    span[i] = (ushort)(x & mask);
-                    continue;
+                    if (refIn)
+                    {
+                        for (var k = 0; k < 8; k++)
+                            x = (ushort)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
+                        span[j * Columns + i] = (ushort)(x & mask);
+                    }
+                    else
+                    {
+                        x <<= bits - 8;
+                        for (var k = 0; k < 8; k++)
+                            x = (ushort)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
+                        span[j * Columns + i] = (ushort)(x & mask);
+                    }
                 }
-                x <<= bits - 8;
-                for (var j = 0; j < 8; j++)
-                    x = (ushort)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
-                span[i] = (ushort)(x & mask);
             }
             return mem;
         }

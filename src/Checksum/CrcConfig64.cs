@@ -8,6 +8,9 @@
     /// <summary>Represents a 64-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig64 : ICrcConfig<ulong>
     {
+        private const int Columns = 1 << 8;
+        private const int Rows = 1 << 5;
+
         /// <inheritdoc/>
         public int Bits { get; }
 
@@ -59,17 +62,73 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(Stream stream, out ulong hash)
+        public unsafe void ComputeHash(Stream stream, out ulong hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            hash = Init;
-            var span = new byte[stream.GetBufferSize()].AsSpan();
-            int len;
-            while ((len = stream.Read(span)) > 0)
+            fixed (ulong* table = Table.Span)
             {
-                for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], ref hash);
+                var bytes = new byte[stream.GetBufferSize()].AsSpan();
+                var sum = Init;
+                fixed (byte* buffer = bytes)
+                {
+                    int len;
+                    while ((len = stream.Read(bytes)) > 0)
+                    {
+                        var i = 0;
+                        while (RefIn && len >= Rows)
+                        {
+                            var x = sum;
+
+                            sum = table[23 * Columns + buffer[i + 08]] ^
+                                  table[22 * Columns + buffer[i + 09]] ^
+                                  table[21 * Columns + buffer[i + 10]] ^
+                                  table[20 * Columns + buffer[i + 11]] ^
+                                  table[19 * Columns + buffer[i + 12]] ^
+                                  table[18 * Columns + buffer[i + 13]] ^
+                                  table[17 * Columns + buffer[i + 14]] ^
+                                  table[16 * Columns + buffer[i + 15]] ^
+                                  table[15 * Columns + buffer[i + 16]] ^
+                                  table[14 * Columns + buffer[i + 17]] ^
+                                  table[13 * Columns + buffer[i + 18]] ^
+                                  table[12 * Columns + buffer[i + 19]] ^
+                                  table[11 * Columns + buffer[i + 20]] ^
+                                  table[10 * Columns + buffer[i + 21]] ^
+                                  table[09 * Columns + buffer[i + 22]] ^
+                                  table[08 * Columns + buffer[i + 23]] ^
+                                  table[07 * Columns + buffer[i + 24]] ^
+                                  table[06 * Columns + buffer[i + 25]] ^
+                                  table[05 * Columns + buffer[i + 26]] ^
+                                  table[04 * Columns + buffer[i + 27]] ^
+                                  table[03 * Columns + buffer[i + 28]] ^
+                                  table[02 * Columns + buffer[i + 29]] ^
+                                  table[01 * Columns + buffer[i + 30]] ^
+                                  table[00 * Columns + buffer[i + 31]];
+
+                            sum ^= table[31 * Columns + (((x >> 00) & 0xff) ^ buffer[i + 0])] ^
+                                   table[30 * Columns + (((x >> 08) & 0xff) ^ buffer[i + 1])] ^
+                                   table[29 * Columns + (((x >> 16) & 0xff) ^ buffer[i + 2])] ^
+                                   table[28 * Columns + (((x >> 24) & 0xff) ^ buffer[i + 3])] ^
+                                   table[27 * Columns + (((x >> 32) & 0xff) ^ buffer[i + 4])] ^
+                                   table[26 * Columns + (((x >> 40) & 0xff) ^ buffer[i + 5])] ^
+                                   table[25 * Columns + (((x >> 48) & 0xff) ^ buffer[i + 6])] ^
+                                   table[24 * Columns + (((x >> 56) & 0xff) ^ buffer[i + 7])];
+
+                            i += Rows;
+                            len -= Rows;
+                            sum &= Mask;
+                        }
+                        while (--len >= 0)
+                        {
+                            var value = buffer[i++];
+                            if (RefIn)
+                                sum = ((sum >> 8) ^ table[(int)(value ^ (sum & 0xff))]) & Mask;
+                            else
+                                sum = (table[(int)(((sum >> (Bits - 8)) ^ value) & 0xff)] ^ (sum << 8)) & Mask;
+                        }
+                    }
+                }
+                hash = sum;
             }
             FinalizeHash(ref hash);
         }
@@ -79,15 +138,17 @@
         {
             var table = Table.Span;
             if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xffuL))]) & Mask;
+                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xffuL)] ^ (hash << 8)) & Mask;
+                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
         }
 
         /// <inheritdoc/>
         public void FinalizeHash(ref ulong hash)
         {
-            if (RefIn ^ RefOut)
+            if (!RefIn && RefOut)
+                hash = hash.ReverseBits();
+            else if (RefIn ^ RefOut)
                 hash = ~hash;
             hash ^= XorOut;
         }
@@ -112,22 +173,28 @@
         private static ReadOnlyMemory<ulong> CreateTable(int bits, ulong poly, ulong mask, bool refIn)
         {
             var top = 1uL << (bits - 1);
-            var mem = new ulong[1 << 8].AsMemory();
+            var rows = refIn ? Rows : 1;
+            var mem = new ulong[rows * Columns].AsMemory();
             var span = mem.Span;
-            for (var i = 0; i < span.Length; i++)
+            for (var i = 0; i < Columns; i++)
             {
                 var x = (ulong)i;
-                if (refIn)
+                for (var j = 0; j < rows; j++)
                 {
-                    for (var k = 0; k < 8; k++)
-                        x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
-                    span[i] = x & mask;
-                    continue;
+                    if (refIn)
+                    {
+                        for (var k = 0; k < 8; k++)
+                            x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                        span[j * Columns + i] = x & mask;
+                    }
+                    else
+                    {
+                        x <<= bits - 8;
+                        for (var k = 0; k < 8; k++)
+                            x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                        span[j * Columns + i] = x & mask;
+                    }
                 }
-                x <<= bits - 8;
-                for (var j = 0; j < 8; j++)
-                    x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
-                span[i] = x & mask;
             }
             return mem;
         }

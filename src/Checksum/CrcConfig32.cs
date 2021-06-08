@@ -2,13 +2,15 @@
 {
     using System;
     using System.IO;
-    using System.Linq;
     using Internal;
     using Resources;
 
     /// <summary>Represents a 32-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig32 : ICrcConfig<uint>
     {
+        private const int Columns = 1 << 8;
+        private const int Rows = 1 << 4;
+
         /// <inheritdoc/>
         public int Bits { get; }
 
@@ -60,17 +62,57 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(Stream stream, out uint hash)
+        public unsafe void ComputeHash(Stream stream, out uint hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            hash = Init;
-            var span = new byte[stream.GetBufferSize()].AsSpan();
-            int len;
-            while ((len = stream.Read(span)) > 0)
+            fixed (uint* table = Table.Span)
             {
-                for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], ref hash);
+                var bytes = new byte[stream.GetBufferSize()].AsSpan();
+                var sum = Init;
+                fixed (byte* buffer = bytes)
+                {
+                    int len;
+                    while ((len = stream.Read(bytes)) > 0)
+                    {
+                        var i = 0;
+                        while (RefIn && len >= Rows)
+                        {
+                            var x = sum;
+
+                            sum = table[11 * Columns + buffer[i + 04]] ^
+                                  table[10 * Columns + buffer[i + 05]] ^
+                                  table[09 * Columns + buffer[i + 06]] ^
+                                  table[08 * Columns + buffer[i + 07]] ^
+                                  table[07 * Columns + buffer[i + 08]] ^
+                                  table[06 * Columns + buffer[i + 09]] ^
+                                  table[05 * Columns + buffer[i + 10]] ^
+                                  table[04 * Columns + buffer[i + 11]] ^
+                                  table[03 * Columns + buffer[i + 12]] ^
+                                  table[02 * Columns + buffer[i + 13]] ^
+                                  table[01 * Columns + buffer[i + 14]] ^
+                                  table[00 * Columns + buffer[i + 15]];
+
+                            sum ^= table[15 * Columns + (((x >> 0) & 0xff) ^ buffer[i + 0])] ^
+                                   table[14 * Columns + (((x >> 8) & 0xff) ^ buffer[i + 1])] ^
+                                   table[13 * Columns + (((x >> 16) & 0xff) ^ buffer[i + 2])] ^
+                                   table[12 * Columns + (((x >> 24) & 0xff) ^ buffer[i + 3])];
+
+                            i += Rows;
+                            len -= Rows;
+                            sum &= Mask;
+                        }
+                        while (--len >= 0)
+                        {
+                            var value = buffer[i++];
+                            if (RefIn)
+                                sum = ((sum >> 8) ^ table[(int)(value ^ (sum & 0xff))]) & Mask;
+                            else
+                                sum = (table[(int)(((sum >> (Bits - 8)) ^ value) & 0xff)] ^ (sum << 8)) & Mask;
+                        }
+                    }
+                }
+                hash = sum;
             }
             FinalizeHash(ref hash);
         }
@@ -80,16 +122,16 @@
         {
             var table = Table.Span;
             if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xffu))]) & Mask;
+                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xffu)] ^ (hash << 8)) & Mask;
+                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
         }
 
         /// <inheritdoc/>
         public void FinalizeHash(ref uint hash)
         {
             if (!RefIn && RefOut)
-                BitsReverseSlow(ref hash);
+                hash = hash.ReverseBits();
             else if (RefIn ^ RefOut)
                 hash = ~hash;
             hash ^= XorOut;
@@ -103,18 +145,6 @@
         public bool IsValid() =>
             IsValid(out _);
 
-        private void BitsReverseSlow(ref uint hash)
-        {
-            var bitstr = Convert.ToString(hash, 2);
-            var size = bitstr.Length;
-            while (size % 4 != 0)
-                size++;
-            if (bitstr.Length < size)
-                bitstr = bitstr.PadLeft(size, '0');
-            bitstr = new string(bitstr.Reverse().ToArray());
-            hash = Convert.ToUInt32(bitstr, 2) & Mask;
-        }
-
         private static uint CreateMask(int bits)
         {
             var mask = 0xffu;
@@ -127,22 +157,28 @@
         private static ReadOnlyMemory<uint> CreateTable(int bits, uint poly, uint mask, bool refIn)
         {
             var top = 1u << (bits - 1);
-            var mem = new uint[1 << 8].AsMemory();
+            var rows = refIn ? Rows : 1;
+            var mem = new uint[rows * Columns].AsMemory();
             var span = mem.Span;
-            for (var i = 0; i < span.Length; i++)
+            for (var i = 0; i < Columns; i++)
             {
                 var x = (uint)i;
-                if (refIn)
+                for (var j = 0; j < rows; j++)
                 {
-                    for (var k = 0; k < 8; k++)
-                        x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
-                    span[i] = x & mask;
-                    continue;
+                    if (refIn)
+                    {
+                        for (var k = 0; k < 8; k++)
+                            x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                        span[j * Columns + i] = x & mask;
+                    }
+                    else
+                    {
+                        x <<= bits - 8;
+                        for (var k = 0; k < 8; k++)
+                            x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                        span[j * Columns + i] = x & mask;
+                    }
                 }
-                x <<= bits - 8;
-                for (var j = 0; j < 8; j++)
-                    x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
-                span[i] = x & mask;
             }
             return mem;
         }

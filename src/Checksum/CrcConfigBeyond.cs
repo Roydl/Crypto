@@ -58,6 +58,9 @@
                 CrcConfig.ThrowIfInvalid(this);
         }
 
+        /// <inheritdoc cref="CrcConfigBeyond(int, BigInteger, BigInteger, BigInteger, bool, bool, BigInteger, BigInteger, bool)"/>
+        public CrcConfigBeyond(int bits, string check, string poly, string init = default, bool refIn = false, bool refOut = false, string xorOut = default, string mask = default, bool skipValidation = false) : this(bits, check.ToBigInt(), poly.ToBigInt(), init.ToBigInt(), refIn, refOut, xorOut.ToBigInt(), mask.ToBigInt(), skipValidation) { }
+
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out BigInteger hash)
         {

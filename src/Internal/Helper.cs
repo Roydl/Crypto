@@ -5,6 +5,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Numerics;
 
     internal static class Helper
@@ -51,10 +52,46 @@
             };
         }
 
+        internal static T ReverseBits<T>(this T value) where T : struct, IComparable, IFormattable
+        {
+            // String conversion is slower than shifting bits,
+            // but it more accurate for some unusual bit widths.
+            var bits = value switch
+            {
+                sbyte x => Convert.ToString(x, 2),
+                byte x => Convert.ToString(x, 2),
+                short x => Convert.ToString(x, 2),
+                ushort x => Convert.ToString(x, 2),
+                int x => Convert.ToString(x, 2),
+                uint x => Convert.ToString(x, 2),
+                long x => Convert.ToString(x, 2),
+                ulong x => Convert.ToString((long)x, 2),
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
+            var size = bits.Length;
+            while (size % 4 != 0)
+                size++;
+            if (bits.Length < size)
+                bits = bits.PadLeft(size, '0');
+            bits = new string(bits.Reverse().ToArray());
+            return value switch
+            {
+                sbyte => (T)(object)Convert.ToSByte(bits, 2),
+                byte => (T)(object)Convert.ToByte(bits, 2),
+                short => (T)(object)Convert.ToInt16(bits, 2),
+                ushort => (T)(object)Convert.ToUInt16(bits, 2),
+                int => (T)(object)Convert.ToInt32(bits, 2),
+                uint => (T)(object)Convert.ToUInt32(bits, 2),
+                long => (T)(object)Convert.ToInt64(bits, 2),
+                _ => (T)(object)Convert.ToUInt64(bits, 2)
+            };
+        }
+
         internal static TOut FromTo<TIn, TOut>(this TIn value) where TIn : struct where TOut : struct
         {
             if (typeof(TIn) == typeof(TOut))
                 return (TOut)(object)value;
+
             // unchecked assignment
             return default(TOut) switch
             {
@@ -234,11 +271,14 @@
             return str;
         }
 
-        internal static BigInteger ToBigInt([AllowNull] this string hex)
+        internal static BigInteger ToBigInt([AllowNull] this string value)
         {
-            if (string.IsNullOrWhiteSpace(hex))
+            if (string.IsNullOrWhiteSpace(value))
                 return BigInteger.Zero;
-            return BigInteger.TryParse(hex, NumberStyles.AllowHexSpecifier, null, out var result) ? result : BigInteger.Zero;
+            var flags = value.StartsWith("0x") ? NumberStyles.HexNumber : NumberStyles.Any;
+            if (flags == NumberStyles.HexNumber)
+                value = value[2..];
+            return BigInteger.TryParse(value, flags, null, out var result) ? result : BigInteger.Zero;
         }
     }
 }
