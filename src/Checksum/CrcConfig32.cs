@@ -93,8 +93,8 @@
                                   table[01 * Columns + buffer[i + 14]] ^
                                   table[00 * Columns + buffer[i + 15]];
 
-                            sum ^= table[15 * Columns + (((x >> 0) & 0xff) ^ buffer[i + 0])] ^
-                                   table[14 * Columns + (((x >> 8) & 0xff) ^ buffer[i + 1])] ^
+                            sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ buffer[i + 0])] ^
+                                   table[14 * Columns + (((x >> 08) & 0xff) ^ buffer[i + 1])] ^
                                    table[13 * Columns + (((x >> 16) & 0xff) ^ buffer[i + 2])] ^
                                    table[12 * Columns + (((x >> 24) & 0xff) ^ buffer[i + 3])];
 
