@@ -66,14 +66,14 @@
         }
 
         /// <summary>Returns the specified <typeparamref name="TValue"/> value as a sequence of bytes.</summary>
-        /// <param name="value">The <typeparamref name="TValue"/> value to convert.</param>
+        /// <param name="source">The <typeparamref name="TValue"/> value to convert.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to order bytes as little endian; otherwise, <see langword="false"/>.</param>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
         /// <returns>A sequence of bytes that represents the specified value.</returns>
-        public static byte[] GetByteArray<TValue>(TValue value, bool isLittleEndian) where TValue : struct, IComparable, IFormattable
+        public static byte[] GetByteArray<TValue>(TValue source, bool isLittleEndian) where TValue : struct, IComparable, IFormattable
         {
             byte[] bytes;
-            switch (value)
+            switch (source)
             {
                 case sbyte x:
                     bytes = new[] { (byte)x };
@@ -148,23 +148,24 @@
             return bytes;
         }
 
-        /// <summary>Returns the specified byte sequence as 64-bit unsigned integer value.</summary>
-        /// <param name="bytes">The byte sequence to convert.</param>
+        /// <summary>Returns the specified sequence of bytes as 64-bit unsigned integer value.</summary>
+        /// <param name="source">The sequence of bytes to convert.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to order bytes as little endian; otherwise, <see langword="false"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException">source is too small.</exception>
         /// <returns>A 64-bit unsigned integer representing the specified sequence of bytes.</returns>
-        public static ulong GetUInt64(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
-            isLittleEndian ? BinaryPrimitives.ReadUInt64LittleEndian(bytes) : BinaryPrimitives.ReadUInt64BigEndian(bytes);
+        public static ulong GetUInt64(ReadOnlySpan<byte> source, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt64LittleEndian(source) : BinaryPrimitives.ReadUInt64BigEndian(source);
 
-        /// <summary>Returns the specified byte sequence as 32-bit unsigned integer value.</summary>
+        /// <summary>Returns the specified sequence of bytes as 32-bit unsigned integer value.</summary>
         /// <returns>A 32-bit unsigned integer representing the specified sequence of bytes.</returns>
         /// <inheritdoc cref="GetUInt64"/>
-        public static uint GetUInt32(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
-            isLittleEndian ? BinaryPrimitives.ReadUInt32LittleEndian(bytes) : BinaryPrimitives.ReadUInt32BigEndian(bytes);
+        public static uint GetUInt32(ReadOnlySpan<byte> source, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt32LittleEndian(source) : BinaryPrimitives.ReadUInt32BigEndian(source);
 
-        /// <summary>Returns the specified byte sequence as 16-bit unsigned integer value.</summary>
+        /// <summary>Returns the specified sequence of bytes as 16-bit unsigned integer value.</summary>
         /// <returns>A 16-bit unsigned integer representing the specified sequence of bytes.</returns>
         /// <inheritdoc cref="GetUInt64"/>
-        public static ushort GetUInt16(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
-            isLittleEndian ? BinaryPrimitives.ReadUInt16LittleEndian(bytes) : BinaryPrimitives.ReadUInt16BigEndian(bytes);
+        public static ushort GetUInt16(ReadOnlySpan<byte> source, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt16LittleEndian(source) : BinaryPrimitives.ReadUInt16BigEndian(source);
     }
 }
