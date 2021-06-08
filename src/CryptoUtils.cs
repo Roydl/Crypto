@@ -68,7 +68,7 @@
         /// <summary>Returns the specified <typeparamref name="TValue"/> value as a sequence of bytes.</summary>
         /// <param name="value">The <typeparamref name="TValue"/> value to convert.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to order bytes as little endian; otherwise, <see langword="false"/>.</param>
-        /// <exception cref="InvalidOperationException">size is less 1 or greater 2.</exception>
+        /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
         /// <returns>A sequence of bytes that represents the specified value.</returns>
         public static byte[] GetByteArray<TValue>(TValue value, bool isLittleEndian) where TValue : struct, IComparable, IFormattable
         {
