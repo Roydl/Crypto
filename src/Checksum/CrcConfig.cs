@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using Internal;
     using Resources;
 
@@ -84,14 +85,9 @@
                     int len;
                     while ((len = stream.Read(bytes)) > 0)
                     {
-                        for (var i = 0; i < len; i++)
-                        {
-                            var value = buffer[i];
-                            if (RefIn)
-                                sum = (byte)(((sum >> 8) ^ table[value ^ (sum & 0xff)]) & Mask);
-                            else
-                                sum = (byte)((table[((sum >> (Bits - 8)) ^ value) & 0xff] ^ (sum << 8)) & Mask);
-                        }
+                        var i = 0;
+                        while (--len >= 0)
+                            ComputeHash(buffer[i++], table, ref sum);
                     }
                 }
                 hash = sum;
@@ -100,13 +96,11 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(byte value, ref byte hash)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(byte value, ref byte hash)
         {
-            var table = Table.Span;
-            if (RefIn)
-                hash = (byte)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
-            else
-                hash = (byte)((table[((hash >> (Bits - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+            fixed (byte* table = Table.Span)
+                ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
@@ -126,6 +120,15 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private unsafe void ComputeHash(byte value, byte* table, ref byte hash)
+        {
+            if (RefIn)
+                hash = (byte)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
+            else
+                hash = (byte)((table[((hash >> (Bits - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+        }
 
         internal static bool IsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
         {

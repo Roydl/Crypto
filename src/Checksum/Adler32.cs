@@ -41,7 +41,7 @@
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            uint sum = 0;
+            uint sum;
             fixed (uint* sums = new[] { 1u, 0u })
             {
                 var size = stream.GetBufferSize();

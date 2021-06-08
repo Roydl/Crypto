@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Numerics;
+    using System.Runtime.CompilerServices;
     using Internal;
 
     /// <summary>Represents a beyond 64-bit CRC configuration structure.
@@ -67,24 +68,23 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             hash = Init;
+            var table = Table.Span;
             var span = new byte[stream.GetBufferSize()].AsSpan();
             int len;
             while ((len = stream.Read(span)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], ref hash);
+                    ComputeHash(span[i], table, ref hash);
             }
             FinalizeHash(ref hash);
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ComputeHash(byte value, ref BigInteger hash)
         {
             var table = Table.Span;
-            if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
-            else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+            ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
@@ -102,6 +102,15 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ComputeHash(byte value, ReadOnlySpan<BigInteger> table, ref BigInteger hash)
+        {
+            if (RefIn)
+                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
+            else
+                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+        }
 
         private static BigInteger CreateMask(int bits)
         {

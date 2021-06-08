@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using Internal;
     using Resources;
 
@@ -99,13 +100,7 @@
                             sum &= Mask;
                         }
                         while (--len >= 0)
-                        {
-                            var value = buffer[i++];
-                            if (RefIn)
-                                sum = (ushort)(((sum >> 8) ^ table[value ^ (sum & 0xff)]) & Mask);
-                            else
-                                sum = (ushort)((table[((sum >> (Bits - 8)) ^ value) & 0xff] ^ (sum << 8)) & Mask);
-                        }
+                            ComputeHash(buffer[i++], table, ref sum);
                     }
                 }
                 hash = sum;
@@ -114,13 +109,11 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(byte value, ref ushort hash)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(byte value, ref ushort hash)
         {
-            var table = Table.Span;
-            if (RefIn)
-                hash = (ushort)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
-            else
-                hash = (ushort)((table[((hash >> (Bits - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+            fixed (ushort* table = Table.Span)
+                ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
@@ -140,6 +133,15 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private unsafe void ComputeHash(byte value, ushort* table, ref ushort hash)
+        {
+            if (RefIn)
+                hash = (ushort)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
+            else
+                hash = (ushort)((table[((hash >> (Bits - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+        }
 
         private static ushort CreateMask(int bits)
         {

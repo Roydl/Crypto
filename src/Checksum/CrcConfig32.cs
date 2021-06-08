@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using Internal;
     using Resources;
 
@@ -103,13 +104,7 @@
                             sum &= Mask;
                         }
                         while (--len >= 0)
-                        {
-                            var value = buffer[i++];
-                            if (RefIn)
-                                sum = ((sum >> 8) ^ table[(int)(value ^ (sum & 0xff))]) & Mask;
-                            else
-                                sum = (table[(int)(((sum >> (Bits - 8)) ^ value) & 0xff)] ^ (sum << 8)) & Mask;
-                        }
+                            ComputeHash(buffer[i++], table, ref sum);
                     }
                 }
                 hash = sum;
@@ -118,13 +113,11 @@
         }
 
         /// <inheritdoc/>
-        public void ComputeHash(byte value, ref uint hash)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(byte value, ref uint hash)
         {
-            var table = Table.Span;
-            if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
-            else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+            fixed (uint* table = Table.Span)
+                ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
@@ -144,6 +137,15 @@
         /// <inheritdoc/>
         public bool IsValid() =>
             IsValid(out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private unsafe void ComputeHash(byte value, uint* table, ref uint hash)
+        {
+            if (RefIn)
+                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
+            else
+                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+        }
 
         private static uint CreateMask(int bits)
         {
