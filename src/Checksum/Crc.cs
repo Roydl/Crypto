@@ -252,17 +252,9 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            Current.ComputeHash(stream, out var num);
-            HashNumber = num;
-            RawHash = num switch
-            {
-                byte x => CryptoUtils.GetByteArray(x, RawHashSize),
-                ushort x => CryptoUtils.GetByteArray(x, RawHashSize),
-                uint x => CryptoUtils.GetByteArray(x, RawHashSize),
-                ulong x => CryptoUtils.GetByteArray(x, RawHashSize),
-                BigInteger x => x.ToByteArray(true, BitConverter.IsLittleEndian),
-                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
-            };
+            Current.ComputeHash(stream, out var sum);
+            HashNumber = sum;
+            RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
         }
 
         private static int GetBitWidth() =>

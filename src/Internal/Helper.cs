@@ -267,7 +267,7 @@
             if (padding > 2)
                 str = str.PadLeft(padding, '0');
             if (prefix)
-                str = "0x" + str;
+                str = $"0x{str}";
             return str;
         }
 

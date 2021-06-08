@@ -62,7 +62,7 @@
                 sum = ((sums[1] << 16) | sums[0]) & uint.MaxValue;
             }
             HashNumber = sum;
-            RawHash = CryptoUtils.GetByteArray(sum, RawHashSize);
+            RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
         }
     }
 }

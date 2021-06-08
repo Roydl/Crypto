@@ -255,10 +255,10 @@
                 var span = RawHash.Span;
                 _hashNumber = _hashNumber switch
                 {
-                    byte => (TCipher)(object)span[^1..][0],
-                    ushort => (TCipher)(object)CryptoUtils.GetUInt16(span),
-                    uint => (TCipher)(object)CryptoUtils.GetUInt32(span),
-                    ulong => (TCipher)(object)CryptoUtils.GetUInt64(span),
+                    byte => (TCipher)(object)(!BitConverter.IsLittleEndian ? span[^1] : span[0]),
+                    ushort => (TCipher)(object)CryptoUtils.GetUInt16(span, !BitConverter.IsLittleEndian),
+                    uint => (TCipher)(object)CryptoUtils.GetUInt32(span, !BitConverter.IsLittleEndian),
+                    ulong => (TCipher)(object)CryptoUtils.GetUInt64(span, !BitConverter.IsLittleEndian),
                     BigInteger => (TCipher)(object)new BigInteger(span, true, !BitConverter.IsLittleEndian),
                     _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
                 };

@@ -1,8 +1,9 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Buffers.Binary;
+    using System.Numerics;
+    using Resources;
 
     /// <summary>Provides some basic utilities.</summary>
     public static class CryptoUtils
@@ -64,158 +65,106 @@
             }
         }
 
-        /// <summary>Returns the specified 64-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <param name="value">The number to convert.</param>
-        /// <param name="size">The size of the sequence. Must be between 1 and 8.</param>
-        /// <param name="inverted"><see langword="true"/> to invert the byte order; otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException">size is less 1 or greater 8.</exception>
-        /// <returns>A sequence of bytes with length of size.</returns>
-        public static IEnumerable<byte> GetBytes(ulong value, int size, bool inverted)
+        /// <summary>Returns the specified <typeparamref name="TValue"/> value as a sequence of bytes.</summary>
+        /// <param name="value">The <typeparamref name="TValue"/> value to convert.</param>
+        /// <param name="isLittleEndian"><see langword="true"/> to order bytes as little endian; otherwise, <see langword="false"/>.</param>
+        /// <exception cref="InvalidOperationException">size is less 1 or greater 2.</exception>
+        /// <returns>A sequence of bytes that represents the specified value.</returns>
+        public static byte[] GetByteArray<TValue>(TValue value, bool isLittleEndian) where TValue : struct, IComparable, IFormattable
         {
-            if (size is < 1 or > sizeof(ulong))
-                throw new ArgumentOutOfRangeException(nameof(size), size, null);
-            var i = 0;
-            while (inverted ? --size >= 0 : i++ < size)
-                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
+            byte[] bytes;
+            switch (value)
+            {
+                case sbyte x:
+                    bytes = new[] { (byte)x };
+                    break;
+                case byte x:
+                    bytes = new[] { x };
+                    break;
+                case short x:
+                    bytes = new byte[sizeof(short)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteInt16LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteInt16BigEndian(bytes, x);
+                    break;
+                case ushort x:
+                    bytes = new byte[sizeof(ushort)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteUInt16LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteUInt16BigEndian(bytes, x);
+                    break;
+                case int x:
+                    bytes = new byte[sizeof(int)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteInt32LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteInt32BigEndian(bytes, x);
+                    break;
+                case uint x:
+                    bytes = new byte[sizeof(uint)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteUInt32LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteUInt32BigEndian(bytes, x);
+                    break;
+                case long x:
+                    bytes = new byte[sizeof(long)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteInt64LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteInt64BigEndian(bytes, x);
+                    break;
+                case ulong x:
+                    bytes = new byte[sizeof(ulong)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteUInt64LittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteUInt64BigEndian(bytes, x);
+                    break;
+#if NET5_0_OR_GREATER
+                case float x:
+                    bytes = new byte[sizeof(float)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteSingleLittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteSingleBigEndian(bytes, x);
+                    break;
+                case double x:
+                    bytes = new byte[sizeof(double)];
+                    if (isLittleEndian)
+                        BinaryPrimitives.WriteDoubleLittleEndian(bytes, x);
+                    else
+                        BinaryPrimitives.WriteDoubleBigEndian(bytes, x);
+                    break;
+#endif
+                case BigInteger x:
+                    bytes = x.ToByteArray(true, !isLittleEndian);
+                    break;
+                default:
+                    throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType);
+            }
+            return bytes;
         }
-
-        /// <summary>Returns the specified 64-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetBytes(ulong, int, bool)"/>
-        public static IEnumerable<byte> GetBytes(ulong value, int size) =>
-            GetBytes(value, size, BitConverter.IsLittleEndian);
-
-        /// <summary>Returns the specified 64-bit unsigned integer value as an array of bytes.</summary>
-        /// <returns>An array of bytes with length of size.</returns>
-        /// <inheritdoc cref="GetBytes(ulong, int, bool)"/>
-        public static byte[] GetByteArray(ulong value, int size, bool inverted) =>
-            GetBytes(value, size, inverted)?.ToArray();
-
-        /// <summary>Returns the specified 64-bit unsigned integer value as an array of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetByteArray(ulong, int, bool)"/>
-        public static byte[] GetByteArray(ulong value, int size) =>
-            GetBytes(value, size)?.ToArray();
-
-        /// <summary>Returns the specified 32-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <param name="value">The number to convert.</param>
-        /// <param name="size">The size of the sequence. Must be between 1 and 4.</param>
-        /// <param name="inverted"><see langword="true"/> to invert the byte order; otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException">size is less 1 or greater 4.</exception>
-        /// <returns>A sequence of bytes with length of size.</returns>
-        public static IEnumerable<byte> GetBytes(uint value, int size, bool inverted)
-        {
-            if (size is < 1 or > sizeof(uint))
-                throw new ArgumentOutOfRangeException(nameof(size), size, null);
-            var i = 0;
-            while (inverted ? --size >= 0 : i++ < size)
-                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
-        }
-
-        /// <summary>Returns the specified 32-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetBytes(uint, int, bool)"/>
-        public static IEnumerable<byte> GetBytes(uint value, int size) =>
-            GetBytes(value, size, BitConverter.IsLittleEndian);
-
-        /// <summary>Returns the specified 32-bit unsigned integer value as an array of bytes.</summary>
-        /// <returns>An array of bytes with length of size.</returns>
-        /// <inheritdoc cref="GetBytes(uint, int, bool)"/>
-        public static byte[] GetByteArray(uint value, int size, bool inverted) =>
-            GetBytes(value, size, inverted)?.ToArray();
-
-        /// <summary>Returns the specified 32-bit unsigned integer value as an array of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetByteArray(uint, int, bool)"/>
-        public static byte[] GetByteArray(uint value, int size) =>
-            GetBytes(value, size)?.ToArray();
-
-        /// <summary>Returns the specified 16-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <param name="value">The number to convert.</param>
-        /// <param name="size">The size of the sequence. Must be between 1 and 2.</param>
-        /// <param name="inverted"><see langword="true"/> to invert the byte order; otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException">size is less 1 or greater 2.</exception>
-        /// <returns>A sequence of bytes with length of size.</returns>
-        public static IEnumerable<byte> GetBytes(ushort value, int size, bool inverted)
-        {
-            if (size is < 1 or > sizeof(ushort))
-                throw new ArgumentOutOfRangeException(nameof(size), size, null);
-            var i = 0;
-            while (inverted ? --size >= 0 : i++ < size)
-                yield return (byte)((value >> (8 * (inverted ? size : i - 1))) & 0xff);
-        }
-
-        /// <summary>Returns the specified 16-bit unsigned integer value as a sequence of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetBytes(ushort, int, bool)"/>
-        public static IEnumerable<byte> GetBytes(ushort value, int size) =>
-            GetBytes(value, size, BitConverter.IsLittleEndian);
-
-        /// <summary>Returns the specified 16-bit unsigned integer value as an array of bytes.</summary>
-        /// <returns>An array of bytes with length of size.</returns>
-        /// <inheritdoc cref="GetBytes(ushort, int, bool)"/>
-        public static byte[] GetByteArray(ushort value, int size, bool inverted) =>
-            GetBytes(value, size, inverted)?.ToArray();
-
-        /// <summary>Returns the specified 16-bit unsigned integer value as an array of bytes.</summary>
-        /// <remarks>The byte order is automatically reversed if <see cref="BitConverter.IsLittleEndian"/> is <see langword="true"/>.</remarks>
-        /// <inheritdoc cref="GetByteArray(ushort, int, bool)"/>
-        public static byte[] GetByteArray(ushort value, int size) =>
-            GetBytes(value, size)?.ToArray();
 
         /// <summary>Returns the specified byte sequence as 64-bit unsigned integer value.</summary>
         /// <param name="bytes">The byte sequence to convert.</param>
-        /// <returns>A 64-bit unsigned integer.</returns>
-        public static ulong GetUInt64(ReadOnlySpan<byte> bytes)
-        {
-            var value = 0uL;
-            if (bytes.Length > 0)
-                value = ((ulong)bytes[0] << 56) & 0xff00000000000000uL;
-            if (bytes.Length > 1)
-                value |= ((ulong)bytes[1] << 48) & 0xff000000000000uL;
-            if (bytes.Length > 2)
-                value |= ((ulong)bytes[2] << 40) & 0xff0000000000uL;
-            if (bytes.Length > 3)
-                value |= ((ulong)bytes[3] << 32) & 0xff00000000uL;
-            if (bytes.Length > 4)
-                value |= ((ulong)bytes[4] << 24) & 0xff000000uL;
-            if (bytes.Length > 5)
-                value |= ((ulong)bytes[5] << 16) & 0xff0000uL;
-            if (bytes.Length > 6)
-                value |= ((ulong)bytes[6] << 8) & 0xff00uL;
-            if (bytes.Length > 7)
-                value |= bytes[7] & 0xffuL;
-            return value;
-        }
+        /// <param name="isLittleEndian"><see langword="true"/> to order bytes as little endian; otherwise, <see langword="false"/>.</param>
+        /// <returns>A 64-bit unsigned integer representing the specified sequence of bytes.</returns>
+        public static ulong GetUInt64(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt64LittleEndian(bytes) : BinaryPrimitives.ReadUInt64BigEndian(bytes);
 
         /// <summary>Returns the specified byte sequence as 32-bit unsigned integer value.</summary>
-        /// <returns>A 32-bit unsigned integer.</returns>
+        /// <returns>A 32-bit unsigned integer representing the specified sequence of bytes.</returns>
         /// <inheritdoc cref="GetUInt64"/>
-        public static uint GetUInt32(ReadOnlySpan<byte> bytes)
-        {
-            var value = 0u;
-            if (bytes.Length > 0)
-                value = ((uint)bytes[0] << 24) & 0xff000000u;
-            if (bytes.Length > 1)
-                value |= ((uint)bytes[1] << 16) & 0xff0000u;
-            if (bytes.Length > 2)
-                value |= ((uint)bytes[2] << 8) & 0xff00u;
-            if (bytes.Length > 3)
-                value |= bytes[3] & 0xffu;
-            return value;
-        }
+        public static uint GetUInt32(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt32LittleEndian(bytes) : BinaryPrimitives.ReadUInt32BigEndian(bytes);
 
         /// <summary>Returns the specified byte sequence as 16-bit unsigned integer value.</summary>
-        /// <returns>A 16-bit unsigned integer.</returns>
+        /// <returns>A 16-bit unsigned integer representing the specified sequence of bytes.</returns>
         /// <inheritdoc cref="GetUInt64"/>
-        public static ushort GetUInt16(ReadOnlySpan<byte> bytes)
-        {
-            var value = (ushort)0;
-            if (bytes.Length > 0)
-                value = (ushort)((bytes[0] << 8) & 0xff00);
-            if (bytes.Length > 1)
-                value |= (ushort)(bytes[1] & 0xff);
-            return value;
-        }
+        public static ushort GetUInt16(ReadOnlySpan<byte> bytes, bool isLittleEndian) =>
+            isLittleEndian ? BinaryPrimitives.ReadUInt16LittleEndian(bytes) : BinaryPrimitives.ReadUInt16BigEndian(bytes);
     }
 }
