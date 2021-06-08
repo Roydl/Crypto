@@ -174,15 +174,14 @@
             {
                 var x = (byte)i;
                 if (refIn)
-                {
-                    for (var k = 0; k < 8; k++)
+                    for (var j = 0; j < 8; j++)
                         x = (byte)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
-                    span[i] = (byte)(x & mask);
-                    continue;
+                else
+                {
+                    x <<= bits - 8;
+                    for (var j = 0; j < 8; j++)
+                        x = (byte)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
                 }
-                x <<= bits - 8;
-                for (var j = 0; j < 8; j++)
-                    x = (byte)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
                 span[i] = (byte)(x & mask);
             }
             return mem;

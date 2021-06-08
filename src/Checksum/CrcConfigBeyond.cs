@@ -121,15 +121,14 @@
             {
                 var x = (BigInteger)i;
                 if (refIn)
-                {
-                    for (var k = 0; k < 8; k++)
+                    for (var j = 0; j < 8; j++)
                         x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
-                    span[i] = x & mask;
-                    continue;
+                else
+                {
+                    x <<= bits - 8;
+                    for (var j = 0; j < 8; j++)
+                        x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
                 }
-                x <<= bits - 8;
-                for (var j = 0; j < 8; j++)
-                    x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
                 span[i] = x & mask;
             }
             return mem;

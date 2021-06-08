@@ -182,18 +182,15 @@
                 for (var j = 0; j < rows; j++)
                 {
                     if (refIn)
-                    {
                         for (var k = 0; k < 8; k++)
                             x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
-                        span[j * Columns + i] = x & mask;
-                    }
                     else
                     {
                         x <<= bits - 8;
                         for (var k = 0; k < 8; k++)
                             x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
-                        span[j * Columns + i] = x & mask;
                     }
+                    span[j * Columns + i] = x & mask;
                 }
             }
             return mem;
