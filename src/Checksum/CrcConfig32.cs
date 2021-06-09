@@ -13,7 +13,7 @@
         private const int Rows = 1 << 4;
 
         /// <inheritdoc/>
-        public int Bits { get; }
+        public int BitWidth { get; }
 
         /// <inheritdoc/>
         public uint Check { get; }
@@ -41,15 +41,15 @@
 
         /// <summary>Creates a new configuration of the <see cref="CrcConfig32"/> struct.</summary>
         /// <inheritdoc cref="CrcConfig(int, byte, byte, byte, bool, bool, byte, byte, bool)"/>
-        public CrcConfig32(int bits, uint check, uint poly, uint init = default, bool refIn = false, bool refOut = false, uint xorOut = default, uint mask = default, bool skipValidation = false)
+        public CrcConfig32(int bitWidth, uint check, uint poly, uint init = default, bool refIn = false, bool refOut = false, uint xorOut = default, uint mask = default, bool skipValidation = false)
         {
-            if (bits < 8)
-                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
-            if (sizeof(uint) < (int)MathF.Floor(bits / 8f))
+            if (bitWidth < 8)
+                throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
+            if (sizeof(uint) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bits);
-            Bits = bits;
+                mask = CreateMask(bitWidth);
+            BitWidth = bitWidth;
             Check = check;
             Poly = poly;
             Init = init;
@@ -57,7 +57,7 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = CreateTable(bits, poly, mask, refIn);
+            Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
                 CrcConfig.ThrowIfInvalid(this);
         }
@@ -67,60 +67,58 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            fixed (uint* table = Table.Span)
+            var sum = Init;
+            fixed (uint* table = &Table.Span[0])
             {
-                var bytes = new byte[stream.GetBufferSize()].AsSpan();
-                var sum = Init;
-                fixed (byte* buffer = bytes)
+                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+                int len;
+                while ((len = stream.Read(bytes)) > 0)
                 {
-                    int len;
-                    while ((len = stream.Read(bytes)) > 0)
+                    var i = 0;
+                    while (RefIn && len >= Rows)
                     {
-                        var i = 0;
-                        while (RefIn && len >= Rows)
-                        {
-                            var x = sum;
+                        var x = sum;
 
-                            sum = table[11 * Columns + buffer[i + 04]] ^
-                                  table[10 * Columns + buffer[i + 05]] ^
-                                  table[09 * Columns + buffer[i + 06]] ^
-                                  table[08 * Columns + buffer[i + 07]] ^
-                                  table[07 * Columns + buffer[i + 08]] ^
-                                  table[06 * Columns + buffer[i + 09]] ^
-                                  table[05 * Columns + buffer[i + 10]] ^
-                                  table[04 * Columns + buffer[i + 11]] ^
-                                  table[03 * Columns + buffer[i + 12]] ^
-                                  table[02 * Columns + buffer[i + 13]] ^
-                                  table[01 * Columns + buffer[i + 14]] ^
-                                  table[00 * Columns + buffer[i + 15]];
+                        sum = table[11 * Columns + bytes[i + 04]] ^
+                              table[10 * Columns + bytes[i + 05]] ^
+                              table[09 * Columns + bytes[i + 06]] ^
+                              table[08 * Columns + bytes[i + 07]] ^
+                              table[07 * Columns + bytes[i + 08]] ^
+                              table[06 * Columns + bytes[i + 09]] ^
+                              table[05 * Columns + bytes[i + 10]] ^
+                              table[04 * Columns + bytes[i + 11]] ^
+                              table[03 * Columns + bytes[i + 12]] ^
+                              table[02 * Columns + bytes[i + 13]] ^
+                              table[01 * Columns + bytes[i + 14]] ^
+                              table[00 * Columns + bytes[i + 15]];
 
-                            sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ buffer[i + 0])] ^
-                                   table[14 * Columns + (((x >> 08) & 0xff) ^ buffer[i + 1])] ^
-                                   table[13 * Columns + (((x >> 16) & 0xff) ^ buffer[i + 2])] ^
-                                   table[12 * Columns + (((x >> 24) & 0xff) ^ buffer[i + 3])];
+                        sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
+                               table[14 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
+                               table[13 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
+                               table[12 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])];
 
-                            i += Rows;
-                            len -= Rows;
-                            sum &= Mask;
-                        }
-                        while (--len >= 0)
-                            ComputeHash(buffer[i++], table, ref sum);
+                        i += Rows;
+                        len -= Rows;
+                        sum &= Mask;
                     }
+                    while (--len >= 0)
+                        ComputeHash(bytes[i++], table, ref sum);
                 }
-                hash = sum;
             }
-            FinalizeHash(ref hash);
+            FinalizeHash(ref sum);
+            hash = sum;
         }
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void ComputeHash(byte value, ref uint hash)
         {
-            fixed (uint* table = Table.Span)
+            fixed (uint* table = &Table.Span[0])
                 ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void FinalizeHash(ref uint hash)
         {
             if (!RefIn && RefOut)
@@ -144,21 +142,21 @@
             if (RefIn)
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+                hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
         }
 
-        private static uint CreateMask(int bits)
+        private static uint CreateMask(int bitWidth)
         {
             var mask = 0xffu;
-            var size = (int)MathF.Ceiling(bits / 8f);
+            var size = (int)MathF.Ceiling(bitWidth / 8f);
             for (var i = 1; i < size; i++)
                 mask ^= 0xffu << (8 * i);
             return mask;
         }
 
-        private static ReadOnlyMemory<uint> CreateTable(int bits, uint poly, uint mask, bool refIn)
+        private static ReadOnlyMemory<uint> CreateTable(int bitWidth, uint poly, uint mask, bool refIn)
         {
-            var top = 1u << (bits - 1);
+            var top = 1u << (bitWidth - 1);
             var rows = refIn ? Rows : 1;
             var mem = new uint[rows * Columns].AsMemory();
             var span = mem.Span;
@@ -172,7 +170,7 @@
                             x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
                     else
                     {
-                        x <<= bits - 8;
+                        x <<= bitWidth - 8;
                         for (var k = 0; k < 8; k++)
                             x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
                     }

@@ -8,8 +8,8 @@
     /// <typeparam name="TValue">The integral type of the hash code. Should be <see cref="byte"/>, <see cref="ushort"/>, <see cref="uint"/>, <see cref="ulong"/>, or <see cref="BigInteger"/>.</typeparam>
     public interface ICrcConfig<TValue> where TValue : struct, IComparable, IFormattable
     {
-        /// <summary>Gets the hash size in bits.</summary>
-        int Bits { get; }
+        /// <summary>Gets the bit width of a computed hash.</summary>
+        int BitWidth { get; }
 
         /// <summary>Gets the test value that is used to check whether the algorithm is working correctly.</summary>
         TValue Check { get; }

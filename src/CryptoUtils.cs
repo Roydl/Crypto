@@ -12,6 +12,7 @@
         /// <summary>Combines the specified 32-bit signed integers.</summary>
         /// <param name="hash1">The first 32-bit signed integer.</param>
         /// <param name="hash2">The second 32-bit signed integer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CombineHashCodes(int hash1, int hash2)
         {
             var hash = (uint)((hash1 << 5) | (int)((uint)hash1 >> 27));

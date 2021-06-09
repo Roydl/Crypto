@@ -201,7 +201,7 @@
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <param name="config">The CRC config.</param>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
-        public Crc(ICrcConfig<TValue> config) : base(config.Bits, GetStringSize(config.Bits))
+        public Crc(ICrcConfig<TValue> config) : base(config.BitWidth, GetStringSize(config.BitWidth))
         {
             switch (default(TValue))
             {
@@ -268,9 +268,9 @@
                 _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
             };
 
-        private static int GetStringSize(int bits)
+        private static int GetStringSize(int bitWidth)
         {
-            switch (bits)
+            switch (bitWidth)
             {
                 case 10:
                 case 11:
@@ -300,10 +300,10 @@
             return (ICrcConfig<TValue>)cfg;
         }
 
-        private static ICrcConfig<TValue> GetConfig(int bits, Enum preset)
+        private static ICrcConfig<TValue> GetConfig(int bitWidth, Enum preset)
         {
             var cc = ConfigCache;
-            var cfg = bits switch
+            var cfg = bitWidth switch
             {
                 8 => cc.TryGetValue(preset, out var x) ? x : cc[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc)preset),
                 10 => cc.TryGetValue(preset, out var x) ? x : cc[preset] = CrcConfigManager.GetConfig((CrcOptions.Crc10)preset),

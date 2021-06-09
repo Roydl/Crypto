@@ -6,8 +6,8 @@
     /// <summary>Represents the interface for checksum encryption algorithms.</summary>
     public interface IChecksumAlgorithm : IChecksumResult
     {
-        /// <summary>Gets the hash size in bits.</summary>
-        int HashBits { get; }
+        /// <summary>Gets the bit width of a computed hash.</summary>
+        int BitWidth { get; }
 
         /// <summary>Encrypts the bytes of the specified stream starting at its current position.</summary>
         /// <param name="stream">The stream to encrypt.</param>

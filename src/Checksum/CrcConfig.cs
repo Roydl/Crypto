@@ -11,7 +11,7 @@
     public readonly struct CrcConfig : ICrcConfig<byte>
     {
         /// <inheritdoc/>
-        public int Bits { get; }
+        public int BitWidth { get; }
 
         /// <inheritdoc/>
         public byte Check { get; }
@@ -38,7 +38,7 @@
         public ReadOnlyMemory<byte> Table { get; }
 
         /// <summary>Creates a new configuration of the <see cref="CrcConfig"/> struct.</summary>
-        /// <param name="bits">The size in bits.</param>
+        /// <param name="bitWidth">The size in bits.</param>
         /// <param name="check">The test value that is used to check whether the algorithm is working correctly.</param>
         /// <param name="poly">The polynomial used to generate CRC hash table.</param>
         /// <param name="init">The seed from which the CRC register should be initialized at beginning of the calculation.</param>
@@ -47,18 +47,18 @@
         /// <param name="xorOut">The value to xor with the final output.</param>
         /// <param name="mask">The mask, which is mostly the maximum type value.</param>
         /// <param name="skipValidation"><see langword="true"/> to skip the automated CRC validation (<b>not</b> recommended); otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8.</exception>
-        /// <exception cref="ArgumentException">bits are larger than byte type allows.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
+        /// <exception cref="ArgumentException">bitWidth is too large for the current integral type of the hash code.</exception>
         /// <exception cref="InvalidDataException">The CRC validation failed.</exception>
-        public CrcConfig(int bits, byte check, byte poly, byte init = default, bool refIn = false, bool refOut = false, byte xorOut = default, byte mask = default, bool skipValidation = false)
+        public CrcConfig(int bitWidth, byte check, byte poly, byte init = default, bool refIn = false, bool refOut = false, byte xorOut = default, byte mask = default, bool skipValidation = false)
         {
-            if (bits < 8)
-                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
-            if (sizeof(byte) < (int)MathF.Floor(bits / 8f))
+            if (bitWidth < 8)
+                throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
+            if (sizeof(byte) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bits);
-            Bits = bits;
+                mask = CreateMask(bitWidth);
+            BitWidth = bitWidth;
             Check = check;
             Poly = poly;
             Init = init;
@@ -66,7 +66,7 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = CreateTable(bits, poly, mask, refIn);
+            Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
                 ThrowIfInvalid(this);
         }
@@ -76,34 +76,32 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            fixed (byte* table = Table.Span)
+            var sum = Init;
+            fixed (byte* table = &Table.Span[0])
             {
-                var bytes = new byte[stream.GetBufferSize()].AsSpan();
-                var sum = Init;
-                fixed (byte* buffer = bytes)
+                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+                int len;
+                while ((len = stream.Read(bytes)) > 0)
                 {
-                    int len;
-                    while ((len = stream.Read(bytes)) > 0)
-                    {
-                        var i = 0;
-                        while (--len >= 0)
-                            ComputeHash(buffer[i++], table, ref sum);
-                    }
+                    var i = 0;
+                    while (--len >= 0)
+                        ComputeHash(bytes[i++], table, ref sum);
                 }
-                hash = sum;
             }
-            FinalizeHash(ref hash);
+            FinalizeHash(ref sum);
+            hash = sum;
         }
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void ComputeHash(byte value, ref byte hash)
         {
-            fixed (byte* table = Table.Span)
+            fixed (byte* table = &Table.Span[0])
                 ComputeHash(value, table, ref hash);
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void FinalizeHash(ref byte hash)
         {
             if (!RefIn && RefOut)
@@ -127,7 +125,7 @@
             if (RefIn)
                 hash = (byte)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
             else
-                hash = (byte)((table[((hash >> (Bits - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+                hash = (byte)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
         }
 
         internal static bool IsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
@@ -147,7 +145,7 @@
             if (item.IsValid(out var current))
                 return;
             var exc = new InvalidDataException(ExceptionMessages.InvalidDataCrcValidation);
-            var size = (int)MathF.Ceiling(item.Bits / 4f);
+            var size = (int)MathF.Ceiling(item.BitWidth / 4f);
             exc.Data.Add("Current", current.ToHexStr(size, true));
             exc.Data.Add("Expected", item.Check.ToHexStr(size, true));
             exc.Data.Add(nameof(Poly), item.Poly.ToHexStr(size, true));
@@ -159,18 +157,18 @@
             throw exc;
         }
 
-        private static byte CreateMask(int bits)
+        private static byte CreateMask(int bitWidth)
         {
             var mask = (byte)0xff;
-            var size = (int)MathF.Ceiling(bits / 8f);
+            var size = (int)MathF.Ceiling(bitWidth / 8f);
             for (var i = 1; i < size; i++)
                 mask ^= (byte)(0xff << (8 * i));
             return mask;
         }
 
-        private static ReadOnlyMemory<byte> CreateTable(int bits, byte poly, byte mask, bool refIn)
+        private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)
         {
-            var top = (byte)(1 << (bits - 1));
+            var top = (byte)(1 << (bitWidth - 1));
             var mem = new byte[1 << 8].AsMemory();
             var span = mem.Span;
             for (var i = 0; i < mem.Length; i++)
@@ -181,7 +179,7 @@
                         x = (byte)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
                 else
                 {
-                    x <<= bits - 8;
+                    x <<= bitWidth - 8;
                     for (var j = 0; j < 8; j++)
                         x = (byte)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
                 }

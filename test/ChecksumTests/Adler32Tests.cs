@@ -12,7 +12,7 @@
     public class Adler32Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Adler32;
-        private const int HashBits = 32;
+        private const int BitWidth = 32;
         private const int HashSize = 8;
         private const int RawHashSize = 4;
         private const string ExpectedTestHash = "03dd01a1";
@@ -113,15 +113,15 @@
         }
 
         [Test]
-        [TestCase(HashBits, HashSize, RawHashSize)]
+        [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
+        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Adler32();
             Assert.IsInstanceOf(typeof(Adler32), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);

@@ -5,11 +5,11 @@
     /// <summary>Represents the interface for checksum results.</summary>
     public interface IChecksumResult
     {
-        /// <summary>Gets the string hash size.</summary>
+        /// <summary>Gets the string length of a computed hash.</summary>
         /// <remarks>For more information, see <see cref="Hash">Hash</see>.</remarks>
         int HashSize { get; }
 
-        /// <summary>Gets the raw hash size.</summary>
+        /// <summary>Gets the byte array length of a computed hash.</summary>
         /// <remarks>For more information, see <see cref="RawHash">RawHash</see>.</remarks>
         int RawHashSize { get; }
 
@@ -21,7 +21,7 @@
         /// <remarks>For more information, see <see cref="RawHashSize">RawHashSize</see>.</remarks>
         ReadOnlyMemory<byte> RawHash { get; }
 
-        /// <summary>Removes the saved data from this instance.</summary>
+        /// <summary>Removes the saved hashes from this instance.</summary>
         void Reset();
     }
 

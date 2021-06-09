@@ -12,7 +12,7 @@
     public readonly struct CrcConfigBeyond : ICrcConfig<BigInteger>
     {
         /// <inheritdoc/>
-        public int Bits { get; }
+        public int BitWidth { get; }
 
         /// <inheritdoc/>
         public BigInteger Check { get; }
@@ -40,13 +40,13 @@
 
         /// <summary>Creates a new configuration of the <see cref="CrcConfigBeyond"/> struct.</summary>
         /// <inheritdoc cref="CrcConfig(int, byte, byte, byte, bool, bool, byte, byte, bool)"/>
-        public CrcConfigBeyond(int bits, BigInteger check, BigInteger poly, BigInteger init = default, bool refIn = false, bool refOut = false, BigInteger xorOut = default, BigInteger mask = default, bool skipValidation = false)
+        public CrcConfigBeyond(int bitWidth, BigInteger check, BigInteger poly, BigInteger init = default, bool refIn = false, bool refOut = false, BigInteger xorOut = default, BigInteger mask = default, bool skipValidation = false)
         {
-            if (bits < 8)
-                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
+            if (bitWidth < 8)
+                throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
             if (mask == default)
-                mask = CreateMask(bits);
-            Bits = bits;
+                mask = CreateMask(bitWidth);
+            BitWidth = bitWidth;
             Check = check;
             Poly = poly;
             Init = init;
@@ -54,13 +54,13 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = CreateTable(bits, poly, mask, refIn);
+            Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
                 CrcConfig.ThrowIfInvalid(this);
         }
 
         /// <inheritdoc cref="CrcConfigBeyond(int, BigInteger, BigInteger, BigInteger, bool, bool, BigInteger, BigInteger, bool)"/>
-        public CrcConfigBeyond(int bits, string check, string poly, string init = default, bool refIn = false, bool refOut = false, string xorOut = default, string mask = default, bool skipValidation = false) : this(bits, check.ToBigInt(), poly.ToBigInt(), init.ToBigInt(), refIn, refOut, xorOut.ToBigInt(), mask.ToBigInt(), skipValidation) { }
+        public CrcConfigBeyond(int bitWidth, string check, string poly, string init = default, bool refIn = false, bool refOut = false, string xorOut = default, string mask = default, bool skipValidation = false) : this(bitWidth, check.ToBigInt(), poly.ToBigInt(), init.ToBigInt(), refIn, refOut, xorOut.ToBigInt(), mask.ToBigInt(), skipValidation) { }
 
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out BigInteger hash)
@@ -68,13 +68,12 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             hash = Init;
-            var table = Table.Span;
-            var span = new byte[stream.GetBufferSize()].AsSpan();
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
-            while ((len = stream.Read(span)) > 0)
+            while ((len = stream.Read(bytes)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(span[i], table, ref hash);
+                    ComputeHash(bytes[i], Table.Span, ref hash);
             }
             FinalizeHash(ref hash);
         }
@@ -88,6 +87,7 @@
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void FinalizeHash(ref BigInteger hash)
         {
             if (RefIn ^ RefOut)
@@ -109,21 +109,21 @@
             if (RefIn)
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
-                hash = (table[(int)(((hash >> (Bits - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+                hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
         }
 
-        private static BigInteger CreateMask(int bits)
+        private static BigInteger CreateMask(int bitWidth)
         {
             var mask = (BigInteger)0xff;
-            var size = (int)MathF.Ceiling(bits / 8f);
+            var size = (int)MathF.Ceiling(bitWidth / 8f);
             for (var i = 1; i < size; i++)
                 mask ^= 0xff << (8 * i);
             return mask;
         }
 
-        private static ReadOnlyMemory<BigInteger> CreateTable(int bits, BigInteger poly, BigInteger mask, bool refIn)
+        private static ReadOnlyMemory<BigInteger> CreateTable(int bitWidth, BigInteger poly, BigInteger mask, bool refIn)
         {
-            var top = (BigInteger)(1 << (bits - 1));
+            var top = (BigInteger)(1 << (bitWidth - 1));
             var mem = new BigInteger[1 << 8].AsMemory();
             var span = mem.Span;
             for (var i = 0; i < span.Length; i++)
@@ -134,7 +134,7 @@
                         x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
                 else
                 {
-                    x <<= bits - 8;
+                    x <<= bitWidth - 8;
                     for (var j = 0; j < 8; j++)
                         x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
                 }

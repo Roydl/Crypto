@@ -38,7 +38,7 @@
         Iso10126 = PaddingMode.ISO10126
     }
 
-    /// <summary>Provides enumerated bits of the key size.</summary>
+    /// <summary>Specifies the bit widths of a symmetric key.</summary>
     public enum SymmetricKeySize
     {
         /// <summary>128 bits.</summary>

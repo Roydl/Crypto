@@ -13,7 +13,7 @@
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
         /// <inheritdoc/>
-        public int HashBits { get; }
+        public int BitWidth { get; }
 
         /// <inheritdoc/>
         public int HashSize { get; }
@@ -28,51 +28,51 @@
         public ReadOnlyMemory<byte> RawHash { get; protected set; }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
-        /// <param name="bits">The hash size in bits.</param>
-        /// <param name="size">The string size to enforce. This is useful to prevent zero padding for algorithms with odd bits.</param>
-        /// <exception cref="ArgumentOutOfRangeException">bits are less than 8.</exception>
-        protected ChecksumAlgorithm(int bits, int size = default)
+        /// <param name="bitWidth">The bit width of a computed hash.</param>
+        /// <param name="strSize">The maximum length of the string representation of a computed hash. This is useful to prevent zero padding in algorithms with unusual bit widths.</param>
+        /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
+        protected ChecksumAlgorithm(int bitWidth, int strSize = default)
         {
-            if (bits < 8)
-                throw new ArgumentOutOfRangeException(nameof(bits), bits, null);
-            HashBits = bits;
-            HashSize = (int)MathF.Ceiling(HashBits / 4f);
+            if (bitWidth < 8)
+                throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
+            BitWidth = bitWidth;
+            HashSize = (int)MathF.Ceiling(BitWidth / 4f);
             if (HashSize % 2 != 0)
                 ++HashSize;
             if (HashSize < 2)
                 HashSize = 2;
             RawHashSize = (int)MathF.Ceiling(HashSize / 2f);
-            if (size > 0)
-                HashSize = size;
+            if (strSize > 0)
+                HashSize = strSize;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="bitWidth">The bit width of a computed hash.</param>
         /// <param name="bytes">The sequence of bytes to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        protected ChecksumAlgorithm(int bits, byte[] bytes) : this(bits) =>
+        protected ChecksumAlgorithm(int bitWidth, byte[] bytes) : this(bitWidth) =>
             Encrypt(bytes);
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text or file.</summary>
-        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="bitWidth">The bit width of a computed hash.</param>
         /// <param name="textOrFile">The text or file to encrypt.</param>
         /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
-        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : this(bits) =>
+        protected ChecksumAlgorithm(int bitWidth, string textOrFile, bool strIsFilePath) : this(bitWidth) =>
             Encrypt(textOrFile, strIsFilePath);
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text.</summary>
-        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="bitWidth">The bit width of a computed hash.</param>
         /// <param name="text">The string to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        protected ChecksumAlgorithm(int bits, string text) : this(bits) =>
+        protected ChecksumAlgorithm(int bitWidth, string text) : this(bitWidth) =>
             Encrypt(text);
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified file.</summary>
-        /// <param name="bits">The hash size in bits.</param>
+        /// <param name="bitWidth">The bit width of a computed hash.</param>
         /// <param name="fileInfo">The file to encrypt.</param>
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(FileInfo)"/>
-        protected ChecksumAlgorithm(int bits, FileInfo fileInfo) : this(bits) =>
+        protected ChecksumAlgorithm(int bitWidth, FileInfo fileInfo) : this(bitWidth) =>
             Encrypt(fileInfo);
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
@@ -137,8 +137,9 @@
         /// <inheritdoc/>
         public virtual void Reset()
         {
-            if (!RawHash.IsEmpty)
-                RawHash = default;
+            if (RawHash.IsEmpty)
+                return;
+            RawHash = default;
         }
 
         /// <summary>Determines whether this instance have same values as the specified <see cref="ChecksumAlgorithm"/> instance.</summary>
@@ -160,17 +161,22 @@
             GetType().GetHashCode();
 
         /// <inheritdoc/>
-        public string ToString(bool uppercase)
+        public unsafe string ToString(bool uppercase)
         {
             if (RawHash.IsEmpty)
                 return string.Empty;
-            var sb = new StringBuilder(RawHashSize * 2);
-            foreach (var b in RawHash.Span)
-                sb.AppendFormat(uppercase ? "{0:X2}" : "{0:x2}", b);
-            while (sb.Length < HashSize)
-                sb.Insert(0, '0');
-            var str = sb.Length > HashSize ? sb.ToString(sb.Length - HashSize, HashSize) : sb.ToString();
-            sb.Clear();
+            string str;
+            fixed (byte* raw = &RawHash.Span[0])
+            {
+                var len = RawHash.Length;
+                var sb = new StringBuilder(len * 2);
+                for (var i = 0; i < len; i++)
+                    sb.AppendFormat(uppercase ? "{0:X2}" : "{0:x2}", raw[i]);
+                while (sb.Length < HashSize)
+                    sb.Insert(0, '0');
+                str = sb.Length > HashSize ? sb.ToString(sb.Length - HashSize, HashSize) : sb.ToString();
+                sb.Clear();
+            }
             return str;
         }
 
@@ -269,23 +275,23 @@
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits, int size = default) : base(bits, size) { }
+        protected ChecksumAlgorithm(int bitWidth, int strSize = default) : base(bitWidth, strSize) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified sequence of bytes.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits, byte[] bytes) : base(bits, bytes) { }
+        protected ChecksumAlgorithm(int bitWidth, byte[] bytes) : base(bitWidth, bytes) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text or file.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits, string textOrFile, bool strIsFilePath) : base(bits, textOrFile, strIsFilePath) { }
+        protected ChecksumAlgorithm(int bitWidth, string textOrFile, bool strIsFilePath) : base(bitWidth, textOrFile, strIsFilePath) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits, string text) : base(bits, text) { }
+        protected ChecksumAlgorithm(int bitWidth, string text) : base(bitWidth, text) { }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified file.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bits, FileInfo fileInfo) : base(bits, fileInfo) { }
+        protected ChecksumAlgorithm(int bitWidth, FileInfo fileInfo) : base(bitWidth, fileInfo) { }
 
         /// <summary>Determines whether this instance have same values as the specified <typeparamref name="TAlgo"/> instance.</summary>
         /// <param name="other">The <typeparamref name="TAlgo"/> instance to compare.</param>
@@ -326,79 +332,79 @@
         public static bool operator !=(ChecksumAlgorithm<TAlgo, TCipher> left, ChecksumAlgorithm<TAlgo, TCipher> right) =>
             !(left == right);
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="sbyte"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="sbyte"/>.</summary>
         /// <param name="value">The item to convert to <see cref="sbyte"/>.</param>
         /// <returns>The <see cref="sbyte"/> representation of the last computed hash code.</returns>
         public static explicit operator sbyte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, sbyte>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="byte"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="byte"/>.</summary>
         /// <param name="value">The item to convert to <see cref="byte"/>.</param>
         /// <returns>The <see cref="byte"/> representation of the last computed hash code.</returns>
         public static explicit operator byte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, byte>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="short"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="short"/>.</summary>
         /// <param name="value">The item to convert to <see cref="short"/>.</param>
         /// <returns>The <see cref="short"/> representation of the last computed hash code.</returns>
         public static explicit operator short(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, short>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="ushort"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="ushort"/>.</summary>
         /// <param name="value">The item to convert to <see cref="ushort"/>.</param>
         /// <returns>The <see cref="ushort"/> representation of the last computed hash code.</returns>
         public static explicit operator ushort(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, ushort>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="int"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="int"/>.</summary>
         /// <param name="value">The item to convert to <see cref="int"/>.</param>
         /// <returns>The <see cref="int"/> representation of the last computed hash code.</returns>
         public static explicit operator int(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, int>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="uint"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="uint"/>.</summary>
         /// <param name="value">The item to convert to <see cref="uint"/>.</param>
         /// <returns>The <see cref="uint"/> representation of the last computed hash code.</returns>
         public static explicit operator uint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, uint>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="long"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="long"/>.</summary>
         /// <param name="value">The item to convert to <see cref="long"/>.</param>
         /// <returns>The <see cref="long"/> representation of the last computed hash code.</returns>
         public static explicit operator long(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, long>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="ulong"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="ulong"/>.</summary>
         /// <param name="value">The item to convert to <see cref="ulong"/>.</param>
         /// <returns>The <see cref="ulong"/> representation of the last computed hash code.</returns>
         public static explicit operator ulong(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, ulong>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="IntPtr"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="IntPtr"/>.</summary>
         /// <param name="value">The item to convert to <see cref="IntPtr"/>.</param>
         /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
         public static explicit operator nint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, nint>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="UIntPtr"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="UIntPtr"/>.</summary>
         /// <param name="value">The item to convert to <see cref="UIntPtr"/>.</param>
         /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
         public static explicit operator nuint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, nuint>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="BigInteger"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="BigInteger"/>.</summary>
         /// <param name="value">The item to convert to <see cref="BigInteger"/>.</param>
         /// <returns>The <see cref="BigInteger"/> representation of the last computed hash code.</returns>
         public static explicit operator BigInteger(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, BigInteger>();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="byte"/> array.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="byte"/> array.</summary>
         /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
         /// <returns>A <see cref="byte"/> array copy of the last computed hash code.</returns>
         public static explicit operator byte[](ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.RawHash.ToArray();
 
-        /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> to <see cref="string"/>.</summary>
+        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="string"/>.</summary>
         /// <param name="value">The item to convert to <see cref="string"/>.</param>
         /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
         public static explicit operator string(ChecksumAlgorithm<TAlgo, TCipher> value) =>

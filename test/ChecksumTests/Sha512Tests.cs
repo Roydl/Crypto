@@ -13,7 +13,7 @@
     public class Sha512Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha512;
-        private const int HashBits = 512;
+        private const int BitWidth = 512;
         private const int HashSize = 128;
         private const int RawHashSize = 64;
         private const string ExpectedTestHash = "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31";
@@ -95,15 +95,15 @@
         }
 
         [Test]
-        [TestCase(HashBits, HashSize, RawHashSize)]
+        [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
+        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha512();
             Assert.IsInstanceOf(typeof(Sha512), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);

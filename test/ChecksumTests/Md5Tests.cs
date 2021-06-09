@@ -13,7 +13,7 @@
     public class Md5Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Md5;
-        private const int HashBits = 128;
+        private const int BitWidth = 128;
         private const int HashSize = 32;
         private const int RawHashSize = 16;
         private const string ExpectedTestHash = "0cbc6611f5540bd0809a388dc95a615b";
@@ -95,15 +95,15 @@
         }
 
         [Test]
-        [TestCase(HashBits, HashSize, RawHashSize)]
+        [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
+        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Md5();
             Assert.IsInstanceOf(typeof(Md5), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);

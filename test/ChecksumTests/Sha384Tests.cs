@@ -13,7 +13,7 @@
     public class Sha384Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha384;
-        private const int HashBits = 384;
+        private const int BitWidth = 384;
         private const int HashSize = 96;
         private const int RawHashSize = 48;
         private const string ExpectedTestHash = "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3";
@@ -95,15 +95,15 @@
         }
 
         [Test]
-        [TestCase(HashBits, HashSize, RawHashSize)]
+        [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
+        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha384();
             Assert.IsInstanceOf(typeof(Sha384), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);

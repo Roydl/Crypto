@@ -13,7 +13,7 @@
     public class Sha256Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha256;
-        private const int HashBits = 256;
+        private const int BitWidth = 256;
         private const int HashSize = 64;
         private const int RawHashSize = 32;
         private const string ExpectedTestHash = "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25";
@@ -95,15 +95,15 @@
         }
 
         [Test]
-        [TestCase(HashBits, HashSize, RawHashSize)]
+        [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int hashBits, int hashSize, int rawHashSize)
+        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha256();
             Assert.IsInstanceOf(typeof(Sha256), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
-            Assert.AreEqual(hashBits, instanceDefault.HashBits);
+            Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);

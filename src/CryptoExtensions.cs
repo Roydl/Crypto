@@ -504,42 +504,42 @@
         /// <returns>A string with a GUID that contains the results of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm1"/> and the specified <paramref name="algorithm2"/>.</returns>
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
-        public static string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
+        public static unsafe string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
         {
-            var sb = new StringBuilder(braces ? 38 : 36);
-            if (braces)
-                sb.Append('{');
-            var raw1 = algorithm1.GetDefaultInstance().InternalEncrypt(source, true).RawHash.Span;
-            var raw2 = algorithm2.GetDefaultInstance().InternalEncrypt(source, false).RawHash.Span;
-            var span = LocalCombineHashBytes(raw1, raw2, 16);
-            var index = 0;
-            for (var i = 0; i < 5; i++)
+            var span1 = algorithm1.GetDefaultInstance().InternalEncrypt(source, true).RawHash.Span;
+            var span2 = algorithm2.GetDefaultInstance().InternalEncrypt(source, false).RawHash.Span;
+            string str;
+            fixed (byte* rawIn1 = &span1[0], rawIn2 = &span2[0])
             {
-                var size = i switch { < 1 => 4, < 4 => 2, _ => 6 };
-                for (var j = 0; j < size; j++)
-                    sb.AppendFormat("{0:x2}", span[index++]);
-                if (i < 4)
-                    sb.Append('-');
-            }
-            if (braces)
-                sb.Append('}');
-            var str = sb.ToString();
-            sb.Clear();
-            return str;
-
-            static Span<byte> LocalCombineHashBytes(ReadOnlySpan<byte> span1, ReadOnlySpan<byte> span2, int size)
-            {
-                var ba = new byte[size].AsSpan();
+                Span<byte> rawOut = stackalloc byte[16];
+                var len1 = span1.Length;
+                var len2 = span2.Length;
                 var i1 = 0;
                 var i2 = 0;
-                for (var i = 0; i < size; i++)
+                for (var i = 0; i < 16; i++)
                 {
-                    var e1 = span1.IsEmpty ? byte.MinValue : span1[i1 < span1.Length ? i1++ : i1 = 0];
-                    var e2 = span2.IsEmpty ? byte.MaxValue : span2[i2 < span2.Length ? i2++ : i2 = 0];
-                    ba[i] = (byte)CryptoUtils.CombineHashCodes(e1, e2);
+                    ref var e1 = ref rawIn1[i1 < len1 ? i1++ : i1 = 0];
+                    ref var e2 = ref rawIn2[i2 < len2 ? i2++ : i2 = 0];
+                    rawOut[i] = (byte)CryptoUtils.CombineHashCodes(e1, e2);
                 }
-                return ba;
+                var sb = new StringBuilder(braces ? 38 : 36);
+                if (braces)
+                    sb.Append('{');
+                i1 = 0;
+                for (var i = 0; i < 5; i++)
+                {
+                    var width = i < 1 ? 4 : i >= 4 ? 6 : 2;
+                    for (var j = 0; j < width; j++)
+                        sb.AppendFormat("{0:x2}", rawOut[i1++]);
+                    if (i < 4)
+                        sb.Append('-');
+                }
+                if (braces)
+                    sb.Append('}');
+                str = sb.ToString();
+                sb.Clear();
             }
+            return str;
         }
 
 #if NET5_0_OR_GREATER
