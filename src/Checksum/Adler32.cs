@@ -36,7 +36,7 @@
         public static Adler32 Create() => new();
 
         /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
-        public override unsafe void Encrypt(Stream stream)
+        public override void Encrypt(Stream stream)
         {
             Reset();
             if (stream == null)
