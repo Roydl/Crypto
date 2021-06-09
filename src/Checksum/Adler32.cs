@@ -41,26 +41,19 @@
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            uint sum;
-            fixed (uint* sums = new[] { 1u, 0u })
+            Span<uint> sums = stackalloc[] { 1u, 0u };
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
             {
-                var size = stream.GetBufferSize();
-                var bytes = new byte[size];
-                fixed (byte* buffer = bytes)
+                for (var i = 0; i < len; i++)
                 {
-                    int len;
-                    while ((len = stream.Read(bytes, 0, size)) > 0)
-                    {
-                        for (var i = 0; i < len; i++)
-                        {
-                            var value = buffer[i];
-                            sums[0] = (sums[0] + value) % 0xfff1;
-                            sums[1] = (sums[1] + sums[0]) % 0xfff1;
-                        }
-                    }
+                    var value = bytes[i];
+                    sums[0] = (sums[0] + value) % 0xfff1;
+                    sums[1] = (sums[1] + sums[0]) % 0xfff1;
                 }
-                sum = ((sums[1] << 16) | sums[0]) & uint.MaxValue;
             }
+            var sum = ((sums[1] << 16) | sums[0]) & uint.MaxValue;
             HashNumber = sum;
             RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
         }
