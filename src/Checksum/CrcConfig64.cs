@@ -63,7 +63,7 @@
         }
 
         /// <inheritdoc/>
-        public unsafe void ComputeHash(Stream stream, out ulong hash)
+        public void ComputeHash(Stream stream, out ulong hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));

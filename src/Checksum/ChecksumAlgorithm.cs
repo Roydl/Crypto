@@ -38,7 +38,7 @@
             BitWidth = bitWidth;
             HashSize = (int)MathF.Ceiling(BitWidth / 4f);
             if (HashSize % 2 != 0)
-                ++HashSize;
+                HashSize++;
             if (HashSize < 2)
                 HashSize = 2;
             RawHashSize = (int)MathF.Ceiling(HashSize / 2f);

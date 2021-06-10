@@ -72,7 +72,7 @@
         }
 
         /// <inheritdoc/>
-        public unsafe void ComputeHash(Stream stream, out byte hash)
+        public void ComputeHash(Stream stream, out byte hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
