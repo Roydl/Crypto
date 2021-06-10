@@ -33,10 +33,6 @@
         }
 
         /// <inheritdoc/>
-        public override void Encrypt(byte[] bytes) =>
-            Encrypt(bytes!.AsSpan());
-
-        /// <inheritdoc/>
         public override void Encrypt(ReadOnlySpan<byte> bytes)
         {
             Reset();

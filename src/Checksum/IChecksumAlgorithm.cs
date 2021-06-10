@@ -22,9 +22,6 @@
         /// <exception cref="ArgumentNullException">bytes is null.</exception>
         /// <exception cref="ArgumentException">bytes is empty.</exception>
         /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
-        void Encrypt(byte[] bytes);
-
-        /// <inheritdoc cref="Encrypt(byte[])"/>
         void Encrypt(ReadOnlySpan<byte> bytes);
 
         /// <summary>Encrypts the specified text or file.</summary>
@@ -33,14 +30,14 @@
         /// <exception cref="ArgumentNullException">textOrFile is null.</exception>
         /// <exception cref="ArgumentException">textOrFile is empty.</exception>
         /// <exception cref="FileNotFoundException">textOrFile cannot be found.</exception>
-        /// <inheritdoc cref="Encrypt(byte[])"/>
+        /// <inheritdoc cref="Encrypt(ReadOnlySpan{byte})"/>
         void Encrypt(string textOrFile, bool strIsFilePath);
 
         /// <summary>Encrypts the specified string.</summary>
         /// <param name="text">The string to encrypt.</param>
         /// <exception cref="ArgumentNullException">text is null.</exception>
         /// <exception cref="ArgumentException">text is empty.</exception>
-        /// <inheritdoc cref="Encrypt(byte[])"/>
+        /// <inheritdoc cref="Encrypt(ReadOnlySpan{byte})"/>
         void Encrypt(string text);
 
         /// <summary>Encrypts the specified file.</summary>

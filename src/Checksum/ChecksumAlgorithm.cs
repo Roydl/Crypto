@@ -51,9 +51,6 @@
         public abstract void Encrypt(Stream stream);
 
         /// <inheritdoc/>
-        public abstract void Encrypt(byte[] bytes);
-
-        /// <inheritdoc/>
         public abstract void Encrypt(ReadOnlySpan<byte> bytes);
 
         /// <inheritdoc/>
@@ -334,8 +331,8 @@
     {
         private byte[] _secretKey;
 
-        /// <summary>Gets or sets secret key for <see cref="HMAC"/> hashing. The key can be of any length, but a key longer than the output size of the specified hash algorithm will be hashed to derive a correctly-sized key. Therefore, the recommended size of the secret key is the output size of the specified hash algorithm.</summary>
-        /// <remarks>Before overwriting an old key, see <see cref="DestroySecretKey()"/>.</remarks>
+        /// <summary>Gets or sets the secret key for <see cref="HMAC"/> hashing. The key can be of any length, but a key longer than the output size of the specified hash algorithm will be hashed to derive a correctly-sized key. Therefore, the recommended size of the secret key is the output size of the specified hash algorithm.</summary>
+        /// <remarks>Before overwriting an old key, see <see cref="DestroySecretKey()">DestroySecretKey</see>.</remarks>
         public byte[] SecretKey
         {
             get => _secretKey;
@@ -374,10 +371,6 @@
             }
             RawHash = hasher.GetHashAndReset();
         }
-
-        /// <inheritdoc/>
-        public sealed override void Encrypt(byte[] bytes) =>
-            Encrypt(bytes!.AsSpan());
 
         /// <inheritdoc/>
         public sealed override void Encrypt(ReadOnlySpan<byte> bytes)
