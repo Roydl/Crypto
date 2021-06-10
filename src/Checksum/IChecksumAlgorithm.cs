@@ -24,6 +24,9 @@
         /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
         void Encrypt(byte[] bytes);
 
+        /// <inheritdoc cref="Encrypt(byte[])"/>
+        void Encrypt(ReadOnlySpan<byte> bytes);
+
         /// <summary>Encrypts the specified text or file.</summary>
         /// <param name="textOrFile">The text or file to encrypt.</param>
         /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>

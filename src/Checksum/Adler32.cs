@@ -21,31 +21,35 @@
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            Span<uint> sums = stackalloc[] { 1u, 0u };
+            Span<uint> sum = stackalloc[] { 1u, 0u };
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
             while ((len = stream.Read(bytes)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(bytes[i], ref sums);
+                    AppendData(bytes[i], ref sum);
             }
-            FinalizeHash(sums);
+            FinalizeHash(sum);
         }
 
-        /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(byte[])"/>
-        public override void Encrypt(byte[] bytes)
+        /// <inheritdoc/>
+        public override void Encrypt(byte[] bytes) =>
+            Encrypt(bytes!.AsSpan());
+
+        /// <inheritdoc/>
+        public override void Encrypt(ReadOnlySpan<byte> bytes)
         {
             Reset();
             if (bytes == null)
                 throw new ArgumentNullException(nameof(bytes));
-            Span<uint> sums = stackalloc[] { 1u, 0u };
+            Span<uint> sum = stackalloc[] { 1u, 0u };
             foreach (var value in bytes)
-                ComputeHash(value, ref sums);
-            FinalizeHash(sums);
+                AppendData(value, ref sum);
+            FinalizeHash(sum);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ComputeHash(byte value, ref Span<uint> hash)
+        private static void AppendData(byte value, ref Span<uint> hash)
         {
             if (hash.Length < 2)
                 throw new IndexOutOfRangeException();

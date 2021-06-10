@@ -60,13 +60,13 @@
         /// <param name="len">The number of bytes to hash.</param>
         /// <param name="hash">The hash code to be computed or its computation that will be continued.</param>
         /// <remarks>Only <see cref="RefIn">RefIn</see> is used.</remarks>
-        void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref TValue hash);
+        void AppendData(ReadOnlySpan<byte> bytes, int len, ref TValue hash);
 
         /// <summary>Computes the hash from the specified byte value using the CRC algorithm.</summary>
         /// <param name="value">The byte value to hash.</param>
         /// <param name="hash">The hash code to be computed or its computation that will be continued.</param>
         /// <remarks>Only <see cref="RefIn">RefIn</see> is used.</remarks>
-        void ComputeHash(byte value, ref TValue hash);
+        void AppendData(byte value, ref TValue hash);
 
         /// <summary>Finalizes the computed hash code.</summary>
         /// <param name="hash">The computed hash code to be finalized.</param>

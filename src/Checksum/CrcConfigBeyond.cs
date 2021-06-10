@@ -73,7 +73,7 @@
             while ((len = stream.Read(bytes)) > 0)
             {
                 for (var i = 0; i < len; i++)
-                    ComputeHash(bytes[i], Table.Span, ref hash);
+                    AppendData(bytes[i], Table.Span, ref hash);
             }
             FinalizeHash(ref hash);
         }
@@ -84,30 +84,30 @@
             if (bytes.IsEmpty)
                 throw new ArgumentNullException(nameof(bytes));
             var sum = Init;
-            ComputeHash(bytes, bytes.Length, ref sum);
+            AppendData(bytes, bytes.Length, ref sum);
             FinalizeHash(ref sum);
             hash = sum;
         }
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref BigInteger hash)
+        public void AppendData(ReadOnlySpan<byte> bytes, int len, ref BigInteger hash)
         {
             if (bytes.IsEmpty)
                 throw new ArgumentNullException(nameof(bytes));
             var sum = hash;
             var i = 0;
             while (--len >= 0)
-                ComputeHash(bytes[i++], Table.Span, ref sum);
+                AppendData(bytes[i++], Table.Span, ref sum);
             hash = sum;
         }
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ComputeHash(byte value, ref BigInteger hash)
+        public void AppendData(byte value, ref BigInteger hash)
         {
             var table = Table.Span;
-            ComputeHash(value, table, ref hash);
+            AppendData(value, table, ref hash);
         }
 
         /// <inheritdoc/>
@@ -128,7 +128,7 @@
             IsValid(out _);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ComputeHash(byte value, ReadOnlySpan<BigInteger> table, ref BigInteger hash)
+        private void AppendData(byte value, ReadOnlySpan<BigInteger> table, ref BigInteger hash)
         {
             if (RefIn)
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;

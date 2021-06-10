@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
     using System.Security.Cryptography;
@@ -51,6 +52,9 @@
 
         /// <inheritdoc/>
         public abstract void Encrypt(byte[] bytes);
+
+        /// <inheritdoc/>
+        public abstract void Encrypt(ReadOnlySpan<byte> bytes);
 
         /// <inheritdoc/>
         public void Encrypt(string textOrFile, bool strIsFilePath)
@@ -146,44 +150,6 @@
         /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
         public sealed override string ToString() =>
             ToString(false);
-
-        /// <summary>Encrypts the specified stream with the specified <see cref="HashAlgorithm"/>.</summary>
-        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
-        /// <param name="stream">The stream to encrypt.</param>
-        /// <param name="algorithm">The algorithm to encrypt.</param>
-        /// <exception cref="ArgumentNullException">stream or algorithm is null.</exception>
-        protected void Encrypt<THashAlgorithm>(Stream stream, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-            if (algorithm == null)
-                throw new ArgumentNullException(nameof(algorithm));
-            using var csp = algorithm;
-            RawHash = csp.ComputeHash(stream);
-        }
-
-        /// <summary>Encrypts the specified sequence of bytes with the specified <see cref="HashAlgorithm"/>.</summary>
-        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
-        /// <param name="bytes">The sequence of bytes to encrypt.</param>
-        /// <param name="algorithm">The algorithm to encrypt.</param>
-        /// <exception cref="ArgumentNullException">stream or algorithm is null.</exception>
-        protected void Encrypt<THashAlgorithm>(byte[] bytes, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
-        {
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
-            if (algorithm == null)
-                throw new ArgumentNullException(nameof(algorithm));
-            using var csp = algorithm;
-            RawHash = csp.ComputeHash(bytes);
-        }
-
-        /// <summary>Encrypts the specified string with the specified <see cref="HashAlgorithm"/>.</summary>
-        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
-        /// <param name="text">The string to encrypt.</param>
-        /// <param name="algorithm">The algorithm to encrypt.</param>
-        /// <exception cref="ArgumentNullException">text or algorithm is null.</exception>
-        protected void Encrypt<THashAlgorithm>(string text, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm =>
-            Encrypt(Encoding.UTF8.GetBytes(text), algorithm);
 
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have same values.</summary>
         /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
@@ -361,5 +327,117 @@
         /// <returns>The <see cref="string"/> representation of the last computed hash code.</returns>
         public static explicit operator string(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.Hash;
+    }
+
+    /// <inheritdoc cref="ChecksumAlgorithm{TAlgo, TCipher}"/>
+    public abstract class ChecksumAlgorithmBuiltIn<TAlgo, TCipher> : ChecksumAlgorithm<TAlgo, TCipher> where TAlgo : IChecksumAlgorithm<TCipher> where TCipher : struct, IComparable, IFormattable
+    {
+        private byte[] _secretKey;
+
+        /// <summary>Gets or sets secret key for <see cref="HMAC"/> hashing. The key can be of any length, but a key longer than the output size of the specified hash algorithm will be hashed to derive a correctly-sized key. Therefore, the recommended size of the secret key is the output size of the specified hash algorithm.</summary>
+        /// <remarks>Before overwriting an old key, see <see cref="DestroySecretKey()"/>.</remarks>
+        public byte[] SecretKey
+        {
+            get => _secretKey;
+            set => _secretKey = value;
+        }
+
+        private HashAlgorithmName Algorithm { get; }
+
+        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
+        /// <param name="algorithm">The built-in algorithm to use.</param>
+        /// <param name="secretKey">The secret key for <see cref="HMAC"/> hashing.</param>
+        /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
+        protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, byte[] secretKey = default) : base(GetBitWidth(algorithm))
+        {
+            Algorithm = algorithm;
+            SecretKey = secretKey;
+        }
+
+        /// <inheritdoc/>
+        public sealed override void Encrypt(Stream stream)
+        {
+            Reset();
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            using var hasher = CreateHashCore();
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
+            {
+                if (bytes.Length == len)
+                {
+                    hasher.AppendData(bytes);
+                    continue;
+                }
+                hasher.AppendData(bytes[..len]);
+            }
+            RawHash = hasher.GetHashAndReset();
+        }
+
+        /// <inheritdoc/>
+        public sealed override void Encrypt(byte[] bytes) =>
+            Encrypt(bytes!.AsSpan());
+
+        /// <inheritdoc/>
+        public sealed override void Encrypt(ReadOnlySpan<byte> bytes)
+        {
+            Reset();
+            if (bytes == null)
+                throw new ArgumentNullException(nameof(bytes));
+            using var hasher = CreateHashCore();
+            hasher.AppendData(bytes);
+            RawHash = hasher.GetHashAndReset();
+        }
+
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
+        public new void Encrypt(string text)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+            if (text.Length < 1)
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
+            Encrypt(Encoding.UTF8.GetBytes(text));
+        }
+
+        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string, bool)"/>
+        public new void Encrypt(string textOrFile, bool strIsFilePath)
+        {
+            if (strIsFilePath)
+            {
+                EncryptFile(textOrFile);
+                return;
+            }
+            Encrypt(textOrFile);
+        }
+
+        /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>
+        /// <remarks>Additional information:
+        ///     <list type="bullet">
+        ///         <item><description>The data cannot be removed if referenced outside of this instance.</description></item>
+        ///         <item><description>Depending on the system, removing the data can take several seconds.</description></item>
+        ///     </list>
+        /// </remarks>
+        public void DestroySecretKey() =>
+            Helper.DestroyElement(ref _secretKey);
+
+        /// <inheritdoc cref="Type.GetHashCode()"/>
+        public override int GetHashCode() =>
+            GetType().GetHashCode();
+
+        private static int GetBitWidth(HashAlgorithmName algorithm) =>
+            algorithm.Name switch
+            {
+                nameof(HashAlgorithmName.MD5) => 128,
+                nameof(HashAlgorithmName.SHA1) => 160,
+                nameof(HashAlgorithmName.SHA256) => 256,
+                nameof(HashAlgorithmName.SHA384) => 384,
+                nameof(HashAlgorithmName.SHA512) => 512,
+                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
+            };
+
+        [return: NotNull]
+        private IncrementalHash CreateHashCore() =>
+            SecretKey != null ? IncrementalHash.CreateHMAC(Algorithm, SecretKey) : IncrementalHash.CreateHash(Algorithm);
     }
 }
