@@ -244,8 +244,8 @@
         /// </remarks>
         public void DestroySecretData()
         {
-            Helper.DestroyElement(ref _password);
-            Helper.DestroyElement(ref _salt);
+            GarbageHelper.DestroyElement(ref _password);
+            GarbageHelper.DestroyElement(ref _salt);
         }
 
         /// <inheritdoc/>

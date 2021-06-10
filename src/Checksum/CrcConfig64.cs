@@ -48,7 +48,7 @@
             if (sizeof(ulong) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = Helper.CreateBitMask<ulong>(bitWidth);
+                mask = NumericHelper.CreateBitMask<ulong>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -59,7 +59,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.InternalThrowIfInvalid(this);
+                CrcConfig.ThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -165,8 +165,11 @@
         }
 
         /// <inheritdoc/>
-        public bool IsValid(out ulong current) =>
-            CrcConfig.InternalIsValid(this, out current);
+        public bool IsValid(out ulong current)
+        {
+            ComputeHash(CrcConfig.ValidationBytes, out current);
+            return current == Check;
+        }
 
         /// <inheritdoc/>
         public bool IsValid() =>

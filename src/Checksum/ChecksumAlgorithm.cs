@@ -23,7 +23,11 @@
         public int RawHashSize { get; }
 
         /// <inheritdoc/>
-        public string Hash => ToString();
+        public string Hash
+        {
+            [return: NotNull]
+            get => ToString();
+        }
 
         /// <inheritdoc/>
         public ReadOnlyMemory<byte> RawHash { get; protected set; }
@@ -125,6 +129,7 @@
             GetType().GetHashCode();
 
         /// <inheritdoc/>
+        [return: NotNull]
         public unsafe string ToString(bool uppercase)
         {
             if (RawHash.IsEmpty)
@@ -145,6 +150,7 @@
         }
 
         /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
+        [return: NotNull]
         public sealed override string ToString() =>
             ToString(false);
 
@@ -295,18 +301,6 @@
         public static explicit operator ulong(ChecksumAlgorithm<TAlgo, TCipher> value) =>
             value.HashNumber.FromTo<TCipher, ulong>();
 
-        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="IntPtr"/>.</summary>
-        /// <param name="value">The item to convert to <see cref="IntPtr"/>.</param>
-        /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
-        public static explicit operator nint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, nint>();
-
-        /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="UIntPtr"/>.</summary>
-        /// <param name="value">The item to convert to <see cref="UIntPtr"/>.</param>
-        /// <returns>The <see cref="IntPtr"/> representation of the last computed hash code.</returns>
-        public static explicit operator nuint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, nuint>();
-
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="BigInteger"/>.</summary>
         /// <param name="value">The item to convert to <see cref="BigInteger"/>.</param>
         /// <returns>The <see cref="BigInteger"/> representation of the last computed hash code.</returns>
@@ -412,7 +406,7 @@
         ///     </list>
         /// </remarks>
         public void DestroySecretKey() =>
-            Helper.DestroyElement(ref _secretKey);
+            GarbageHelper.DestroyElement(ref _secretKey);
 
         /// <inheritdoc cref="Type.GetHashCode()"/>
         public override int GetHashCode() =>

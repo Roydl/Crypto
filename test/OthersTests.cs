@@ -37,7 +37,6 @@
 
         [Test]
         [TestCaseSource(nameof(GetGuidTestData))]
-        [Retry(2)]
         [Category("Extension")]
         public void GetGuid(TestVarsType varsType, ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, string expectedGuid)
         {

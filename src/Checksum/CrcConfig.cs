@@ -1,7 +1,6 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.CompilerServices;
     using Internal;
@@ -10,6 +9,13 @@
     /// <summary>Represents a 8-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig : ICrcConfig<byte>
     {
+        internal static readonly byte[] ValidationBytes =
+        {
+            0x31, 0x32, 0x33,
+            0x34, 0x35, 0x36,
+            0x37, 0x38, 0x39
+        };
+
         /// <inheritdoc/>
         public int BitWidth { get; }
 
@@ -57,7 +63,7 @@
             if (sizeof(byte) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = Helper.CreateBitMask<byte>(bitWidth);
+                mask = NumericHelper.CreateBitMask<byte>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -68,7 +74,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                InternalThrowIfInvalid(this);
+                ThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -132,8 +138,11 @@
         }
 
         /// <inheritdoc/>
-        public bool IsValid(out byte current) =>
-            InternalIsValid(this, out current);
+        public bool IsValid(out byte current)
+        {
+            ComputeHash(ValidationBytes, out current);
+            return current == Check;
+        }
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -146,35 +155,6 @@
                 hash = (byte)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
             else
                 hash = (byte)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
-        }
-
-        internal static bool InternalIsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
-        {
-            using var ms = new MemoryStream(new byte[]
-            {
-                0x31, 0x32, 0x33,
-                0x34, 0x35, 0x36,
-                0x37, 0x38, 0x39
-            });
-            item.ComputeHash(ms, out current);
-            return EqualityComparer<T>.Default.Equals(current, item.Check);
-        }
-
-        internal static void InternalThrowIfInvalid<T>(ICrcConfig<T> item) where T : struct, IComparable, IFormattable
-        {
-            if (item.IsValid(out var current))
-                return;
-            var exc = new InvalidDataException(ExceptionMessages.InvalidDataCrcValidation);
-            var size = (int)MathF.Ceiling(item.BitWidth / 4f);
-            exc.Data.Add("Current", current.ToHexStr(size, true));
-            exc.Data.Add("Expected", item.Check.ToHexStr(size, true));
-            exc.Data.Add(nameof(Poly), item.Poly.ToHexStr(size, true));
-            exc.Data.Add(nameof(Init), item.Init.ToHexStr(size, true));
-            exc.Data.Add(nameof(RefIn), item.RefIn.ToString());
-            exc.Data.Add(nameof(RefOut), item.RefOut.ToString());
-            exc.Data.Add(nameof(XorOut), item.XorOut.ToHexStr(size, true));
-            exc.Data.Add(nameof(Mask), item.Mask.ToHexStr(size, true));
-            throw exc;
         }
 
         private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)
@@ -197,6 +177,23 @@
                 span[i] = (byte)(x & mask);
             }
             return mem;
+        }
+
+        internal static void ThrowIfInvalid<TValue>(ICrcConfig<TValue> item) where TValue : struct, IComparable, IFormattable
+        {
+            if (item.IsValid(out var current))
+                return;
+            var exc = new InvalidDataException(ExceptionMessages.InvalidDataCrcValidation);
+            var size = (int)MathF.Ceiling(item.BitWidth / 4f);
+            exc.Data.Add("Current", current.ToHexStr(size, true));
+            exc.Data.Add("Expected", item.Check.ToHexStr(size, true));
+            exc.Data.Add(nameof(item.Poly), item.Poly.ToHexStr(size, true));
+            exc.Data.Add(nameof(item.Init), item.Init.ToHexStr(size, true));
+            exc.Data.Add(nameof(item.RefIn), item.RefIn.ToString());
+            exc.Data.Add(nameof(item.RefOut), item.RefOut.ToString());
+            exc.Data.Add(nameof(item.XorOut), item.XorOut.ToHexStr(size, true));
+            exc.Data.Add(nameof(item.Mask), item.Mask.ToHexStr(size, true));
+            throw exc;
         }
     }
 }

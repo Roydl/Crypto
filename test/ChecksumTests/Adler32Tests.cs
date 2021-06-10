@@ -43,7 +43,7 @@
 
             _instanceByteArray = new Adler32();
             _instanceByteArray.Encrypt(TestVars.TestBytes);
-            
+
             _instanceString = new Adler32();
             _instanceString.Encrypt(TestVars.TestStr);
 
@@ -224,8 +224,6 @@
             Assert.AreEqual(_instanceStream.HashNumber, (uint)_instanceByteArray);
             Assert.AreEqual((long)_instanceStream.HashNumber, (long)_instanceByteArray);
             Assert.AreEqual((ulong)_instanceStream.HashNumber, (ulong)_instanceByteArray);
-            Assert.AreEqual((nint)_instanceStream.HashNumber, (nint)_instanceByteArray);
-            Assert.AreEqual((nuint)_instanceStream.HashNumber, (nuint)_instanceByteArray);
             Assert.AreEqual((BigInteger)_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
             Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }

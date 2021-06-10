@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
     using Resources;
@@ -98,7 +99,11 @@
         // We don't want the same CRC tables to be created multiple times.
         private static IDictionary<Enum, object> ConfigCache { get; } = new ConcurrentDictionary<Enum, object>();
 
-        private ICrcConfig<TValue> Current { get; }
+        private ICrcConfig<TValue> Current
+        {
+            [return: NotNull]
+            get;
+        }
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <remarks>Generic type usage:
@@ -267,6 +272,7 @@
             }
         }
 
+        [return: NotNull]
         private static ICrcConfig<TValue> GetConfig()
         {
             var cc = ConfigCache;
@@ -282,6 +288,7 @@
             return (ICrcConfig<TValue>)cfg;
         }
 
+        [return: NotNull]
         private static ICrcConfig<TValue> GetConfig(int bitWidth, Enum preset)
         {
             var cc = ConfigCache;

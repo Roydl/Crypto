@@ -48,7 +48,7 @@
             if (sizeof(ushort) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = Helper.CreateBitMask<ushort>(bitWidth);
+                mask = NumericHelper.CreateBitMask<ushort>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -59,7 +59,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.InternalThrowIfInvalid(this);
+                CrcConfig.ThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -145,8 +145,11 @@
         }
 
         /// <inheritdoc/>
-        public bool IsValid(out ushort current) =>
-            CrcConfig.InternalIsValid(this, out current);
+        public bool IsValid(out ushort current)
+        {
+            ComputeHash(CrcConfig.ValidationBytes, out current);
+            return current == Check;
+        }
 
         /// <inheritdoc/>
         public bool IsValid() =>

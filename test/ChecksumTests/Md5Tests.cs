@@ -120,17 +120,13 @@
         }
 
         [Test]
-        [Retry(3)]
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
         public void InstanceDestroySecretKey()
         {
             var secretKey = new WeakReference(TestVars.GetRandomBytes(64));
-            var instance = new Md5
-            {
-                SecretKey = (byte[])secretKey.Target
-            };
+            var instance = new Md5((byte[])secretKey.Target);
 
             // Let's see if the password and salt were created correctly.
             Assert.GreaterOrEqual(instance.SecretKey?.Length, 64);
@@ -242,8 +238,6 @@
             Assert.AreEqual((uint)(_instanceStream.HashNumber & uint.MaxValue), (uint)_instanceByteArray);
             Assert.AreEqual((long)(_instanceStream.HashNumber & long.MaxValue), (long)_instanceByteArray);
             Assert.AreEqual((ulong)(_instanceStream.HashNumber & ulong.MaxValue), (ulong)_instanceByteArray);
-            Assert.AreEqual((nint)(long)(_instanceStream.HashNumber & long.MaxValue), (nint)_instanceByteArray);
-            Assert.AreEqual((nuint)(ulong)(_instanceStream.HashNumber & ulong.MaxValue), (nuint)_instanceByteArray);
             Assert.AreEqual(_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
             Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
