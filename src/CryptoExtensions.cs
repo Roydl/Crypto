@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto
 {
     using System;
+    using System.Buffers;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
@@ -732,13 +733,25 @@
                     instance.Encrypt(x as byte[] ?? x.ToArray());
                     break;
                 case Memory<byte> x:
-                    instance.Encrypt(x.ToArray());
+                    instance.Encrypt(x.Span);
+                    break;
+                case ReadOnlySequence<byte> x:
+                    instance.Encrypt(x.FirstSpan);
+                    break;
+                case ReadOnlySequenceSegment<byte> x:
+                    instance.Encrypt(x.Memory.Span);
                     break;
                 case IEnumerable<char> x:
                     instance.Encrypt(x as string ?? new string(x.ToArray()));
                     break;
                 case Memory<char> x:
-                    instance.Encrypt(new string(x.ToArray()));
+                    instance.Encrypt(new string(x.Span));
+                    break;
+                case ReadOnlySequence<char> x:
+                    instance.Encrypt(new string(x.FirstSpan));
+                    break;
+                case ReadOnlySequenceSegment<char> x:
+                    instance.Encrypt(new string(x.Memory.Span));
                     break;
                 case StreamReader x:
                     LocalProcessStream(instance, x.BaseStream, restoreStreamPos);
