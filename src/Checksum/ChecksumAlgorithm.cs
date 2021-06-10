@@ -46,48 +46,11 @@
                 HashSize = strSize;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <param name="bitWidth">The bit width of a computed hash.</param>
-        /// <param name="bytes">The sequence of bytes to encrypt.</param>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(byte[])"/>
-        protected ChecksumAlgorithm(int bitWidth, byte[] bytes) : this(bitWidth) =>
-            Encrypt(bytes);
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text or file.</summary>
-        /// <param name="bitWidth">The bit width of a computed hash.</param>
-        /// <param name="textOrFile">The text or file to encrypt.</param>
-        /// <param name="strIsFilePath"><see langword="true"/> if the specified value is a file path; otherwise, <see langword="false"/>.</param>
-        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
-        protected ChecksumAlgorithm(int bitWidth, string textOrFile, bool strIsFilePath) : this(bitWidth) =>
-            Encrypt(textOrFile, strIsFilePath);
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified text.</summary>
-        /// <param name="bitWidth">The bit width of a computed hash.</param>
-        /// <param name="text">The string to encrypt.</param>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        protected ChecksumAlgorithm(int bitWidth, string text) : this(bitWidth) =>
-            Encrypt(text);
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class and encrypts the specified file.</summary>
-        /// <param name="bitWidth">The bit width of a computed hash.</param>
-        /// <param name="fileInfo">The file to encrypt.</param>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(FileInfo)"/>
-        protected ChecksumAlgorithm(int bitWidth, FileInfo fileInfo) : this(bitWidth) =>
-            Encrypt(fileInfo);
-
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
+        /// <inheritdoc/>
         public abstract void Encrypt(Stream stream);
 
         /// <inheritdoc/>
-        public void Encrypt(byte[] bytes)
-        {
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
-            if (bytes.Length < 1)
-                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
-            using var ms = new MemoryStream(bytes);
-            Encrypt(ms);
-        }
+        public abstract void Encrypt(byte[] bytes);
 
         /// <inheritdoc/>
         public void Encrypt(string textOrFile, bool strIsFilePath)
@@ -199,21 +162,28 @@
             RawHash = csp.ComputeHash(stream);
         }
 
+        /// <summary>Encrypts the specified sequence of bytes with the specified <see cref="HashAlgorithm"/>.</summary>
+        /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
+        /// <param name="bytes">The sequence of bytes to encrypt.</param>
+        /// <param name="algorithm">The algorithm to encrypt.</param>
+        /// <exception cref="ArgumentNullException">stream or algorithm is null.</exception>
+        protected void Encrypt<THashAlgorithm>(byte[] bytes, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
+        {
+            if (bytes == null)
+                throw new ArgumentNullException(nameof(bytes));
+            if (algorithm == null)
+                throw new ArgumentNullException(nameof(algorithm));
+            using var csp = algorithm;
+            RawHash = csp.ComputeHash(bytes);
+        }
+
         /// <summary>Encrypts the specified string with the specified <see cref="HashAlgorithm"/>.</summary>
         /// <typeparam name="THashAlgorithm">The type of the algorithm.</typeparam>
         /// <param name="text">The string to encrypt.</param>
         /// <param name="algorithm">The algorithm to encrypt.</param>
         /// <exception cref="ArgumentNullException">text or algorithm is null.</exception>
-        protected void Encrypt<THashAlgorithm>(string text, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm
-        {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
-            if (algorithm == null)
-                throw new ArgumentNullException(nameof(algorithm));
-            var ba = Encoding.UTF8.GetBytes(text);
-            using var csp = algorithm;
-            RawHash = csp.ComputeHash(ba);
-        }
+        protected void Encrypt<THashAlgorithm>(string text, THashAlgorithm algorithm) where THashAlgorithm : HashAlgorithm =>
+            Encrypt(Encoding.UTF8.GetBytes(text), algorithm);
 
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have same values.</summary>
         /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
@@ -252,9 +222,7 @@
         {
             get
             {
-                if (RawHash.IsEmpty)
-                    return default;
-                if (!EqualityComparer<TCipher>.Default.Equals(_hashNumber, default))
+                if (RawHash.IsEmpty || !EqualityComparer<TCipher>.Default.Equals(_hashNumber, default))
                     return _hashNumber;
 
                 // Fallback (should be set from the underlying types if necessary)
@@ -276,22 +244,6 @@
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class.</summary>
         /// <inheritdoc/>
         protected ChecksumAlgorithm(int bitWidth, int strSize = default) : base(bitWidth, strSize) { }
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bitWidth, byte[] bytes) : base(bitWidth, bytes) { }
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text or file.</summary>
-        /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bitWidth, string textOrFile, bool strIsFilePath) : base(bitWidth, textOrFile, strIsFilePath) { }
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified text.</summary>
-        /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bitWidth, string text) : base(bitWidth, text) { }
-
-        /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class and encrypts the specified file.</summary>
-        /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bitWidth, FileInfo fileInfo) : base(bitWidth, fileInfo) { }
 
         /// <summary>Determines whether this instance have same values as the specified <typeparamref name="TAlgo"/> instance.</summary>
         /// <param name="other">The <typeparamref name="TAlgo"/> instance to compare.</param>

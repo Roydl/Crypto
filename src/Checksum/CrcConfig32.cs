@@ -48,7 +48,7 @@
             if (sizeof(uint) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bitWidth);
+                mask = Helper.CreateBitMask<uint>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -59,53 +59,73 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.ThrowIfInvalid(this);
+                CrcConfig.InternalThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
-        public unsafe void ComputeHash(Stream stream, out uint hash)
+        public void ComputeHash(Stream stream, out uint hash)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             var sum = Init;
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
+                ComputeHash(bytes, len, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        public void ComputeHash(ReadOnlySpan<byte> bytes, out uint hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = Init;
+            ComputeHash(bytes, bytes.Length, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref uint hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = hash;
             fixed (uint* table = &Table.Span[0])
             {
-                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-                int len;
-                while ((len = stream.Read(bytes)) > 0)
+                var i = 0;
+                while (RefIn && len >= Rows)
                 {
-                    var i = 0;
-                    while (RefIn && len >= Rows)
-                    {
-                        var x = sum;
+                    var x = sum;
 
-                        sum = table[11 * Columns + bytes[i + 04]] ^
-                              table[10 * Columns + bytes[i + 05]] ^
-                              table[09 * Columns + bytes[i + 06]] ^
-                              table[08 * Columns + bytes[i + 07]] ^
-                              table[07 * Columns + bytes[i + 08]] ^
-                              table[06 * Columns + bytes[i + 09]] ^
-                              table[05 * Columns + bytes[i + 10]] ^
-                              table[04 * Columns + bytes[i + 11]] ^
-                              table[03 * Columns + bytes[i + 12]] ^
-                              table[02 * Columns + bytes[i + 13]] ^
-                              table[01 * Columns + bytes[i + 14]] ^
-                              table[00 * Columns + bytes[i + 15]];
+                    sum = table[11 * Columns + bytes[i + 04]] ^
+                          table[10 * Columns + bytes[i + 05]] ^
+                          table[09 * Columns + bytes[i + 06]] ^
+                          table[08 * Columns + bytes[i + 07]] ^
+                          table[07 * Columns + bytes[i + 08]] ^
+                          table[06 * Columns + bytes[i + 09]] ^
+                          table[05 * Columns + bytes[i + 10]] ^
+                          table[04 * Columns + bytes[i + 11]] ^
+                          table[03 * Columns + bytes[i + 12]] ^
+                          table[02 * Columns + bytes[i + 13]] ^
+                          table[01 * Columns + bytes[i + 14]] ^
+                          table[00 * Columns + bytes[i + 15]];
 
-                        sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
-                               table[14 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
-                               table[13 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
-                               table[12 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])];
+                    sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
+                           table[14 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
+                           table[13 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
+                           table[12 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])];
 
-                        i += Rows;
-                        len -= Rows;
-                        sum &= Mask;
-                    }
-                    while (--len >= 0)
-                        ComputeHash(bytes[i++], table, ref sum);
+                    i += Rows;
+                    len -= Rows;
+                    sum &= Mask;
                 }
+                while (--len >= 0)
+                    ComputeHash(bytes[i++], table, ref sum);
             }
-            FinalizeHash(ref sum);
             hash = sum;
         }
 
@@ -130,7 +150,7 @@
 
         /// <inheritdoc/>
         public bool IsValid(out uint current) =>
-            CrcConfig.IsValid(this, out current);
+            CrcConfig.InternalIsValid(this, out current);
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -143,15 +163,6 @@
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
                 hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
-        }
-
-        private static uint CreateMask(int bitWidth)
-        {
-            var mask = 0xffu;
-            var size = (int)MathF.Ceiling(bitWidth / 8f);
-            for (var i = 1; i < size; i++)
-                mask ^= 0xffu << (8 * i);
-            return mask;
         }
 
         private static ReadOnlyMemory<uint> CreateTable(int bitWidth, uint poly, uint mask, bool refIn)

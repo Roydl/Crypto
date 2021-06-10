@@ -21,37 +21,6 @@
         /// <summary>Initializes a new instance of the <see cref="Sha256"/> class.</summary>
         public Sha256() : base(256) { }
 
-        /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified stream.</summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
-        public Sha256(Stream stream) : this() =>
-            Encrypt(stream);
-
-        /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
-        public Sha256(byte[] bytes) : this() =>
-            Encrypt(bytes);
-
-        /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified text or file.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
-        public Sha256(string textOrFile, bool strIsFilePath) : this()
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified text.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
-        public Sha256(string text) : this(text, false) { }
-
-        /// <summary>Initializes a new instance of the <see cref="Sha256"/> class and encrypts the specified file.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
-        public Sha256(FileInfo fileInfo) : this() =>
-            Encrypt(fileInfo);
-
         /// <summary>Initializes a new instance of the <see cref="Sha256"/> class.</summary>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> encryption.</param>
         /// <remarks>For more information, see <see cref="SecretKey">here</see>.</remarks>
@@ -63,19 +32,29 @@
         public override void Encrypt(Stream stream)
         {
             Reset();
-            Encrypt(stream, (HashAlgorithm)(SecretKey == null ? SHA256.Create() : new HMACSHA256(SecretKey)));
+            Encrypt(stream, CreateHashAlgorithm());
+        }
+
+        /// <inheritdoc/>
+        public override void Encrypt(byte[] bytes)
+        {
+            Reset();
+            Encrypt(bytes, CreateHashAlgorithm());
         }
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
         public new void Encrypt(string text)
         {
             Reset();
-            Encrypt(text, (HashAlgorithm)(SecretKey == null ? SHA256.Create() : new HMACSHA256(SecretKey)));
+            Encrypt(text, CreateHashAlgorithm());
         }
 
         /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>
         /// <inheritdoc cref="Md5.DestroySecretKey()"/>
         public void DestroySecretKey() =>
             Helper.DestroyElement(ref _secretKey);
+
+        private HashAlgorithm CreateHashAlgorithm() =>
+            SecretKey == null ? SHA256.Create() : new HMACSHA256(SecretKey);
     }
 }

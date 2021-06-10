@@ -21,37 +21,6 @@
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class.</summary>
         public Md5() : base(128) { }
 
-        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified stream.</summary>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
-        public Md5(Stream stream) : this() =>
-            Encrypt(stream);
-
-        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
-        public Md5(byte[] bytes) : this() =>
-            Encrypt(bytes);
-
-        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified text or file.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
-        public Md5(string textOrFile, bool strIsFilePath) : this()
-        {
-            if (strIsFilePath)
-            {
-                EncryptFile(textOrFile);
-                return;
-            }
-            Encrypt(textOrFile);
-        }
-
-        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified text.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
-        public Md5(string text) : this(text, false) { }
-
-        /// <summary>Initializes a new instance of the <see cref="Md5"/> class and encrypts the specified file.</summary>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
-        public Md5(FileInfo fileInfo) : this() =>
-            Encrypt(fileInfo);
-
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class.</summary>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> encryption.</param>
         /// <remarks>For more information, see <see cref="SecretKey">here</see>.</remarks>
@@ -63,14 +32,21 @@
         public override void Encrypt(Stream stream)
         {
             Reset();
-            Encrypt(stream, (HashAlgorithm)(SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey)));
+            Encrypt(stream, CreateHashAlgorithm());
+        }
+
+        /// <inheritdoc/>
+        public override void Encrypt(byte[] bytes)
+        {
+            Reset();
+            Encrypt(bytes, CreateHashAlgorithm());
         }
 
         /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
         public new void Encrypt(string text)
         {
             Reset();
-            Encrypt(text, (HashAlgorithm)(SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey)));
+            Encrypt(text, CreateHashAlgorithm());
         }
 
         /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>
@@ -82,5 +58,8 @@
         /// </remarks>
         public void DestroySecretKey() =>
             Helper.DestroyElement(ref _secretKey);
+
+        private HashAlgorithm CreateHashAlgorithm() =>
+            SecretKey == null ? MD5.Create() : new HMACMD5(SecretKey);
     }
 }

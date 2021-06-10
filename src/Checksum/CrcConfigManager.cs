@@ -26,7 +26,7 @@
                     new CrcConfig(8, 0xda, 0x9b, 0xff),
 
                 CrcOptions.Crc.Darc =>
-                    new CrcConfig(8, 0x15, 0b_10011100, default, true, true),
+                    new CrcConfig(8, 0x15, 0x9c, default, true, true),
 
                 CrcOptions.Crc.DvbS2 =>
                     new CrcConfig(8, 0xbc, 0xd5),

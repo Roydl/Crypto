@@ -48,7 +48,7 @@
             if (sizeof(ulong) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bitWidth);
+                mask = Helper.CreateBitMask<ulong>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -59,7 +59,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.ThrowIfInvalid(this);
+                CrcConfig.InternalThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -68,60 +68,80 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             var sum = Init;
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
+                ComputeHash(bytes, len, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        public void ComputeHash(ReadOnlySpan<byte> bytes, out ulong hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = Init;
+            ComputeHash(bytes, bytes.Length, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref ulong hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = hash;
             fixed (ulong* table = &Table.Span[0])
             {
-                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-                int len;
-                while ((len = stream.Read(bytes)) > 0)
+                var i = 0;
+                while (RefIn && len >= Rows)
                 {
-                    var i = 0;
-                    while (RefIn && len >= Rows)
-                    {
-                        var x = sum;
+                    var x = sum;
 
-                        sum = table[23 * Columns + bytes[i + 08]] ^
-                              table[22 * Columns + bytes[i + 09]] ^
-                              table[21 * Columns + bytes[i + 10]] ^
-                              table[20 * Columns + bytes[i + 11]] ^
-                              table[19 * Columns + bytes[i + 12]] ^
-                              table[18 * Columns + bytes[i + 13]] ^
-                              table[17 * Columns + bytes[i + 14]] ^
-                              table[16 * Columns + bytes[i + 15]] ^
-                              table[15 * Columns + bytes[i + 16]] ^
-                              table[14 * Columns + bytes[i + 17]] ^
-                              table[13 * Columns + bytes[i + 18]] ^
-                              table[12 * Columns + bytes[i + 19]] ^
-                              table[11 * Columns + bytes[i + 20]] ^
-                              table[10 * Columns + bytes[i + 21]] ^
-                              table[09 * Columns + bytes[i + 22]] ^
-                              table[08 * Columns + bytes[i + 23]] ^
-                              table[07 * Columns + bytes[i + 24]] ^
-                              table[06 * Columns + bytes[i + 25]] ^
-                              table[05 * Columns + bytes[i + 26]] ^
-                              table[04 * Columns + bytes[i + 27]] ^
-                              table[03 * Columns + bytes[i + 28]] ^
-                              table[02 * Columns + bytes[i + 29]] ^
-                              table[01 * Columns + bytes[i + 30]] ^
-                              table[00 * Columns + bytes[i + 31]];
+                    sum = table[23 * Columns + bytes[i + 08]] ^
+                          table[22 * Columns + bytes[i + 09]] ^
+                          table[21 * Columns + bytes[i + 10]] ^
+                          table[20 * Columns + bytes[i + 11]] ^
+                          table[19 * Columns + bytes[i + 12]] ^
+                          table[18 * Columns + bytes[i + 13]] ^
+                          table[17 * Columns + bytes[i + 14]] ^
+                          table[16 * Columns + bytes[i + 15]] ^
+                          table[15 * Columns + bytes[i + 16]] ^
+                          table[14 * Columns + bytes[i + 17]] ^
+                          table[13 * Columns + bytes[i + 18]] ^
+                          table[12 * Columns + bytes[i + 19]] ^
+                          table[11 * Columns + bytes[i + 20]] ^
+                          table[10 * Columns + bytes[i + 21]] ^
+                          table[09 * Columns + bytes[i + 22]] ^
+                          table[08 * Columns + bytes[i + 23]] ^
+                          table[07 * Columns + bytes[i + 24]] ^
+                          table[06 * Columns + bytes[i + 25]] ^
+                          table[05 * Columns + bytes[i + 26]] ^
+                          table[04 * Columns + bytes[i + 27]] ^
+                          table[03 * Columns + bytes[i + 28]] ^
+                          table[02 * Columns + bytes[i + 29]] ^
+                          table[01 * Columns + bytes[i + 30]] ^
+                          table[00 * Columns + bytes[i + 31]];
 
-                        sum ^= table[31 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
-                               table[30 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
-                               table[29 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
-                               table[28 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])] ^
-                               table[27 * Columns + (((x >> 32) & 0xff) ^ bytes[i + 4])] ^
-                               table[26 * Columns + (((x >> 40) & 0xff) ^ bytes[i + 5])] ^
-                               table[25 * Columns + (((x >> 48) & 0xff) ^ bytes[i + 6])] ^
-                               table[24 * Columns + (((x >> 56) & 0xff) ^ bytes[i + 7])];
+                    sum ^= table[31 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
+                           table[30 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
+                           table[29 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
+                           table[28 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])] ^
+                           table[27 * Columns + (((x >> 32) & 0xff) ^ bytes[i + 4])] ^
+                           table[26 * Columns + (((x >> 40) & 0xff) ^ bytes[i + 5])] ^
+                           table[25 * Columns + (((x >> 48) & 0xff) ^ bytes[i + 6])] ^
+                           table[24 * Columns + (((x >> 56) & 0xff) ^ bytes[i + 7])];
 
-                        i += Rows;
-                        len -= Rows;
-                        sum &= Mask;
-                    }
-                    while (--len >= 0)
-                        ComputeHash(bytes[i++], table, ref sum);
+                    i += Rows;
+                    len -= Rows;
+                    sum &= Mask;
                 }
+                while (--len >= 0)
+                    ComputeHash(bytes[i++], table, ref sum);
             }
-            FinalizeHash(ref sum);
             hash = sum;
         }
 
@@ -146,7 +166,7 @@
 
         /// <inheritdoc/>
         public bool IsValid(out ulong current) =>
-            CrcConfig.IsValid(this, out current);
+            CrcConfig.InternalIsValid(this, out current);
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -159,15 +179,6 @@
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
                 hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
-        }
-
-        private static ulong CreateMask(int bitWidth)
-        {
-            var mask = 0xffuL;
-            var size = (int)MathF.Ceiling(bitWidth / 8f);
-            for (var i = 1; i < size; i++)
-                mask ^= 0xffuL << (8 * i);
-            return mask;
         }
 
         private static ReadOnlyMemory<ulong> CreateTable(int bitWidth, ulong poly, ulong mask, bool refIn)

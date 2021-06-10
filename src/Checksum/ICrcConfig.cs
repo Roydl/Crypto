@@ -22,11 +22,11 @@
         TValue Poly { get; }
 
         /// <summary>Gets the seed from which the CRC register should be initialized at beginning of the calculation.</summary>
-        /// <remarks>Only automatically used in <see cref="Stream"/> based <see cref="ComputeHash(Stream, out TValue)">ComputeHash</see>.</remarks>
+        /// <remarks>Only automatically used in <see langword="ComputeHash"/> (<see cref="ComputeHash(ReadOnlySpan{byte}, out TValue)">Span</see> and <see cref="ComputeHash(Stream, out TValue)">Stream</see>) functions with <see langword="out"/> parameter.</remarks>
         TValue Init { get; }
 
         /// <summary>Gets the value that determines whether the input bytes are processed in big-endian bit order for the calculation.</summary>
-        /// <remarks>Used in <see langword="ComputeHash"/> <see cref="ComputeHash(byte, ref TValue)">here</see> and <see cref="ComputeHash(Stream, out TValue)">here</see>.</remarks>
+        /// <remarks>Used in all <see langword="ComputeHash"/> functions.</remarks>
         bool RefIn { get; }
 
         /// <summary>Gets the value that determines whether the bits of the calculated hash code are reversed.</summary>
@@ -34,34 +34,48 @@
         bool RefOut { get; }
 
         /// <summary>The value to xor with the calculated hash code.</summary>
-        /// <remarks>Used in <see cref="FinalizeHash(ref TValue)"/>.</remarks>
+        /// <remarks>Used in <see cref="FinalizeHash(ref TValue)">FinalizeHash</see>, which is only automatically called in <see langword="ComputeHash"/> (<see cref="ComputeHash(ReadOnlySpan{byte}, out TValue)">Span</see> and <see cref="ComputeHash(Stream, out TValue)">Stream</see>) functions with <see langword="out"/> parameter.</remarks>
         TValue XorOut { get; }
 
         /// <summary>Gets the generated hash table of the configured CRC algorithm.</summary>
         /// <remarks>For more information, see <see cref="Poly">Poly</see>.</remarks>
         ReadOnlyMemory<TValue> Table { get; }
 
-        /// <summary>Computes the hash of stream data using the configured CRC algorithm.</summary>
-        /// <param name="stream">The stream with the data to encrypt.</param>
+        /// <summary>Computes the hash from the data of the specified stream using the configured CRC algorithm.</summary>
+        /// <param name="stream">The stream with the data to hash.</param>
         /// <param name="hash">The fully computed hash code.</param>
         /// <exception cref="ArgumentNullException">stream is null.</exception>
-        /// <remarks>For more information, see <see cref="Init">Init</see>, <see cref="RefIn">RefIn</see>, <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see>.</remarks>
+        /// <remarks><see cref="Init">Init</see>, <see cref="RefIn">RefIn</see>, <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see> are used.</remarks>
         void ComputeHash(Stream stream, out TValue hash);
 
-        /// <summary>Computes the hash of the byte value using the CRC algorithm.</summary>
-        /// <param name="value">The byte value to encrypt.</param>
+        /// <summary>Computes the hash from the specified sequence of bytes using the configured CRC algorithm.</summary>
+        /// <param name="bytes">The sequence of bytes to hash.</param>
+        /// <param name="hash">The fully computed hash code.</param>
+        /// <exception cref="ArgumentNullException">stream is null.</exception>
+        /// <remarks><see cref="Init">Init</see>, <see cref="RefIn">RefIn</see>, <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see> are used.</remarks>
+        void ComputeHash(ReadOnlySpan<byte> bytes, out TValue hash);
+
+        /// <summary>Computes the hash from the specified sequence of bytes using the configured CRC algorithm.</summary>
+        /// <param name="bytes">The sequence of bytes to hash.</param>
+        /// <param name="len">The number of bytes to hash.</param>
         /// <param name="hash">The hash code to be computed or its computation that will be continued.</param>
-        /// <remarks>For more information, see <see cref="RefIn">RefIn</see>.</remarks>
+        /// <remarks>Only <see cref="RefIn">RefIn</see> is used.</remarks>
+        void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref TValue hash);
+
+        /// <summary>Computes the hash from the specified byte value using the CRC algorithm.</summary>
+        /// <param name="value">The byte value to hash.</param>
+        /// <param name="hash">The hash code to be computed or its computation that will be continued.</param>
+        /// <remarks>Only <see cref="RefIn">RefIn</see> is used.</remarks>
         void ComputeHash(byte value, ref TValue hash);
 
         /// <summary>Finalizes the computed hash code.</summary>
         /// <param name="hash">The computed hash code to be finalized.</param>
-        /// <remarks>For more information, see <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see>.</remarks>
+        /// <remarks><see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see> are used.</remarks>
         void FinalizeHash(ref TValue hash);
 
         /// <summary>Check whether the current algorithm is working correctly.</summary>
         /// <param name="current">The computed value that is compared to <see cref="Check"/>.</param>
-        /// <remarks>For more information, see <see cref="Check">Check</see>.</remarks>
+        /// <remarks><see cref="Check">Check</see> is used.</remarks>
         bool IsValid(out TValue current);
 
         /// <inheritdoc cref="IsValid(out TValue)"/>

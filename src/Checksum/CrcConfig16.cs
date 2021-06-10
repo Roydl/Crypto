@@ -48,7 +48,7 @@
             if (sizeof(ushort) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bitWidth);
+                mask = Helper.CreateBitMask<ushort>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -59,7 +59,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.ThrowIfInvalid(this);
+                CrcConfig.InternalThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -68,40 +68,60 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             var sum = Init;
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
+                ComputeHash(bytes, len, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        public void ComputeHash(ReadOnlySpan<byte> bytes, out ushort hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = Init;
+            ComputeHash(bytes, bytes.Length, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref ushort hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = hash;
             fixed (ushort* table = &Table.Span[0])
             {
-                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-                int len;
-                while ((len = stream.Read(bytes)) > 0)
+                var i = 0;
+                while (RefIn && len >= Rows)
                 {
-                    var i = 0;
-                    while (RefIn && len >= Rows)
-                    {
-                        var x = sum;
+                    var x = sum;
 
-                        sum = (ushort)(
-                            table[5 * Columns + bytes[i + 2]] ^
-                            table[4 * Columns + bytes[i + 3]] ^
-                            table[3 * Columns + bytes[i + 4]] ^
-                            table[2 * Columns + bytes[i + 5]] ^
-                            table[1 * Columns + bytes[i + 6]] ^
-                            table[0 * Columns + bytes[i + 7]]
-                        );
+                    sum = (ushort)(
+                        table[5 * Columns + bytes[i + 2]] ^
+                        table[4 * Columns + bytes[i + 3]] ^
+                        table[3 * Columns + bytes[i + 4]] ^
+                        table[2 * Columns + bytes[i + 5]] ^
+                        table[1 * Columns + bytes[i + 6]] ^
+                        table[0 * Columns + bytes[i + 7]]
+                    );
 
-                        sum ^= (ushort)(
-                            table[7 * Columns + (((x >> 0) & 0xff) ^ bytes[i + 0])] ^
-                            table[6 * Columns + (((x >> 8) & 0xff) ^ bytes[i + 1])]
-                        );
+                    sum ^= (ushort)(
+                        table[7 * Columns + (((x >> 0) & 0xff) ^ bytes[i + 0])] ^
+                        table[6 * Columns + (((x >> 8) & 0xff) ^ bytes[i + 1])]
+                    );
 
-                        i += Rows;
-                        len -= Rows;
-                        sum &= Mask;
-                    }
-                    while (--len >= 0)
-                        ComputeHash(bytes[i++], table, ref sum);
+                    i += Rows;
+                    len -= Rows;
+                    sum &= Mask;
                 }
+                while (--len >= 0)
+                    ComputeHash(bytes[i++], table, ref sum);
             }
-            FinalizeHash(ref sum);
             hash = sum;
         }
 
@@ -126,7 +146,7 @@
 
         /// <inheritdoc/>
         public bool IsValid(out ushort current) =>
-            CrcConfig.IsValid(this, out current);
+            CrcConfig.InternalIsValid(this, out current);
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -139,15 +159,6 @@
                 hash = (ushort)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
             else
                 hash = (ushort)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
-        }
-
-        private static ushort CreateMask(int width)
-        {
-            var mask = (ushort)0xff;
-            var size = (int)MathF.Ceiling(width / 8f);
-            for (var i = 1; i < size; i++)
-                mask ^= (ushort)(0xff << (8 * i));
-            return mask;
         }
 
         private static ReadOnlyMemory<ushort> CreateTable(int width, ushort poly, ushort mask, bool refIn)

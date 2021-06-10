@@ -34,12 +34,22 @@
         public void CreateInstances()
         {
             _instanceDefault = new Adler32();
+
             using (var ms = new MemoryStream(TestVars.TestBytes))
-                _instanceStream = new Adler32(ms);
-            _instanceByteArray = new Adler32(TestVars.TestBytes);
-            _instanceString = new Adler32(TestVars.TestStr);
+            {
+                _instanceStream = new Adler32();
+                _instanceStream.Encrypt(ms);
+            }
+
+            _instanceByteArray = new Adler32();
+            _instanceByteArray.Encrypt(TestVars.TestBytes);
+            
+            _instanceString = new Adler32();
+            _instanceString.Encrypt(TestVars.TestStr);
+
             File.WriteAllBytes(TestFilePath, TestVars.TestBytes);
-            _instanceFilePath = new Adler32(TestFilePath, true);
+            _instanceFilePath = new Adler32();
+            _instanceFilePath.EncryptFile(TestFilePath);
         }
 
         [OneTimeTearDown]
@@ -125,41 +135,6 @@
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
-
-            Adler32 instanceStream;
-            using (var ms = new MemoryStream(TestVars.TestBytes))
-                instanceStream = new Adler32(ms);
-            Assert.IsInstanceOf(typeof(Adler32), instanceStream);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceStream);
-            Assert.AreNotSame(instanceDefault, instanceStream);
-            Assert.AreEqual(hashSize, instanceStream.Hash.Length);
-
-            var instanceByteArray = new Adler32(TestVars.TestBytes);
-            Assert.IsInstanceOf(typeof(Adler32), instanceByteArray);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceByteArray);
-            Assert.AreNotSame(instanceStream, instanceByteArray);
-            Assert.AreEqual(hashSize, instanceByteArray.Hash.Length);
-
-            var instanceString = new Adler32(TestVars.TestStr);
-            Assert.IsInstanceOf(typeof(Adler32), instanceString);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceString);
-            Assert.AreNotSame(instanceByteArray, instanceString);
-            Assert.AreEqual(hashSize, instanceString.Hash.Length);
-
-            var instanceFilePath = new Adler32(TestFilePath, true);
-            Assert.IsInstanceOf(typeof(Adler32), instanceFilePath);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFilePath);
-            Assert.AreNotSame(instanceString, instanceFilePath);
-            Assert.AreEqual(hashSize, instanceFilePath.Hash.Length);
-
-            var instanceFileInfo = new Adler32(new FileInfo(TestFilePath));
-            Assert.IsInstanceOf(typeof(Adler32), instanceFileInfo);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFileInfo);
-            Assert.AreNotSame(instanceString, instanceFileInfo);
-            Assert.AreEqual(hashSize, instanceFileInfo.Hash.Length);
-
-            Assert.AreEqual(instanceFilePath.HashNumber, instanceFileInfo.HashNumber);
-            Assert.AreEqual(instanceFilePath.Hash, instanceFileInfo.Hash);
         }
 
         [Test]
@@ -181,6 +156,8 @@
                     break;
                 case TestVarsType.TestFile:
                     _instanceDefault.EncryptFile(TestFilePath);
+                    Assert.AreEqual(expectedHash, _instanceDefault.Hash);
+                    _instanceDefault.Encrypt(new FileInfo(TestFilePath));
                     break;
                 case TestVarsType.RangeString:
                     _instanceDefault.Encrypt(TestVars.RangeStr);

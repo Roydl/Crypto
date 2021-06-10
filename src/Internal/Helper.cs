@@ -33,23 +33,95 @@
 
         internal static int GetBufferSize(this Stream stream)
         {
-            if (stream is MemoryStream ms)
-                return (int)Math.Abs(ms.Length & int.MaxValue);
-            const int kb128 = 0x20000;
-            const int kb64 = 0x10000;
-            const int kb32 = 0x8000;
-            const int kb16 = 0x4000;
-            const int kb8 = 0x2000;
-            const int kb4 = 0x1000;
-            return (int)Math.Floor((stream?.Length ?? 0) / 1.5d) switch
+            const int m256 = 0x10000000;
+            const int k128 = 0x20000;
+            const int k64 = 0x10000;
+            const int k32 = 0x8000;
+            const int k16 = 0x4000;
+            const int k8 = 0x2000;
+            const int k4 = 0x1000;
+            return stream switch
             {
-                > kb128 => kb128,
-                > kb64 => kb64,
-                > kb32 => kb32,
-                > kb16 => kb16,
-                > kb8 => kb8,
-                _ => kb4
+                null => 0,
+                BufferedStream => k4,
+                MemoryStream ms => (int)Math.Min(ms.Length, m256),
+                _ => (int)Math.Floor(stream.Length / 1.5d) switch
+                {
+                    > k128 => k128,
+                    > k64 => k64,
+                    > k32 => k32,
+                    > k16 => k16,
+                    > k8 => k8,
+                    _ => k4
+                }
             };
+        }
+
+        internal static T CreateBitMask<T>(int bitWidth) where T : struct, IComparable, IFormattable
+        {
+            var size = (int)MathF.Ceiling(bitWidth / 8f);
+            switch (0xff.FromTo<int, T>())
+            {
+                case byte x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= (byte)(0xff << (8 * i));
+                    return (T)(object)mask;
+                }
+                case short x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= (short)(0xff << (8 * i));
+                    return (T)(object)mask;
+                }
+                case ushort x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= (ushort)(0xff << (8 * i));
+                    return (T)(object)mask;
+                }
+                case int x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= 0xff << (8 * i);
+                    return (T)(object)mask;
+                }
+                case uint x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= 0xffu << (8 * i);
+                    return (T)(object)mask;
+                }
+                case long x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= 0xffL << (8 * i);
+                    return (T)(object)mask;
+                }
+                case ulong x:
+                {
+                    var mask = x;
+                    for (var i = 1; i < size; i++)
+                        mask ^= 0xffuL << (8 * i);
+                    return (T)(object)mask;
+                }
+                case BigInteger x:
+                {
+                    var mask = x;
+                    BigInteger b = 0xff;
+                    for (var i = 1; i < size; i++)
+                        mask ^= b << (8 * i);
+                    return (T)(object)mask;
+                }
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         internal static T ReverseBits<T>(this T value) where T : struct, IComparable, IFormattable
@@ -66,7 +138,7 @@
                 uint x => Convert.ToString(x, 2),
                 long x => Convert.ToString(x, 2),
                 ulong x => Convert.ToString((long)x, 2),
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                _ => throw new NotSupportedException()
             };
             var size = bits.Length;
             while (size % 4 != 0)
@@ -107,7 +179,7 @@
                     nint x => (TOut)(object)(sbyte)x,
                     nuint x => (TOut)(object)(sbyte)x,
                     BigInteger x => (TOut)(object)(sbyte)(x & sbyte.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 byte => value switch
                 {
@@ -121,7 +193,7 @@
                     nint x => (TOut)(object)(byte)x,
                     nuint x => (TOut)(object)(byte)x,
                     BigInteger x => (TOut)(object)(byte)(x & byte.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 short => value switch
                 {
@@ -135,7 +207,7 @@
                     nint x => (TOut)(object)(short)x,
                     nuint x => (TOut)(object)(short)x,
                     BigInteger x => (TOut)(object)(short)(x & short.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 ushort => value switch
                 {
@@ -149,7 +221,7 @@
                     nint x => (TOut)(object)(ushort)x,
                     nuint x => (TOut)(object)(ushort)x,
                     BigInteger x => (TOut)(object)(ushort)(x & ushort.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 int => value switch
                 {
@@ -163,7 +235,7 @@
                     nint x => (TOut)(object)(int)x,
                     nuint x => (TOut)(object)(int)x,
                     BigInteger x => (TOut)(object)(int)(x & int.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 uint => value switch
                 {
@@ -177,7 +249,7 @@
                     nint x => (TOut)(object)(uint)x,
                     nuint x => (TOut)(object)(uint)x,
                     BigInteger x => (TOut)(object)(uint)(x & uint.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 long => value switch
                 {
@@ -191,7 +263,7 @@
                     nint x => (TOut)(object)(long)x,
                     nuint x => (TOut)(object)(long)x,
                     BigInteger x => (TOut)(object)(long)(x & long.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 ulong => value switch
                 {
@@ -205,7 +277,7 @@
                     nint x => (TOut)(object)(ulong)x,
                     nuint x => (TOut)(object)(ulong)x,
                     BigInteger x => (TOut)(object)(ulong)(x & ulong.MaxValue),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 nint => value switch
                 {
@@ -222,9 +294,9 @@
                     {
                         sizeof(long) => (long)(x & long.MaxValue),
                         sizeof(int) => (int)(x & int.MaxValue),
-                        _ => throw new InvalidCastException()
+                        _ => throw new ArithmeticException()
                     }),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 nuint => value switch
                 {
@@ -241,9 +313,9 @@
                     {
                         sizeof(ulong) => (ulong)(x & ulong.MaxValue),
                         sizeof(uint) => (uint)(x & uint.MaxValue),
-                        _ => throw new InvalidCastException()
+                        _ => throw new ArithmeticException()
                     }),
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
                 BigInteger => value switch
                 {
@@ -255,9 +327,9 @@
                     uint x => (TOut)(object)(BigInteger)x,
                     long x => (TOut)(object)(BigInteger)x,
                     ulong x => (TOut)(object)(BigInteger)x,
-                    _ => throw new InvalidCastException()
+                    _ => throw new NotSupportedException()
                 },
-                _ => throw new InvalidCastException()
+                _ => throw new NotSupportedException()
             };
         }
 

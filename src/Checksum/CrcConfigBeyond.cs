@@ -45,7 +45,7 @@
             if (bitWidth < 8)
                 throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
             if (mask == default)
-                mask = CreateMask(bitWidth);
+                mask = Helper.CreateBitMask<BigInteger>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -56,7 +56,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                CrcConfig.ThrowIfInvalid(this);
+                CrcConfig.InternalThrowIfInvalid(this);
         }
 
         /// <inheritdoc cref="CrcConfigBeyond(int, BigInteger, BigInteger, BigInteger, bool, bool, BigInteger, BigInteger, bool)"/>
@@ -79,6 +79,30 @@
         }
 
         /// <inheritdoc/>
+        public void ComputeHash(ReadOnlySpan<byte> bytes, out BigInteger hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = Init;
+            ComputeHash(bytes, bytes.Length, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref BigInteger hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = hash;
+            var i = 0;
+            while (--len >= 0)
+                ComputeHash(bytes[i++], Table.Span, ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ComputeHash(byte value, ref BigInteger hash)
         {
@@ -97,7 +121,7 @@
 
         /// <inheritdoc/>
         public bool IsValid(out BigInteger current) =>
-            CrcConfig.IsValid(this, out current);
+            CrcConfig.InternalIsValid(this, out current);
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -110,15 +134,6 @@
                 hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
             else
                 hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
-        }
-
-        private static BigInteger CreateMask(int bitWidth)
-        {
-            var mask = (BigInteger)0xff;
-            var size = (int)MathF.Ceiling(bitWidth / 8f);
-            for (var i = 1; i < size; i++)
-                mask ^= 0xff << (8 * i);
-            return mask;
         }
 
         private static ReadOnlyMemory<BigInteger> CreateTable(int bitWidth, BigInteger poly, BigInteger mask, bool refIn)

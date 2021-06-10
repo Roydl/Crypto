@@ -46,12 +46,22 @@
         public void CreateInstances()
         {
             _instanceDefault = new Sha384();
+
             using (var ms = new MemoryStream(TestVars.TestBytes))
-                _instanceStream = new Sha384(ms);
-            _instanceByteArray = new Sha384(TestVars.TestBytes);
-            _instanceString = new Sha384(TestVars.TestStr);
+            {
+                _instanceStream = new Sha384();
+                _instanceStream.Encrypt(ms);
+            }
+
+            _instanceByteArray = new Sha384();
+            _instanceByteArray.Encrypt(TestVars.TestBytes);
+
+            _instanceString = new Sha384();
+            _instanceString.Encrypt(TestVars.TestStr);
+
             File.WriteAllBytes(TestFilePath, TestVars.TestBytes);
-            _instanceFilePath = new Sha384(TestFilePath, true);
+            _instanceFilePath = new Sha384();
+            _instanceFilePath.EncryptFile(TestFilePath);
         }
 
         [OneTimeTearDown]
@@ -107,41 +117,6 @@
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
             Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
-
-            Sha384 instanceStream;
-            using (var ms = new MemoryStream(TestVars.TestBytes))
-                instanceStream = new Sha384(ms);
-            Assert.IsInstanceOf(typeof(Sha384), instanceStream);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceStream);
-            Assert.AreNotSame(instanceDefault, instanceStream);
-            Assert.AreEqual(hashSize, instanceStream.Hash.Length);
-
-            var instanceByteArray = new Sha384(TestVars.TestBytes);
-            Assert.IsInstanceOf(typeof(Sha384), instanceByteArray);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceByteArray);
-            Assert.AreNotSame(instanceStream, instanceByteArray);
-            Assert.AreEqual(hashSize, instanceByteArray.Hash.Length);
-
-            var instanceString = new Sha384(TestVars.TestStr);
-            Assert.IsInstanceOf(typeof(Sha384), instanceString);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceString);
-            Assert.AreNotSame(instanceByteArray, instanceString);
-            Assert.AreEqual(hashSize, instanceString.Hash.Length);
-
-            var instanceFilePath = new Sha384(TestFilePath, true);
-            Assert.IsInstanceOf(typeof(Sha384), instanceFilePath);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFilePath);
-            Assert.AreNotSame(instanceString, instanceFilePath);
-            Assert.AreEqual(hashSize, instanceFilePath.Hash.Length);
-
-            var instanceFileInfo = new Sha384(new FileInfo(TestFilePath));
-            Assert.IsInstanceOf(typeof(Sha384), instanceFileInfo);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceFileInfo);
-            Assert.AreNotSame(instanceString, instanceFileInfo);
-            Assert.AreEqual(hashSize, instanceFileInfo.Hash.Length);
-
-            Assert.AreEqual(instanceFilePath.HashNumber, instanceFileInfo.HashNumber);
-            Assert.AreEqual(instanceFilePath.Hash, instanceFileInfo.Hash);
         }
 
         [Test]
@@ -199,6 +174,8 @@
                     break;
                 case TestVarsType.TestFile:
                     _instanceDefault.EncryptFile(TestFilePath);
+                    Assert.AreEqual(expectedHash, _instanceDefault.Hash);
+                    _instanceDefault.Encrypt(new FileInfo(TestFilePath));
                     break;
                 case TestVarsType.RangeString:
                     _instanceDefault.Encrypt(TestVars.RangeStr);

@@ -57,7 +57,7 @@
             if (sizeof(byte) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
             if (mask == default)
-                mask = CreateMask(bitWidth);
+                mask = Helper.CreateBitMask<byte>(bitWidth);
             BitWidth = bitWidth;
             Check = check;
             Poly = poly;
@@ -68,7 +68,7 @@
             Mask = mask;
             Table = CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
-                ThrowIfInvalid(this);
+                InternalThrowIfInvalid(this);
         }
 
         /// <inheritdoc/>
@@ -77,18 +77,38 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             var sum = Init;
+            Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
+            int len;
+            while ((len = stream.Read(bytes)) > 0)
+                ComputeHash(bytes, len, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        public void ComputeHash(ReadOnlySpan<byte> bytes, out byte hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = Init;
+            ComputeHash(bytes, bytes.Length, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
+        }
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void ComputeHash(ReadOnlySpan<byte> bytes, int len, ref byte hash)
+        {
+            if (bytes.IsEmpty)
+                throw new ArgumentNullException(nameof(bytes));
+            var sum = hash;
             fixed (byte* table = &Table.Span[0])
             {
-                Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-                int len;
-                while ((len = stream.Read(bytes)) > 0)
-                {
-                    var i = 0;
-                    while (--len >= 0)
-                        ComputeHash(bytes[i++], table, ref sum);
-                }
+                var i = 0;
+                while (--len >= 0)
+                    ComputeHash(bytes[i++], table, ref sum);
             }
-            FinalizeHash(ref sum);
             hash = sum;
         }
 
@@ -113,7 +133,7 @@
 
         /// <inheritdoc/>
         public bool IsValid(out byte current) =>
-            IsValid(this, out current);
+            InternalIsValid(this, out current);
 
         /// <inheritdoc/>
         public bool IsValid() =>
@@ -128,7 +148,7 @@
                 hash = (byte)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
         }
 
-        internal static bool IsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
+        internal static bool InternalIsValid<T>(ICrcConfig<T> item, out T current) where T : struct, IComparable, IFormattable
         {
             using var ms = new MemoryStream(new byte[]
             {
@@ -140,7 +160,7 @@
             return EqualityComparer<T>.Default.Equals(current, item.Check);
         }
 
-        internal static void ThrowIfInvalid<T>(ICrcConfig<T> item) where T : struct, IComparable, IFormattable
+        internal static void InternalThrowIfInvalid<T>(ICrcConfig<T> item) where T : struct, IComparable, IFormattable
         {
             if (item.IsValid(out var current))
                 return;
@@ -155,15 +175,6 @@
             exc.Data.Add(nameof(XorOut), item.XorOut.ToHexStr(size, true));
             exc.Data.Add(nameof(Mask), item.Mask.ToHexStr(size, true));
             throw exc;
-        }
-
-        private static byte CreateMask(int bitWidth)
-        {
-            var mask = (byte)0xff;
-            var size = (int)MathF.Ceiling(bitWidth / 8f);
-            for (var i = 1; i < size; i++)
-                mask ^= (byte)(0xff << (8 * i));
-            return mask;
         }
 
         private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)

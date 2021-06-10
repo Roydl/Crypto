@@ -217,44 +217,26 @@
             Current = config;
         }
 
-        /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class and encrypts the specified stream.</summary>
-        /// <inheritdoc cref="Crc{TValue}()"/>
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(Stream)"/>
-        public Crc(Stream stream) : this() =>
-            Encrypt(stream);
-
-        /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class and encrypts the specified sequence of bytes.</summary>
-        /// <inheritdoc cref="Crc{TValue}()"/>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, byte[])"/>
-        public Crc(byte[] bytes) : this() =>
-            Encrypt(bytes);
-
-        /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class and encrypts the specified text or file.</summary>
-        /// <inheritdoc cref="Crc{TValue}()"/>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string, bool)"/>
-        public Crc(string textOrFile, bool strIsFilePath) : this() =>
-            Encrypt(textOrFile, strIsFilePath);
-
-        /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class and encrypts the specified text.</summary>
-        /// <inheritdoc cref="Crc{TValue}()"/>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, string)"/>
-        public Crc(string text) : this() =>
-            Encrypt(text);
-
-        /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class and encrypts the specified file.</summary>
-        /// <inheritdoc cref="Crc{TValue}()"/>
-        /// <inheritdoc cref="ChecksumAlgorithm(int, FileInfo)"/>
-        public Crc(FileInfo fileInfo) : this() =>
-            Encrypt(fileInfo);
-
         /// <inheritdoc/>
         public override void Encrypt(Stream stream)
         {
+            Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var sum);
-            HashNumber = sum;
-            RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
+            FinalizeHash(sum);
+        }
+
+        /// <inheritdoc/>
+        public override void Encrypt(byte[] bytes)
+        {
+            Reset();
+            if (bytes == null)
+                throw new ArgumentNullException(nameof(bytes));
+            if (bytes.Length < 1)
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
+            Current.ComputeHash(bytes, out var sum);
+            FinalizeHash(sum);
         }
 
         private static int GetBitWidth() =>
@@ -325,6 +307,12 @@
                 _ => GetConfig()
             };
             return (ICrcConfig<TValue>)cfg;
+        }
+
+        private void FinalizeHash(TValue hash)
+        {
+            HashNumber = hash;
+            RawHash = CryptoUtils.GetByteArray(hash, !BitConverter.IsLittleEndian);
         }
     }
 }
