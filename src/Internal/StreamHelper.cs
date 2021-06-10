@@ -30,11 +30,5 @@
                 }
             };
         }
-
-        internal static int Read(this Stream stream, Span<byte> buffer, int length) =>
-            stream!.Read(buffer.Length == length ? buffer : buffer[..length]);
-
-        internal static void Write(this Stream stream, ReadOnlySpan<byte> buffer, int length) =>
-            stream!.Write(buffer.Length == length ? buffer : buffer[..length]);
     }
 }

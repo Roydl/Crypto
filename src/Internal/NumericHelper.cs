@@ -110,7 +110,7 @@
             };
         }
 
-        internal static TIntegerOut FromTo<TIntegerIn, TIntegerOut>(this TIntegerIn value) where TIntegerIn : struct where TIntegerOut : struct, IComparable, IFormattable
+        internal static TIntegerOut FromTo<TIntegerIn, TIntegerOut>(this TIntegerIn value) where TIntegerIn : struct, IComparable, IFormattable where TIntegerOut : struct, IComparable, IFormattable
         {
             if (typeof(TIntegerIn) == typeof(TIntegerOut))
                 return (TIntegerOut)(object)value;
