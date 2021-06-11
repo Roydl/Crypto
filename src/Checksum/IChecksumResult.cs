@@ -1,6 +1,7 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>Represents the interface for checksum results.</summary>
     public interface IChecksumResult
@@ -15,7 +16,11 @@
 
         /// <summary>Gets the string representation of the last computed hash code.</summary>
         /// <remarks>For more information, see <see cref="HashSize">HashSize</see>.</remarks>
-        string Hash { get; }
+        string Hash
+        {
+            [return: NotNull]
+            get;
+        }
 
         /// <summary>Gets the sequence of bytes of the last computed hash code.</summary>
         /// <remarks>For more information, see <see cref="RawHashSize">RawHashSize</see>.</remarks>
