@@ -111,14 +111,14 @@
         /// <param name="inputStream">The input stream to encrypt.</param>
         /// <param name="outputStream">The output stream for encryption.</param>
         /// <param name="dispose"><see langword="true"/> to release all resources used by the input and output <see cref="Stream"/> ; otherwise, <see langword="false"/>.</param>
-        public abstract void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false);
+        public abstract void Encrypt(Stream inputStream, Stream outputStream, bool dispose = false);
 
         /// <summary>Encrypts the specified sequence of bytes.</summary>
         /// <param name="bytes">The sequence of bytes to encrypt.</param>
         /// <returns>A sequence of bytes that contains the results of encrypting the specified sequence of bytes.</returns>
         /// <exception cref="ArgumentNullException">bytes is null.</exception>
         /// <exception cref="ArgumentException">bytes is empty.</exception>
-        public byte[] EncryptBytes(byte[] bytes)
+        public byte[] Encrypt(byte[] bytes)
         {
             if (bytes == null)
                 throw new ArgumentNullException(nameof(bytes));
@@ -126,7 +126,7 @@
                 throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(bytes));
             using var msi = new MemoryStream(bytes);
             using var mso = new MemoryStream();
-            EncryptStream(msi, mso);
+            Encrypt(msi, mso);
             return mso.ToArray();
         }
 
@@ -151,7 +151,7 @@
                 throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFoundDestPath);
             using var fsi = new FileStream(srcPath, FileMode.Open, FileAccess.Read);
             using var fso = new FileStream(destPath, overwrite ? FileMode.Create : FileMode.CreateNew);
-            EncryptStream(fsi, fso);
+            Encrypt(fsi, fso);
             return File.Exists(destPath);
         }
 
@@ -168,7 +168,7 @@
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             using var ms = new MemoryStream();
-            EncryptStream(fs, ms);
+            Encrypt(fs, ms);
             return ms.ToArray();
         }
 
@@ -176,14 +176,14 @@
         /// <param name="inputStream">The input stream to decrypt.</param>
         /// <param name="outputStream">The output stream for decryption.</param>
         /// <param name="dispose"><see langword="true"/> to release all resources used by the input and output <see cref="Stream"/> ; otherwise, <see langword="false"/>.</param>
-        public abstract void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false);
+        public abstract void Decrypt(Stream inputStream, Stream outputStream, bool dispose = false);
 
         /// <summary>Decrypts the specified sequence of bytes.</summary>
         /// <param name="code">The sequence of bytes to decrypt.</param>
         /// <returns>A sequence of bytes that contains the results of decrypting the specified sequence of bytes.</returns>
         /// <exception cref="ArgumentNullException">code is null.</exception>
         /// <exception cref="ArgumentException">code is empty.</exception>
-        public byte[] DecryptBytes(byte[] code)
+        public byte[] Decrypt(byte[] code)
         {
             if (code == null)
                 throw new ArgumentNullException(nameof(code));
@@ -191,7 +191,7 @@
                 throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(code));
             using var msi = new MemoryStream(code);
             using var mso = new MemoryStream();
-            DecryptStream(msi, mso);
+            Decrypt(msi, mso);
             return mso.ToArray();
         }
 
@@ -213,7 +213,7 @@
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, srcPath);
             using var fsi = new FileStream(srcPath, FileMode.Open, FileAccess.Read);
             using var fso = new FileStream(destPath, overwrite ? FileMode.Create : FileMode.CreateNew);
-            DecryptStream(fsi, fso);
+            Decrypt(fsi, fso);
             return File.Exists(destPath);
         }
 
@@ -230,7 +230,7 @@
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             using var ms = new MemoryStream();
-            DecryptStream(fs, ms);
+            Decrypt(fs, ms);
             return ms.ToArray();
         }
 

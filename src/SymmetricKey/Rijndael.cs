@@ -21,11 +21,11 @@
         public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large) : base(password, salt, iterations, 128, keySize) { }
 
         /// <inheritdoc/>
-        public override void EncryptStream(Stream inputStream, Stream outputStream, bool dispose = false) =>
+        public override void Encrypt(Stream inputStream, Stream outputStream, bool dispose = false) =>
             InternalEncryptDecrypt(inputStream, outputStream, true, dispose);
 
         /// <inheritdoc/>
-        public override void DecryptStream(Stream inputStream, Stream outputStream, bool dispose = false) =>
+        public override void Decrypt(Stream inputStream, Stream outputStream, bool dispose = false) =>
             InternalEncryptDecrypt(inputStream, outputStream, false, dispose);
 
         private void InternalEncryptDecrypt(Stream inputStream, Stream outputStream, bool encrypt, bool dispose = false)

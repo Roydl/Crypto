@@ -112,8 +112,8 @@
 
             // Let's use the instance as usual.
             var original = TestVars.GetRandomBytes();
-            var encrypted = inst.EncryptBytes(original);
-            var decrypted = inst.DecryptBytes(encrypted);
+            var encrypted = inst.Encrypt(original);
+            var decrypted = inst.Decrypt(encrypted);
             Assert.AreEqual(original, decrypted);
 
             // Time to remove password and salt from process memory.
@@ -150,7 +150,7 @@
                         using (var msi = new MemoryStream((byte[])original))
                         {
                             using var mso = new MemoryStream();
-                            instance.EncryptStream(msi, mso);
+                            instance.Encrypt(msi, mso);
                             encrypted = mso.ToArray();
                         }
 
@@ -158,19 +158,19 @@
                         using (var msi = new MemoryStream(encrypted))
                         {
                             using var mso = new MemoryStream();
-                            instance.DecryptStream(msi, mso);
+                            instance.Decrypt(msi, mso);
                             decrypted = mso.ToArray();
                         }
                         break;
                     case TestVarsType.TestBytes:
                         original = TestVars.TestBytes;
-                        encrypted = instance.EncryptBytes((byte[])original);
-                        decrypted = instance.DecryptBytes(encrypted);
+                        encrypted = instance.Encrypt((byte[])original);
+                        decrypted = instance.Decrypt(encrypted);
                         break;
                     case TestVarsType.TestString:
                         original = Encoding.UTF8.GetBytes(TestVars.TestStr);
-                        encrypted = instance.EncryptBytes((byte[])original);
-                        decrypted = instance.DecryptBytes(encrypted);
+                        encrypted = instance.Encrypt((byte[])original);
+                        decrypted = instance.Decrypt(encrypted);
                         break;
                     case TestVarsType.TestFile:
                         Assert.IsTrue(instance.EncryptFile(TestFileSrcPath, TestFileDestPath));
@@ -181,8 +181,8 @@
                         break;
                     case TestVarsType.RangeString:
                         original = Encoding.UTF8.GetBytes(TestVars.RangeStr);
-                        encrypted = instance.EncryptBytes((byte[])original);
-                        decrypted = instance.DecryptBytes(encrypted);
+                        encrypted = instance.Encrypt((byte[])original);
+                        decrypted = instance.Decrypt(encrypted);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
