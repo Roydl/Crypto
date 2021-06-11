@@ -423,7 +423,6 @@
                 _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
             };
 
-        [return: NotNull]
         private IncrementalHash CreateHashCore() =>
             SecretKey != null ? IncrementalHash.CreateHMAC(Algorithm, SecretKey) : IncrementalHash.CreateHash(Algorithm);
     }
