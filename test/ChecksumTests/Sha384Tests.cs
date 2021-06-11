@@ -50,18 +50,18 @@
             using (var ms = new MemoryStream(TestVars.TestBytes))
             {
                 _instanceStream = new Sha384();
-                _instanceStream.Encrypt(ms);
+                _instanceStream.ComputeHash(ms);
             }
 
             _instanceByteArray = new Sha384();
-            _instanceByteArray.Encrypt(TestVars.TestBytes);
+            _instanceByteArray.ComputeHash(TestVars.TestBytes);
 
             _instanceString = new Sha384();
-            _instanceString.Encrypt(TestVars.TestStr);
+            _instanceString.ComputeHash(TestVars.TestStr);
 
             File.WriteAllBytes(TestFilePath, TestVars.TestBytes);
             _instanceFilePath = new Sha384();
-            _instanceFilePath.EncryptFile(TestFilePath);
+            _instanceFilePath.ComputeFileHash(TestFilePath);
         }
 
         [OneTimeTearDown]
@@ -134,7 +134,7 @@
             Assert.AreSame(secretKey.Target, instance.SecretKey);
 
             // Let's use the instance as usual.
-            instance.Encrypt(TestVars.RangeStr);
+            instance.ComputeHash(TestVars.RangeStr);
 
             // Time to remove secret key from process memory.
             instance.DestroySecretKey();
@@ -160,21 +160,21 @@
             {
                 case TestVarsType.TestStream:
                     using (var ms = new MemoryStream(TestVars.TestBytes))
-                        _instanceDefault.Encrypt(ms);
+                        _instanceDefault.ComputeHash(ms);
                     break;
                 case TestVarsType.TestBytes:
-                    _instanceDefault.Encrypt(TestVars.TestBytes);
+                    _instanceDefault.ComputeHash(TestVars.TestBytes);
                     break;
                 case TestVarsType.TestString:
-                    _instanceDefault.Encrypt(TestVars.TestStr);
+                    _instanceDefault.ComputeHash(TestVars.TestStr);
                     break;
                 case TestVarsType.TestFile:
-                    _instanceDefault.EncryptFile(TestFilePath);
+                    _instanceDefault.ComputeFileHash(TestFilePath);
                     Assert.AreEqual(expectedHash, _instanceDefault.Hash);
-                    _instanceDefault.Encrypt(new FileInfo(TestFilePath));
+                    _instanceDefault.ComputeHash(new FileInfo(TestFilePath));
                     break;
                 case TestVarsType.RangeString:
-                    _instanceDefault.Encrypt(TestVars.RangeStr);
+                    _instanceDefault.ComputeHash(TestVars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);

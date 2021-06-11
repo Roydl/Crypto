@@ -311,10 +311,10 @@ namespace Roydl.Crypto.Test.ChecksumTests
                 case TestVarsType.InitOnly:
                     return;
                 case TestVarsType.TestString:
-                    instance.Encrypt(TestVars.TestStr);
+                    instance.ComputeHash(TestVars.TestStr);
                     break;
                 case TestVarsType.RangeString:
-                    instance.Encrypt(TestVars.RangeStr);
+                    instance.ComputeHash(TestVars.RangeStr);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(varsType), varsType, null);
@@ -358,7 +358,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
                 sw.Restart();
                 while (sw.Elapsed < TimeSpan.FromSeconds(cycles))
                 {
-                    instance.Encrypt(data);
+                    instance.ComputeHash(data);
                     total += data.Length;
                 }
                 sw.Stop();

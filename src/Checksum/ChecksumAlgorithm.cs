@@ -52,45 +52,45 @@
         }
 
         /// <inheritdoc/>
-        public abstract void Encrypt(Stream stream);
+        public abstract void ComputeHash(Stream stream);
 
         /// <inheritdoc/>
-        public abstract void Encrypt(ReadOnlySpan<byte> bytes);
+        public abstract void ComputeHash(ReadOnlySpan<byte> bytes);
 
         /// <inheritdoc/>
-        public void Encrypt(string textOrFile, bool strIsFilePath)
+        public void ComputeHash(string textOrFile, bool strIsFilePath)
         {
             if (strIsFilePath)
             {
-                EncryptFile(textOrFile);
+                ComputeFileHash(textOrFile);
                 return;
             }
-            Encrypt(textOrFile);
+            ComputeHash(textOrFile);
         }
 
         /// <inheritdoc/>
-        public void Encrypt(string text)
+        public void ComputeHash(string text)
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
             if (text.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
-            Encrypt(Encoding.UTF8.GetBytes(text));
+            ComputeHash(Encoding.UTF8.GetBytes(text));
         }
 
         /// <inheritdoc/>
-        public void Encrypt(FileInfo fileInfo)
+        public void ComputeHash(FileInfo fileInfo)
         {
             if (fileInfo == null)
                 throw new ArgumentNullException(nameof(fileInfo));
             if (!fileInfo.Exists)
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, fileInfo.FullName);
             using var fs = fileInfo.OpenRead();
-            Encrypt(fs);
+            ComputeHash(fs);
         }
 
         /// <inheritdoc/>
-        public void EncryptFile(string path)
+        public void ComputeFileHash(string path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -99,7 +99,7 @@
             if (!File.Exists(path))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = File.OpenRead(path);
-            Encrypt(fs);
+            ComputeHash(fs);
         }
 
         /// <inheritdoc/>
@@ -346,7 +346,7 @@
         }
 
         /// <inheritdoc/>
-        public sealed override void Encrypt(Stream stream)
+        public sealed override void ComputeHash(Stream stream)
         {
             Reset();
             if (stream == null)
@@ -367,7 +367,7 @@
         }
 
         /// <inheritdoc/>
-        public sealed override void Encrypt(ReadOnlySpan<byte> bytes)
+        public sealed override void ComputeHash(ReadOnlySpan<byte> bytes)
         {
             Reset();
             if (bytes == null)
@@ -377,25 +377,25 @@
             RawHash = hasher.GetHashAndReset();
         }
 
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string)"/>
-        public new void Encrypt(string text)
+        /// <inheritdoc cref="IChecksumAlgorithm.ComputeHash(string)"/>
+        public new void ComputeHash(string text)
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
             if (text.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
-            Encrypt(Encoding.UTF8.GetBytes(text));
+            ComputeHash(Encoding.UTF8.GetBytes(text));
         }
 
-        /// <inheritdoc cref="IChecksumAlgorithm.Encrypt(string, bool)"/>
-        public new void Encrypt(string textOrFile, bool strIsFilePath)
+        /// <inheritdoc cref="IChecksumAlgorithm.ComputeHash(string, bool)"/>
+        public new void ComputeHash(string textOrFile, bool strIsFilePath)
         {
             if (strIsFilePath)
             {
-                EncryptFile(textOrFile);
+                ComputeFileHash(textOrFile);
                 return;
             }
-            Encrypt(textOrFile);
+            ComputeHash(textOrFile);
         }
 
         /// <summary>Removes the specified <see cref="SecretKey"/> from current process memory.</summary>

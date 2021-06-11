@@ -15,8 +15,8 @@
         /// <returns>A newly created <see cref="Adler32"/> instance.</returns>
         public static Adler32 Create() => new();
 
-        /// <inheritdoc cref="ChecksumAlgorithm.Encrypt(Stream)"/>
-        public override void Encrypt(Stream stream)
+        /// <inheritdoc/>
+        public override void ComputeHash(Stream stream)
         {
             Reset();
             if (stream == null)
@@ -33,7 +33,7 @@
         }
 
         /// <inheritdoc/>
-        public override void Encrypt(ReadOnlySpan<byte> bytes)
+        public override void ComputeHash(ReadOnlySpan<byte> bytes)
         {
             Reset();
             if (bytes == null)

@@ -79,7 +79,7 @@
     {
         // ReSharper disable once StaticMemberInGenericType
         // We don't want the same CRC tables to be created multiple times.
-        private static IDictionary<Enum, object> ConfigCache { get; } = new ConcurrentDictionary<Enum, object>();
+        private static IDictionary<Enum, object> ConfigCache { get; } = new ConcurrentDictionary<Enum, object>(Environment.ProcessorCount, 90);
 
         private ICrcConfig<TValue> Current { get; }
 
@@ -201,7 +201,7 @@
         }
 
         /// <inheritdoc/>
-        public override void Encrypt(Stream stream)
+        public override void ComputeHash(Stream stream)
         {
             Reset();
             if (stream == null)
@@ -211,7 +211,7 @@
         }
 
         /// <inheritdoc/>
-        public override void Encrypt(ReadOnlySpan<byte> bytes)
+        public override void ComputeHash(ReadOnlySpan<byte> bytes)
         {
             Reset();
             if (bytes == null)

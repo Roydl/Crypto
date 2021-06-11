@@ -489,11 +489,11 @@
         /// <param name="path">The full path of the file to encrypt.</param>
         /// <param name="algorithm">The algorithm to use.</param>
         /// <returns>A string that contains the result of encrypting the file at specified <paramref name="path"/> by the specified <paramref name="algorithm"/>.</returns>
-        /// <inheritdoc cref="IChecksumAlgorithm.EncryptFile(string)"/>
+        /// <inheritdoc cref="IChecksumAlgorithm.ComputeFileHash(string)"/>
         public static string GetFileChecksum(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
             var instance = algorithm.GetDefaultInstance();
-            instance.EncryptFile(path);
+            instance.ComputeFileHash(path);
             return instance.Hash;
         }
 
@@ -724,34 +724,34 @@
             switch (source)
             {
                 case BigInteger x:
-                    instance.Encrypt(x.ToByteArray());
+                    instance.ComputeHash(x.ToByteArray());
                     break;
                 case char x:
-                    instance.Encrypt(x.ToString());
+                    instance.ComputeHash(x.ToString());
                     break;
                 case IEnumerable<byte> x:
-                    instance.Encrypt(x as byte[] ?? x.ToArray());
+                    instance.ComputeHash(x as byte[] ?? x.ToArray());
                     break;
                 case Memory<byte> x:
-                    instance.Encrypt(x.Span);
+                    instance.ComputeHash(x.Span);
                     break;
                 case ReadOnlySequence<byte> x:
-                    instance.Encrypt(x.FirstSpan);
+                    instance.ComputeHash(x.FirstSpan);
                     break;
                 case ReadOnlySequenceSegment<byte> x:
-                    instance.Encrypt(x.Memory.Span);
+                    instance.ComputeHash(x.Memory.Span);
                     break;
                 case IEnumerable<char> x:
-                    instance.Encrypt(x as string ?? new string(x.ToArray()));
+                    instance.ComputeHash(x as string ?? new string(x.ToArray()));
                     break;
                 case Memory<char> x:
-                    instance.Encrypt(new string(x.Span));
+                    instance.ComputeHash(new string(x.Span));
                     break;
                 case ReadOnlySequence<char> x:
-                    instance.Encrypt(new string(x.FirstSpan));
+                    instance.ComputeHash(new string(x.FirstSpan));
                     break;
                 case ReadOnlySequenceSegment<char> x:
-                    instance.Encrypt(new string(x.Memory.Span));
+                    instance.ComputeHash(new string(x.Memory.Span));
                     break;
                 case StreamReader x:
                     LocalProcessStream(instance, x.BaseStream, restoreStreamPos);
@@ -760,7 +760,7 @@
                     LocalProcessStream(instance, x, restoreStreamPos);
                     break;
                 case FileInfo x:
-                    instance.Encrypt(x);
+                    instance.ComputeHash(x);
                     break;
                 default:
 #if DEBUG
@@ -768,7 +768,7 @@
 #else
                     try
                     {
-                        instance.Encrypt(LocalGetByteArray(source));
+                        instance.ComputeHash(LocalGetByteArray(source));
                     }
                     catch (ArgumentException)
                     {
@@ -777,7 +777,7 @@
                         using var jw = new Utf8JsonWriter(ms, new JsonWriterOptions { SkipValidation = true });
                         JsonSerializer.Serialize(jw, source);
                         ms.Position = 0L;
-                        instance.Encrypt(ms);
+                        instance.ComputeHash(ms);
                     }
 #endif
                     break;
@@ -805,7 +805,7 @@
             static void LocalProcessStream(IChecksumAlgorithm instance, Stream stream, bool restorePos)
             {
                 var pos = restorePos ? stream.Position : -1L;
-                instance.Encrypt(stream);
+                instance.ComputeHash(stream);
                 if (restorePos && pos >= 0)
                     stream.Position = pos;
             }
