@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
     using Resources;
@@ -14,72 +13,55 @@
         /// <summary>Initializes a new instance of the <see cref="Crc"/> class with the specified configuration preset.</summary>
         /// <param name="preset">The config preset.</param>
         /// <returns>A newly created <see cref="Crc"/> instance.</returns>
-        public static Crc<byte> Create(CrcOptions.Crc preset) =>
-            new(preset);
+        public static Crc<byte> Create(CrcOptions.Crc preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc10 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc10 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc11 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc11 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc12 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc12 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc13 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc13 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc14 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc14 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc15 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc15 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ushort> Create(CrcOptions.Crc16 preset) =>
-            new(preset);
+        public static Crc<ushort> Create(CrcOptions.Crc16 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc17 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc17 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc21 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc21 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc24 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc24 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc30 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc30 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc31 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc31 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<uint> Create(CrcOptions.Crc32 preset) =>
-            new(preset);
+        public static Crc<uint> Create(CrcOptions.Crc32 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ulong> Create(CrcOptions.Crc40 preset) =>
-            new(preset);
+        public static Crc<ulong> Create(CrcOptions.Crc40 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<ulong> Create(CrcOptions.Crc64 preset) =>
-            new(preset);
+        public static Crc<ulong> Create(CrcOptions.Crc64 preset) => new(preset);
 
         /// <inheritdoc cref="Create(CrcOptions.Crc)"/>
-        public static Crc<BigInteger> Create(CrcOptions.Crc82 preset) =>
-            new(preset);
+        public static Crc<BigInteger> Create(CrcOptions.Crc82 preset) => new(preset);
     }
 
     /// <summary>Provides functionality to compute CRC hashes.</summary>
@@ -99,11 +81,7 @@
         // We don't want the same CRC tables to be created multiple times.
         private static IDictionary<Enum, object> ConfigCache { get; } = new ConcurrentDictionary<Enum, object>();
 
-        private ICrcConfig<TValue> Current
-        {
-            [return: NotNull]
-            get;
-        }
+        private ICrcConfig<TValue> Current { get; }
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <remarks>Generic type usage:
@@ -272,7 +250,6 @@
             }
         }
 
-        [return: NotNull]
         private static ICrcConfig<TValue> GetConfig()
         {
             var cc = ConfigCache;
@@ -288,7 +265,6 @@
             return (ICrcConfig<TValue>)cfg;
         }
 
-        [return: NotNull]
         private static ICrcConfig<TValue> GetConfig(int bitWidth, Enum preset)
         {
             var cc = ConfigCache;
