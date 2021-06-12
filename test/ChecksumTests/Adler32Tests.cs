@@ -8,13 +8,13 @@
 
     [TestFixture]
     [Parallelizable]
-    [Platform(Include = TestVars.PlatformInclude)]
+    [Platform(Include = TestVars.PlatformCross)]
     public class Adler32Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Adler32;
         private const int BitWidth = 32;
-        private const int HashSize = 8;
-        private const int RawHashSize = 4;
+        private const int HashSize = BitWidth / 4;
+        private const int RawHashSize = BitWidth / 8;
         private const string ExpectedTestHash = "03dd01a1";
         private const string ExpectedRangeHash = "f923cf3f";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
@@ -65,7 +65,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void ExtensionEncrypt(TestVarsType varsType, string expectedHash)
+        public void Extension_GetChecksum(TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
@@ -82,6 +82,8 @@
                     break;
                 case TestVarsType.TestFile:
                     hash = TestFilePath.GetFileChecksum(Algorithm);
+                    Assert.AreEqual(expectedHash, hash);
+                    hash = new FileInfo(TestFilePath).GetChecksum(Algorithm);
                     break;
                 case TestVarsType.RangeString:
                     hash = TestVars.RangeStr.GetChecksum(Algorithm);
@@ -93,9 +95,21 @@
         }
 
         [Test]
+        [Explicit]
+        [Category("Extension")]
+        [Platform(Include = TestVars.PlatformWin)]
+        public void Extension_GetChecksums()
+        {
+            var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums(Algorithm);
+            Assert.GreaterOrEqual(items.Count, 2383);
+            foreach (var (_, checksum) in items)
+                Assert.AreEqual(HashSize, checksum.Length);
+        }
+
+        [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void ExtensionGetCipher(TestVarsType varsType, string expectedHash)
+        public void Extension_GetCipher(TestVarsType varsType, string expectedHash)
         {
             ulong hash;
             switch (varsType)
@@ -125,7 +139,7 @@
         [Test]
         [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
+        public void Instance__Ctor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Adler32();
             Assert.IsInstanceOf(typeof(Adler32), instanceDefault);
@@ -140,7 +154,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Method")]
-        public void InstanceEncrypt(TestVarsType varsType, string expectedHash)
+        public void Instance_ComputeHash(TestVarsType varsType, string expectedHash)
         {
             switch (varsType)
             {
@@ -170,7 +184,7 @@
 
         [Test]
         [Category("Method")]
-        public void InstanceEquals()
+        public void Instance_Equals()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -186,7 +200,7 @@
 
         [Test]
         [Category("Method")]
-        public void InstanceGetHashCode()
+        public void Instance_GetHashCode()
         {
             Assert.AreEqual(_instanceDefault.GetHashCode(), new Adler32().GetHashCode());
             Assert.AreNotEqual(new Crc<byte>().GetHashCode(), _instanceDefault.GetHashCode());
@@ -203,7 +217,7 @@
 
         [Test]
         [Category("Operator")]
-        public void InstanceOperators()
+        public void Instance_Operators()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -230,7 +244,7 @@
 
         [Test]
         [Category("Method")]
-        public void InstanceToString()
+        public void Instance_ToString()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceByteArray.ToString());

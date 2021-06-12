@@ -24,7 +24,8 @@
 
     public static class TestVars
     {
-        public const string PlatformInclude = "Win32NT,Linux";
+        public const string PlatformCross = "Win32NT,Linux";
+        public const string PlatformWin = "Win32NT";
         public const string QuoteStr = "We know what we are, but know not what we may be.";
         public const string TestStr = "Test";
         public static readonly byte[] TestBytes = { 0x54, 0x65, 0x73, 0x74 };

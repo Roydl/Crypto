@@ -9,7 +9,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
 
     [TestFixture]
     [Parallelizable]
-    [Platform(Include = TestVars.PlatformInclude)]
+    [Platform(Include = TestVars.PlatformCross)]
     public class CrcTests
     {
         public enum CrcType
@@ -303,7 +303,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
         [Test]
         [TestCaseSource(nameof(PresetTestData))]
         [Category("Method")]
-        public void InstanceEncrypt(CrcType crcType, Enum algorithm, TestVarsType varsType, string expectedHash)
+        public void Instance_ComputeHash(CrcType crcType, Enum algorithm, TestVarsType varsType, string expectedHash)
         {
             var instance = CreateInstance(crcType, algorithm);
             switch (varsType)

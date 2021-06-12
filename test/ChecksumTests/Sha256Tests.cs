@@ -9,13 +9,13 @@
 
     [TestFixture]
     [Parallelizable]
-    [Platform(Include = TestVars.PlatformInclude)]
+    [Platform(Include = TestVars.PlatformCross)]
     public class Sha256Tests
     {
         private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha256;
         private const int BitWidth = 256;
-        private const int HashSize = 64;
-        private const int RawHashSize = 32;
+        private const int HashSize = BitWidth / 4;
+        private const int RawHashSize = BitWidth / 8;
         private const string ExpectedTestHash = "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25";
         private const string ExpectedRangeHash = "7fb98786c16c175d232ab161b5e604c5792e6befd4e1e8d4ecac9d568a6db524";
         private const string HmacExpectedTestHash = "c3e300fb7b66a2379feb536b2964c959a8f91472e3c633a636ca6df8fc471c62";
@@ -77,7 +77,7 @@
         [Test]
         [TestCaseSource(nameof(TestDataDefault))]
         [Category("Extension")]
-        public void ExtensionEncrypt(TestSetting _, TestVarsType varsType, string expectedHash)
+        public void Extension_GetChecksum(TestSetting _, TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
@@ -94,6 +94,8 @@
                     break;
                 case TestVarsType.TestFile:
                     hash = TestFilePath.GetFileChecksum();
+                    Assert.AreEqual(expectedHash, hash);
+                    hash = new FileInfo(TestFilePath).GetChecksum();
                     break;
                 case TestVarsType.RangeString:
                     hash = TestVars.RangeStr.GetChecksum();
@@ -105,9 +107,21 @@
         }
 
         [Test]
+        [Explicit]
+        [Category("Extension")]
+        [Platform(Include = TestVars.PlatformWin)]
+        public void Extension_GetChecksums()
+        {
+            var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums(Algorithm);
+            Assert.GreaterOrEqual(items.Count, 2383);
+            foreach (var (_, checksum) in items)
+                Assert.AreEqual(HashSize, checksum.Length);
+        }
+
+        [Test]
         [TestCase(BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void InstanceCtor(int bitWidth, int hashSize, int rawHashSize)
+        public void Instance__Ctor(int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha256();
             Assert.IsInstanceOf(typeof(Sha256), instanceDefault);
@@ -120,40 +134,10 @@
         }
 
         [Test]
-        [MaxTime(3000)]
-        [RequiresThread]
-        [Category("Security")]
-        public void InstanceDestroySecretKey()
-        {
-            var secretKey = new WeakReference(TestVars.GetRandomBytes(64));
-            var instance = new Sha256((byte[])secretKey.Target);
-
-            // Let's see if the password and salt were created correctly.
-            Assert.GreaterOrEqual(instance.SecretKey?.Length, 64);
-            Assert.AreEqual(secretKey.Target, instance.SecretKey);
-            Assert.AreSame(secretKey.Target, instance.SecretKey);
-
-            // Let's use the instance as usual.
-            instance.ComputeHash(TestVars.RangeStr);
-
-            // Time to remove secret key from process memory.
-            instance.DestroySecretKey();
-            Assert.IsNull(instance.SecretKey);
-
-            // This takes a few milliseconds. 
-            while (secretKey.IsAlive)
-                Task.Delay(1);
-
-            // Now we will see if all secret key has been removed from the process memory.
-            Assert.IsNull(secretKey.Target);
-            Assert.IsFalse(secretKey.IsAlive);
-        }
-
-        [Test]
         [TestCaseSource(nameof(TestDataDefault))]
         [TestCaseSource(nameof(TestDataHmac))]
         [Category("Method")]
-        public void InstanceEncrypt(TestSetting setting, TestVarsType varsType, string expectedHash)
+        public void Instance_ComputeHash(TestSetting setting, TestVarsType varsType, string expectedHash)
         {
             _instanceDefault.SecretKey = setting == TestSetting.Hmac ? TestVars.TestSecretKey : null;
             switch (varsType)
@@ -183,8 +167,38 @@
         }
 
         [Test]
+        [MaxTime(3000)]
+        [RequiresThread]
+        [Category("Security")]
+        public void Instance_DestroySecretKey()
+        {
+            var secretKey = new WeakReference(TestVars.GetRandomBytes(64));
+            var instance = new Sha256((byte[])secretKey.Target);
+
+            // Let's see if the password and salt were created correctly.
+            Assert.GreaterOrEqual(instance.SecretKey?.Length, 64);
+            Assert.AreEqual(secretKey.Target, instance.SecretKey);
+            Assert.AreSame(secretKey.Target, instance.SecretKey);
+
+            // Let's use the instance as usual.
+            instance.ComputeHash(TestVars.RangeStr);
+
+            // Time to remove secret key from process memory.
+            instance.DestroySecretKey();
+            Assert.IsNull(instance.SecretKey);
+
+            // This takes a few milliseconds. 
+            while (secretKey.IsAlive)
+                Task.Delay(1);
+
+            // Now we will see if all secret key has been removed from the process memory.
+            Assert.IsNull(secretKey.Target);
+            Assert.IsFalse(secretKey.IsAlive);
+        }
+
+        [Test]
         [Category("Method")]
-        public void InstanceEquals()
+        public void Instance_Equals()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -200,7 +214,7 @@
 
         [Test]
         [Category("Method")]
-        public void InstanceGetHashCode()
+        public void Instance_GetHashCode()
         {
             Assert.AreEqual(_instanceDefault.GetHashCode(), new Sha256().GetHashCode());
             Assert.AreNotEqual(new Adler32().GetHashCode(), _instanceDefault.GetHashCode());
@@ -217,7 +231,7 @@
 
         [Test]
         [Category("Operator")]
-        public void InstanceOperators()
+        public void Instance_Operators()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -242,7 +256,7 @@
 
         [Test]
         [Category("Method")]
-        public void InstanceToString()
+        public void Instance_ToString()
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceByteArray.ToString());

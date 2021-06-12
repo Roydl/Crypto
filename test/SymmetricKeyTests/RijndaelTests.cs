@@ -11,7 +11,7 @@
 
     [TestFixture]
     [Parallelizable]
-    [Platform(Include = TestVars.PlatformInclude)]
+    [Platform(Include = TestVars.PlatformCross)]
     public class RijndaelTests
     {
         private static readonly string TestFileSrcPath = TestVars.GetTempFilePath(nameof(Rijndael));
@@ -49,7 +49,7 @@
 
         [Test]
         [Category("New")]
-        public void InstanceCtor()
+        public void Instance__Ctor()
         {
             var instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small);
             Assert.IsInstanceOf(typeof(Rijndael), instance128);
@@ -96,7 +96,7 @@
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
-        public void InstanceDestroySecretData()
+        public void Instance_DestroySecretData()
         {
             var pass = new WeakReference(TestVars.GetRandomBytes(256));
             var salt = new WeakReference(TestVars.GetRandomBytes(128));
@@ -135,7 +135,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Method")]
-        public void InstanceEncryptDecrypt(TestVarsType varsType)
+        public void Instance_Encrypt_Decrypt(TestVarsType varsType)
         {
             foreach (var instance in new[] { _instance128, _instance192, _instance256 })
             {

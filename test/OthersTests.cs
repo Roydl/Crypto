@@ -6,7 +6,7 @@
 
     [TestFixture]
     [Parallelizable]
-    [Platform(Include = TestVars.PlatformInclude)]
+    [Platform(Include = TestVars.PlatformCross)]
     public class OthersTests
     {
         private static readonly TestCaseData[] GetGuidTestData =
@@ -20,6 +20,7 @@
 
         [Test]
         [TestCase(575792, null, null)]
+        [Category("Method")]
         public void CombineHashCodes(int expected, object obj1, object obj2) =>
             Assert.AreEqual(expected, CryptoUtils.CombineHashCodes(obj1, obj2));
 
@@ -43,9 +44,6 @@
             string guid;
             switch (varsType)
             {
-                case TestVarsType.TestFile:
-                    // No extension for file paths
-                    return;
                 case TestVarsType.TestStream:
                     using (var ms = new MemoryStream(TestVars.TestBytes))
                         guid = ms.GetGuid(braces, algorithm1, algorithm2);
