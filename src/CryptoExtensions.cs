@@ -9,8 +9,11 @@
     using System.Linq;
     using System.Numerics;
     using System.Runtime.InteropServices;
+    using System.Security;
     using System.Text;
     using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Checksum;
 
     /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
@@ -458,14 +461,14 @@
     /// <summary>Provides extension methods for data encryption and decryption.</summary>
     public static class CryptoExtensions
     {
-        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the 64-bit unsigned integer representation of the computed hash code.</summary>
+        /// <summary>Hashes this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the 64-bit unsigned integer representation of the computed hash code.</summary>
         /// <exception cref="ArgumentNullException">source is null.</exception>
         /// <exception cref="ArgumentException">source is empty.</exception>
         /// <exception cref="FileNotFoundException">source cannot be found.</exception>
         /// <exception cref="UnauthorizedAccessException">source is a directory.</exception>
         /// <exception cref="IOException">source is already open, or an I/O error occurs.</exception>
         /// <exception cref="NotSupportedException">source does not support reading.</exception>
-        /// <returns>A 64-bit unsigned integer that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
+        /// <returns>A 64-bit unsigned integer that contains the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             algorithm.GetDefaultInstance().InternalEncrypt(source, false) switch
@@ -478,17 +481,17 @@
                 _ => default
             };
 
-        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
-        /// <returns>A string that contains the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
+        /// <summary>Hashes this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
+        /// <returns>A string that contains the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
             algorithm.GetDefaultInstance().InternalEncrypt(source, false).Hash;
 
-        /// <summary>Encrypts the file at this <paramref name="path"/> with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
-        /// <param name="path">The full path of the file to encrypt.</param>
+        /// <summary>Hashes the file at this <paramref name="path"/> with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
+        /// <param name="path">The full path of the file to hash.</param>
         /// <param name="algorithm">The algorithm to use.</param>
-        /// <returns>A string that contains the result of encrypting the file at specified <paramref name="path"/> by the specified <paramref name="algorithm"/>.</returns>
+        /// <returns>A string that contains the result of hashing the file at specified <paramref name="path"/> by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="IChecksumAlgorithm.ComputeFileHash(string)"/>
         public static string GetFileChecksum(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
@@ -497,8 +500,66 @@
             return instance.Hash;
         }
 
-        /// <summary>Encrypts this <paramref name="source"/> object with the specified <paramref name="algorithm1"/> and the specified <paramref name="algorithm2"/> and combines the bytes of both hashes into a unique GUID string.</summary>
-        /// <param name="source">The object to encrypt.</param>
+        /// <summary>Hashes all files of this <paramref name="dirInfo"/> object with the specified <paramref name="algorithm"/>.</summary>
+        /// <exception cref="ArgumentNullException">dirInfo is null.</exception>
+        /// <exception cref="DirectoryNotFoundException">The path encapsulated in dirInfo is invalid, such as being on an unmapped drive.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="IOException">A device such as a disk drive is not ready, or an I/O error occurs.</exception>
+        /// <exception cref="NotSupportedException">A file does not support reading.</exception>
+        /// <returns>A sequence of <see cref="string"/>-based <see cref="KeyValuePair"/>&lt;<see langword="FilePath"/>, <see langword="Checksum"/>&gt; objects provided by an <see cref="IDictionary{TKey, TValue}"/> object that contains the result of hashing the files of the specified <paramref name="dirInfo"/> by the specified <paramref name="algorithm"/>.</returns>
+        /// <inheritdoc cref="TryGetChecksums(DirectoryInfo, SearchOption, ChecksumAlgo, out IDictionary{string, string})"/>
+        [return: NotNullIfNotNull("dirInfo")]
+        public static IDictionary<string, string> GetChecksums(this DirectoryInfo dirInfo, SearchOption searchOption = SearchOption.AllDirectories, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
+        {
+            if (dirInfo == null)
+                throw new ArgumentNullException(nameof(dirInfo));
+            dirInfo.Refresh();
+            if (!dirInfo.Exists)
+                throw new DirectoryNotFoundException();
+            var files = dirInfo.GetFiles();
+            var capacity = GetCapacity(files.Length, dirInfo, searchOption);
+            if (capacity == 0)
+                return new Dictionary<string, string>();
+            var items = new KeyValuePair<string, string>[capacity];
+            var index = -1;
+            if (files.Any())
+                Parallel.ForEach(files, fi =>
+                {
+                    var i = Interlocked.Increment(ref index);
+                    items[i] = new KeyValuePair<string, string>(fi.FullName, fi.GetChecksum(algorithm));
+                });
+            if (searchOption == SearchOption.AllDirectories && capacity > files.Length)
+                Parallel.ForEach(dirInfo.GetDirectories(), di =>
+                {
+                    var dict = di.GetChecksums(SearchOption.AllDirectories, algorithm);
+                    Parallel.ForEach(dict, pair =>
+                    {
+                        var i = Interlocked.Increment(ref index);
+                        items[i] = pair;
+                    });
+                });
+            return items.OrderBy(p => p.Key, StringComparer.CurrentCulture).ToDictionary(p => p.Key, p => p.Value);
+
+            static int GetCapacity(int numberOfFiles, DirectoryInfo dirInfo, SearchOption searchOption)
+            {
+                var count = numberOfFiles;
+                if (searchOption == SearchOption.TopDirectoryOnly)
+                    return numberOfFiles;
+                var dirs = dirInfo.GetDirectories();
+                if (dirs.Any())
+                    Parallel.ForEach(dirs, di => Interlocked.Add(ref count, GetCapacity(di.GetFiles().Length, di, SearchOption.AllDirectories)));
+                return count;
+            }
+        }
+
+        /// <inheritdoc cref="GetChecksums(DirectoryInfo, SearchOption, ChecksumAlgo)"/>
+        [return: NotNullIfNotNull("dirInfo")]
+        public static IDictionary<string, string> GetChecksums(this DirectoryInfo dirInfo, ChecksumAlgo algorithm) =>
+            GetChecksums(dirInfo, SearchOption.AllDirectories, algorithm);
+
+        /// <summary>Hashes this <paramref name="source"/> object with the specified <paramref name="algorithm1"/> and the specified <paramref name="algorithm2"/> and combines the bytes of both hashes into a unique GUID string.</summary>
+        /// <param name="source">The object to hash.</param>
         /// <param name="braces"><see langword="true"/> to place the GUID between braces; otherwise, <see langword="false"/>.</param>
         /// <param name="algorithm1">The first algorithm to use.</param>
         /// <param name="algorithm2">The second algorithm to use.</param>
@@ -544,31 +605,31 @@
         }
 
 #if NET5_0_OR_GREATER
-        /// <summary>Tries to encrypt this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <summary>Tries to hash this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
         /// <typeparam name="TSource">The type of source.</typeparam>
-        /// <param name="source">The object to encrypt.</param>
+        /// <param name="source">The object to hash.</param>
         /// <param name="algorithm">The algorithm to use.</param>
-        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
+        /// <param name="hash">If successful, the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks>
         ///     <list type="table">
         ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
         ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
         ///     </list>
         /// </remarks>
-        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
 #else
-        /// <summary>Tries to encrypt this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <summary>Tries to hash this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
         /// <typeparam name="TSource">The type of source.</typeparam>
-        /// <param name="source">The object to encrypt.</param>
+        /// <param name="source">The object to hash.</param>
         /// <param name="algorithm">The algorithm to use.</param>
-        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
+        /// <param name="hash">If successful, the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks>
         ///     <list type="table">
         ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
         ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
         ///     </list>
         /// </remarks>
-        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
 #endif
         public static bool TryGetCipher<TSource>(this TSource source, ChecksumAlgo algorithm, out ulong hash)
         {
@@ -584,11 +645,11 @@
             }
         }
 
-        /// <summary>Encrypts this <paramref name="source"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the encryption was successful. All possible exceptions are caught.</summary>
+        /// <summary>Tries to hash this <paramref name="source"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
         /// <typeparam name="TSource">The type of source.</typeparam>
-        /// <param name="source">The object to encrypt.</param>
-        /// <param name="hash">If successful, the result of encrypting the specified <paramref name="source"/> object by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="default"/>.</param>
-        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be encrypted by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="false"/>.</returns>
+        /// <param name="source">The object to hash.</param>
+        /// <param name="hash">If successful, the result of hashing the specified <paramref name="source"/> object by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="default"/>.</param>
+        /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be hashed by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="false"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
         public static bool TryGetCipher<TSource>(this TSource source, out ulong hash) =>
             source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
@@ -611,6 +672,37 @@
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, out ulong)"/>
         public static bool TryGetChecksum<TSource>([NotNullWhen(true)] this TSource source, out string hash) =>
             source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
+
+        /// <summary>Tries to hash all files of this <paramref name="dirInfo"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
+        /// <param name="dirInfo">The directory that contains the files to hash.</param>
+        /// <param name="searchOption">One of the enumeration values that specifies whether the operation should include only the current directory or all subdirectories.</param>
+        /// <param name="algorithm">The algorithm to use.</param>
+        /// <param name="result">If successful, a sequence of <see cref="string"/>-based <see cref="KeyValuePair"/>&lt;<see langword="FilePath"/>, <see langword="Checksum"/>&gt; objects provided by an <see cref="IDictionary{TKey, TValue}"/> object that contains the result of hashing the files of the specified <paramref name="dirInfo"/> by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
+        /// <remarks></remarks>
+        /// <returns><see langword="true"/> if the files of the specified <paramref name="dirInfo"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, SearchOption searchOption, ChecksumAlgo algorithm, out IDictionary<string, string> result)
+        {
+            try
+            {
+                result = dirInfo.GetChecksums(searchOption, algorithm);
+                return result.Any();
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        /// <summary>Tries to hash all files of this <paramref name="dirInfo"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
+        /// <returns><see langword="true"/> if the files of the specified <paramref name="dirInfo"/> could be hashed by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc cref="TryGetChecksums(DirectoryInfo, SearchOption, ChecksumAlgo, out IDictionary{string, string})"/>
+        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, ChecksumAlgo algorithm, out IDictionary<string, string> result) =>
+            dirInfo.TryGetChecksums(SearchOption.AllDirectories, algorithm, out result);
+
+        /// <inheritdoc cref="TryGetChecksums(DirectoryInfo, ChecksumAlgo, out IDictionary{string, string})"/>
+        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, out IDictionary<string, string> result) =>
+            dirInfo.TryGetChecksums(SearchOption.AllDirectories, ChecksumAlgo.Sha256, out result);
 
         /// <summary>Creates a default instance of this algorithm.</summary>
         /// <param name="algorithm">The algorithm to use.</param>
