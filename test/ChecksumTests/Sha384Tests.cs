@@ -106,6 +106,7 @@
             Assert.AreEqual(expectedHash, hash);
         }
 
+#if DEBUG
         [Test]
         [Explicit]
         [Category("Extension")]
@@ -117,6 +118,7 @@
             foreach (var (_, checksum) in items)
                 Assert.AreEqual(HashSize, checksum.Length);
         }
+#endif
 
         [Test]
         [TestCase(BitWidth, HashSize, RawHashSize)]

@@ -529,8 +529,9 @@
                     var i = Interlocked.Increment(ref index);
                     items[i] = new KeyValuePair<string, string>(fi.FullName, fi.GetChecksum(algorithm));
                 });
-            if (searchOption == SearchOption.AllDirectories && capacity > files.Length)
-                Parallel.ForEach(dirInfo.GetDirectories(), di =>
+            DirectoryInfo[] dirs;
+            if (searchOption == SearchOption.AllDirectories && capacity > files.Length && (dirs = dirInfo.GetDirectories()).Any())
+                Parallel.ForEach(dirs, di =>
                 {
                     var dict = di.GetChecksums(SearchOption.AllDirectories, algorithm);
                     Parallel.ForEach(dict, pair =>
@@ -856,7 +857,7 @@
                     break;
                 default:
 #if DEBUG
-                    instance.Encrypt(LocalGetByteArray(source));
+                    instance.ComputeHash(LocalGetByteArray(source));
 #else
                     try
                     {
