@@ -10,19 +10,23 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Provides a handy way to hash data using Adler32, CRC (8-bit to 82-bit, and customizable without bit restriction), MD5, SHA-1 and SHA-2 (256-bit, 384-bit and 512-bit), including HMAC keyed hashing for some types. Functions for encrypting and decrypting data with Rijndael (128-bit, 192-bit and 256-bit) are also offered.</Description>
+    <Description>Provides a handy and performant way to hash data using Adler32, CRC (8-bit to 82-bit, and customizable without bit restriction), MD5, SHA-1 and SHA-2 (256-bit, 384-bit and 512-bit), including HMAC keyed hashing for some types. Functions for encrypting and decrypting data with Rijndael (128-bit, 192-bit and 256-bit) are also offered.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>https://github.com/Roydl/Crypto</RepositoryUrl>
     <PackageTags>encryption decryption hmac adler32 crc crc-custom crc-customizable crc8 crc10 crc11 crc12 crc13 crc14 crc15 crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
     <RepositoryType></RepositoryType>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.1.2</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>https://github.com/Roydl/Crypto/releases/latest</PackageReleaseNotes>
+    <PackageReleaseNotes>**❗This release contains a lot of breaking changes❗**
+
+Read the changelog before updating:
+https://github.com/Roydl/Crypto/releases/latest</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
+    <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -43,12 +47,16 @@
     <None Include="..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Visible>false</Visible>
+      <Visible>False</Visible>
     </None>
     <None Include="..\LOGO.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Visible>false</Visible>
+      <Visible>False</Visible>
+    </None>
+    <None Include="Roydl.Crypto.snk">
+      <Pack>False</Pack>
+      <Visible>False</Visible>
     </None>
   </ItemGroup>
 
