@@ -78,7 +78,7 @@
         internal static TInt ReverseBits<TInt>(this TInt value) where TInt : struct, IComparable, IFormattable
         {
             // string conversion is slower than shifting bits,
-            // but it more accurate for some unusual bit widths
+            // but it's more accurate for some unusual bit widths
             var bits = value switch
             {
                 sbyte x => Convert.ToString(x, 2),
