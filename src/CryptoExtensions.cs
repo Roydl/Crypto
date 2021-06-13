@@ -17,6 +17,7 @@
     using Checksum;
 
     /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
+    /// <remarks>Note that most of the CRC constants are tagged with <see cref="EditorBrowsableState.Never"/>. You are able to find all available names by performing a <see langword="Go To Definition"/> on <see cref="ChecksumAlgo"/>. It is also possible to convert <see cref="CrcOptions"/> to <see cref="ChecksumAlgo"/>.</remarks>
     public enum ChecksumAlgo
     {
         /// ReSharper disable CommentTypo
@@ -26,157 +27,157 @@
         /// <summary>CRC-8.
         ///     <para><b>Alias:</b> SMBUS.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8,
 
         /// <summary>CRC-8/AUTOSAR.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Autosar,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Autosar,
 
         /// <summary>CRC-8/BLUETOOTH.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Bluetooth,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Bluetooth,
 
         /// <summary>CRC-8/CDMA2000.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Cdma2000,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Cdma2000,
 
         /// <summary>CRC-8/DARC.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Darc,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Darc,
 
         /// <summary>CRC-8/DVB-S2.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08DvbS2,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8DvbS2,
 
         /// <summary>CRC-8/GSM-A.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08GsmA,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8GsmA,
 
         /// <summary>CRC-8/GSM-B.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08GsmB,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8GsmB,
 
         /// <summary>CRC-8/I-432-1.
         ///     <para><b>Alias:</b> ITU.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08I4321,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8I4321,
 
         /// <summary>CRC-8/I-CODE.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08ICode,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8ICode,
 
         /// <summary>CRC-8/LTE.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Lte,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Lte,
 
         /// <summary>CRC-8/MAXIM.
         ///     <para><b>Alias:</b> MAXIM-DOW, DOW-CRC.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Maxim,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Maxim,
 
         /// <summary>CRC-8/MIFARE-MAD.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08MifareMad,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8MifareMad,
 
         /// <summary>CRC-8/NRSC-5.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Nrsc5,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Nrsc5,
 
         /// <summary>CRC-8/OPENSAFETY.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08OpenSafety,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8OpenSafety,
 
         /// <summary>CRC-8/ROHC.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Rohc,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Rohc,
 
         /// <summary>CRC-8/SAE-J1850.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08SaeJ1850,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8SaeJ1850,
 
         /// <summary>CRC-8/TECH-3250.
         ///     <para><b>Alias:</b> AES, EBU.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Tech3250,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Tech3250,
 
         /// <summary>CRC-8/WCDMA.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        Crc08Wcdma,
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        Crc8Wcdma,
 
         /// <summary>CRC-10.
         ///     <para><b>Alias:</b> ATM, I-610.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10,
 
         /// <summary>CRC-10/CDMA2000.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10Cdma2000,
 
         /// <summary>CRC-10/GSM.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10Gsm,
 
         /// <summary>CRC-11.
         ///     <para><b>Alias:</b> FLEXRAY.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc11,
 
         /// <summary>CRC-11/UMTS.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc11Umts,
 
         /// <summary>CRC-12.
         ///     <para><b>Alias:</b> CDMA2000.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12,
 
         /// <summary>CRC-12/DECT.
         ///     <para><b>Alias:</b> X-CRC-12.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Dect,
 
         /// <summary>CRC-12/GSM.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Gsm,
 
         /// <summary>CRC-12/UMTS.
         ///     <para><b>Alias:</b> 3GPP.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Umts,
 
         /// <summary>CRC-13.
         ///     <para><b>Alias:</b> BBC.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc13,
 
         /// <summary>CRC-14.
         ///     <para><b>Alias:</b> DARC.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc14,
 
         /// <summary>CRC-14/GSM.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc14Gsm,
 
         /// <summary>CRC-15.
         ///     <para><b>Alias:</b> CAN.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc15,
 
         /// <summary>CRC-15/MPT1327.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc15Mpt1327,
 
         /// <summary>CRC-16.
@@ -185,174 +186,174 @@
         Crc16,
 
         /// <summary>CRC-16/A.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16A,
 
         /// <summary>CRC-16/BUYPASS.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Buypass,
 
         /// <summary>CRC-16/CDMA2000.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Cdma2000,
 
         /// <summary>CRC-16/CMS.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Cms,
 
         /// <summary>CRC-16/DDS-110.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Dds110,
 
         /// <summary>CRC-16/DECT-R.
         ///     <para><b>Alias:</b> R-CRC-16</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16DectR,
 
         /// <summary>CRC-16/DECT-X.
         ///     <para><b>Alias:</b> X-CRC-16</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16DectX,
 
         /// <summary>CRC-16/DNP.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Dnp,
 
         /// <summary>CRC-16/EN-13757.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16En13757,
 
         /// <summary>CRC-16/GENIBUS.
         ///     <para><b>Alias:</b> DARC, EPC, EPC-C1G2, I-CODE</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Genibus,
 
         /// <summary>CRC-16/GSM.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Gsm,
 
         /// <summary>CRC-16/IBM-3740.
         ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Ibm3740,
 
         /// <summary>CRC-16/IBM-SDLC.
         ///     <para><b>Alias:</b> ISO-HDLC, ISO-IEC-14443-3-B, CRC-B, X-25</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16IbmSdlc,
 
         /// <summary>CRC-16/KERMIT.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Kermit,
 
         /// <summary>CRC-16/LJ1200.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Lj1200,
 
         /// <summary>CRC-16/MAXIM.</summary>
         /// <para><b>Alias:</b> MAXIM-DOW</para>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Maxim,
 
         /// <summary>CRC-16/MCRF4XX.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Mcrf4Xx,
 
         /// <summary>CRC-16/MODBUS.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16ModBus,
 
         /// <summary>CRC-16/RIELLO.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Riello,
 
         /// <summary>CRC-16/SPI-FUJITSU.
         ///     <para><b>Alias:</b> AUG-CCITT</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16SpiFujitsu,
 
         /// <summary>CRC-16/T10-DIF.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16T10Dif,
 
         /// <summary>CRC-16/TELEDISK.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16TeleDisk,
 
         /// <summary>CRC-16/TMS37157.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Tms37157,
 
         /// <summary>CRC-16/USB.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Usb,
 
         /// <summary>CRC-16/XMODEM.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16XModem,
 
         /// <summary>CRC-17.
         ///     <para><b>Alias:</b> CAN-FD.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc17,
 
         /// <summary>CRC-21.
         ///     <para><b>Alias:</b> CAN-FD.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc21,
 
         /// <summary>CRC-24.
         ///     <para><b>Alias:</b> OPENPGP.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24,
 
         /// <summary>CRC-24/BLE.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Ble,
 
         /// <summary>CRC-24/LTE-A.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24LteA,
 
         /// <summary>CRC-24/LTE-B.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24LteB,
 
         /// <summary>CRC-24/FLEXRAY-A.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24FlexRayA,
 
         /// <summary>CRC-24/FLEXRAY-B.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24FlexRayB,
 
         /// <summary>CRC-24/INTERLAKEN.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Interlaken,
 
         /// <summary>CRC-24/OS-9.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Os9,
 
         /// <summary>CRC-30.
         ///     <para><b>Alias:</b> CDMA.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc30,
 
         /// <summary>CRC-31.
         ///     <para><b>Alias:</b> PHILIPS.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc31,
 
         /// <summary>CRC-32/ISO-HDLC.
@@ -361,59 +362,59 @@
         Crc32,
 
         /// <summary>CRC-32/AUTOSAR.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Autosar,
 
         /// <summary>CRC-32/CD-ROM-EDC.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32CdRomEdc,
 
         /// <summary>CRC-32/Q.
         ///     <para><b>Alias:</b> AIXM.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Q,
 
         /// <summary>CRC-32/BZIP2.
         ///     <para><b>Alias:</b> AAL5, DECT-B, B-CRC.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32BZip2,
 
         /// <summary>CRC-32/C.
         ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32C,
 
         /// <summary>CRC-32/D.
         ///     <para><b>Alias:</b> BASE91-D.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32D,
 
         /// <summary>CRC-32/JAMCRC.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32JamCrc,
 
         /// <summary>CRC-32/MPEG-2.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Mpeg2,
 
         /// <summary>CRC-32/POSIX.
         ///     <para><b>Alias:</b> CKSUM.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Posix,
 
         /// <summary>CRC-32/XFER.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Xfer,
 
         /// <summary>CRC-40.
         ///     <para><b>Alias:</b> GSM.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc40,
 
         /// <summary>CRC-64.
@@ -422,23 +423,23 @@
         Crc64,
 
         /// <summary>CRC-64/WE.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64We,
 
         /// <summary>CRC-64/XZ.
         ///     <para><b>Alias:</b> GO-ECMA.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64Xz,
 
         /// <summary>CRC-64/GO-ISO.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64GoIso,
 
         /// <summary>CRC-82.
         ///     <para><b>Alias:</b> DARC.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc82,
 
         /// <summary>MD5-128.</summary>
@@ -712,25 +713,25 @@
             algorithm switch
             {
                 ChecksumAlgo.Adler32 => Adler32.Create(),
-                ChecksumAlgo.Crc08 => Crc.Create(CrcOptions.Crc.Default),
-                ChecksumAlgo.Crc08Autosar => Crc.Create(CrcOptions.Crc.Autosar),
-                ChecksumAlgo.Crc08Bluetooth => Crc.Create(CrcOptions.Crc.Bluetooth),
-                ChecksumAlgo.Crc08Cdma2000 => Crc.Create(CrcOptions.Crc.Cdma2000),
-                ChecksumAlgo.Crc08Darc => Crc.Create(CrcOptions.Crc.Darc),
-                ChecksumAlgo.Crc08DvbS2 => Crc.Create(CrcOptions.Crc.DvbS2),
-                ChecksumAlgo.Crc08GsmA => Crc.Create(CrcOptions.Crc.GsmA),
-                ChecksumAlgo.Crc08GsmB => Crc.Create(CrcOptions.Crc.GsmB),
-                ChecksumAlgo.Crc08I4321 => Crc.Create(CrcOptions.Crc.I4321),
-                ChecksumAlgo.Crc08ICode => Crc.Create(CrcOptions.Crc.ICode),
-                ChecksumAlgo.Crc08Lte => Crc.Create(CrcOptions.Crc.Lte),
-                ChecksumAlgo.Crc08Maxim => Crc.Create(CrcOptions.Crc.Maxim),
-                ChecksumAlgo.Crc08MifareMad => Crc.Create(CrcOptions.Crc.MifareMad),
-                ChecksumAlgo.Crc08Nrsc5 => Crc.Create(CrcOptions.Crc.Nrsc5),
-                ChecksumAlgo.Crc08OpenSafety => Crc.Create(CrcOptions.Crc.OpenSafety),
-                ChecksumAlgo.Crc08Rohc => Crc.Create(CrcOptions.Crc.Rohc),
-                ChecksumAlgo.Crc08SaeJ1850 => Crc.Create(CrcOptions.Crc.SaeJ1850),
-                ChecksumAlgo.Crc08Tech3250 => Crc.Create(CrcOptions.Crc.Tech3250),
-                ChecksumAlgo.Crc08Wcdma => Crc.Create(CrcOptions.Crc.Wcdma),
+                ChecksumAlgo.Crc8 => Crc.Create(CrcOptions.Crc.Default),
+                ChecksumAlgo.Crc8Autosar => Crc.Create(CrcOptions.Crc.Autosar),
+                ChecksumAlgo.Crc8Bluetooth => Crc.Create(CrcOptions.Crc.Bluetooth),
+                ChecksumAlgo.Crc8Cdma2000 => Crc.Create(CrcOptions.Crc.Cdma2000),
+                ChecksumAlgo.Crc8Darc => Crc.Create(CrcOptions.Crc.Darc),
+                ChecksumAlgo.Crc8DvbS2 => Crc.Create(CrcOptions.Crc.DvbS2),
+                ChecksumAlgo.Crc8GsmA => Crc.Create(CrcOptions.Crc.GsmA),
+                ChecksumAlgo.Crc8GsmB => Crc.Create(CrcOptions.Crc.GsmB),
+                ChecksumAlgo.Crc8I4321 => Crc.Create(CrcOptions.Crc.I4321),
+                ChecksumAlgo.Crc8ICode => Crc.Create(CrcOptions.Crc.ICode),
+                ChecksumAlgo.Crc8Lte => Crc.Create(CrcOptions.Crc.Lte),
+                ChecksumAlgo.Crc8Maxim => Crc.Create(CrcOptions.Crc.Maxim),
+                ChecksumAlgo.Crc8MifareMad => Crc.Create(CrcOptions.Crc.MifareMad),
+                ChecksumAlgo.Crc8Nrsc5 => Crc.Create(CrcOptions.Crc.Nrsc5),
+                ChecksumAlgo.Crc8OpenSafety => Crc.Create(CrcOptions.Crc.OpenSafety),
+                ChecksumAlgo.Crc8Rohc => Crc.Create(CrcOptions.Crc.Rohc),
+                ChecksumAlgo.Crc8SaeJ1850 => Crc.Create(CrcOptions.Crc.SaeJ1850),
+                ChecksumAlgo.Crc8Tech3250 => Crc.Create(CrcOptions.Crc.Tech3250),
+                ChecksumAlgo.Crc8Wcdma => Crc.Create(CrcOptions.Crc.Wcdma),
                 ChecksumAlgo.Crc10 => Crc.Create(CrcOptions.Crc10.Default),
                 ChecksumAlgo.Crc10Cdma2000 => Crc.Create(CrcOptions.Crc10.Cdma2000),
                 ChecksumAlgo.Crc10Gsm => Crc.Create(CrcOptions.Crc10.Gsm),
