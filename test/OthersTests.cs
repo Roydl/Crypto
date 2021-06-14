@@ -11,11 +11,12 @@
     {
         private static readonly TestCaseData[] GetGuidTestData =
         {
-            new(TestVarsType.TestStream, ChecksumAlgo.Crc16, ChecksumAlgo.Crc16Usb, false, "db1fdbdb-1fdb-db1f-dbdb-1fdbdb1fdbdb"),
-            new(TestVarsType.TestBytes, ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, "2bc35bcf-ed0c-65fc-cd0e-c1553d72fb54"),
-            new(TestVarsType.TestBytes, ChecksumAlgo.Sha256, ChecksumAlgo.Crc32, false, "cba33b6f-4d8c-c57c-ad4e-a1f59d329bd4"),
-            new(TestVarsType.QuoteString, ChecksumAlgo.Sha1, ChecksumAlgo.Crc64, false, "a5a80644-f996-6528-f58f-9cea95e3569f"),
-            new(TestVarsType.RangeString, ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, "c52f1114-7bd6-81cb-b190-0bf72374be7f")
+            new(ChecksumAlgo.Crc16, ChecksumAlgo.Crc16Usb, false, TestVarsType.TestStream, "db1fdbdb-1fdb-db1f-dbdb-1fdbdb1fdbdb"),
+            new(ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, TestVarsType.TestBytes, "2bc35bcf-ed0c-65fc-cd0e-c1553d72fb54"),
+            new(ChecksumAlgo.Sha256, ChecksumAlgo.Crc32, false, TestVarsType.TestBytes, "cba33b6f-4d8c-c57c-ad4e-a1f59d329bd4"),
+            new(ChecksumAlgo.Sha1, ChecksumAlgo.Crc64, false, TestVarsType.QuoteString, "a5a80644-f996-6528-f58f-9cea95e3569f"),
+            new(ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, false, TestVarsType.RangeString, "c52f1114-7bd6-81cb-b190-0bf72374be7f"),
+            new(ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, true, TestVarsType.RangeString, "{c52f1114-7bd6-81cb-b190-0bf72374be7f}")
         };
 
         [Test]
@@ -42,16 +43,16 @@
         }
 
         [Test]
-        [TestCase(TestVarsType.QuoteString, "9a775baf-7038-728b-8fb4-26b9a910764a")]
+        [TestCase(ChecksumAlgo.Crc32, ChecksumAlgo.Sha256, TestVarsType.QuoteString, "9a775baf-7038-728b-8fb4-26b9a910764a")]
         [Category("Extension")]
         [Description("Computes a CRC-32 and a SHA-256 hash and combines both to form a GUID.")]
-        public void Extension_GetGuid(TestVarsType _, string expectedGuid) =>
+        public void Extension_GetGuid(ChecksumAlgo _, ChecksumAlgo __, TestVarsType ___, string expectedGuid) =>
             Assert.AreEqual(expectedGuid, TestVars.QuoteStr.GetGuid());
 
         [Test]
         [TestCaseSource(nameof(GetGuidTestData))]
         [Category("Extension")]
-        public void Extension_GetGuid(TestVarsType varsType, ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, string expectedGuid)
+        public void Extension_GetGuid(ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, TestVarsType varsType, string expectedGuid)
         {
             string guid;
             switch (varsType)
