@@ -13,7 +13,7 @@
         private static int _cacheCapacity, _cacheConcurrencyLevel;
 
         /// <summary>Gets or sets the initial number of CRC configurations that the storage can contain.</summary>
-        /// <remarks>The capacity cannot be is less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise it is increased or decreased.</remarks>
+        /// <remarks>The capacity cannot be less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise, it is increased or decreased.</remarks>
         public static int CacheCapacity
         {
             get
@@ -41,7 +41,7 @@
             typeof(CrcOptions).GetNestedTypes().Where(t => t.IsEnum).Sum(t => Enum.GetValues(t).Length);
 
         /// <summary>Gets or sets the estimated number of threads that will update the storage concurrently.</summary>
-        /// <remarks>If the number is less than 1, it is increased.</remarks>
+        /// <remarks>The capacity cannot be less than 1 or greater than <see cref="CacheCapacityLimit"/>; otherwise, it is increased or decreased.</remarks>
         public static int CacheConcurrencyLevel
         {
             get
