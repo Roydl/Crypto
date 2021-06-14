@@ -12,7 +12,8 @@
         private static IDictionary<Enum, object> _cache;
         private static int _cacheCapacity, _cacheConcurrencyLevel;
 
-        /// <summary>Gets or sets the initial number of CRC configurations that the storage can contain. The capacity cannot be is less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise it is increased or decreased.</summary>
+        /// <summary>Gets or sets the initial number of CRC configurations that the storage can contain.</summary>
+        /// <remarks>The capacity cannot be is less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise it is increased or decreased.</remarks>
         public static int CacheCapacity
         {
             get
@@ -39,8 +40,8 @@
         public static int CacheCapacityLimit { get; } =
             typeof(CrcOptions).GetNestedTypes().Where(t => t.IsEnum).Sum(t => Enum.GetValues(t).Length);
 
-        /// <summary>Gets or sets the estimated number of threads that will update the storage concurrently. If the number is less than 1, it is increased.</summary>
-        /// <inheritdoc cref="CacheCapacity"/>
+        /// <summary>Gets or sets the estimated number of threads that will update the storage concurrently.</summary>
+        /// <remarks>If the number is less than 1, it is increased.</remarks>
         public static int CacheConcurrencyLevel
         {
             get
