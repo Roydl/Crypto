@@ -1,17 +1,115 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
 
     /// <summary>Provides static functions for loading preset <see cref="ICrcConfig{TValue}"/> structures.</summary>
     public static class CrcConfigManager
     {
+        private static IDictionary<Enum, object> _cache;
+        private static int _cacheCapacity, _cacheConcurrencyLevel;
+
+        /// <summary>Gets or sets the initial number of CRC configurations that the storage can contain. The capacity cannot be is less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise it is increased or decreased.</summary>
+        /// <remarks>If changes are made, the current storage is completely removed.</remarks>
+        public static int CacheCapacity
+        {
+            get
+            {
+                if (_cacheCapacity == default)
+                    CacheCapacity = (int)Math.Ceiling(CacheCapacityLimit / 3d);
+                return _cacheCapacity;
+            }
+            set
+            {
+                var capacity = value;
+                if (capacity < CacheConcurrencyLevel)
+                    capacity = CacheConcurrencyLevel;
+                if (capacity > CacheCapacityLimit)
+                    capacity = CacheCapacityLimit;
+                var reset = _cacheCapacity != default;
+                _cacheCapacity = capacity;
+                if (reset)
+                    Cache = null;
+            }
+        }
+
+        /// <summary>Gets the total number of CRC configurations available for storage.</summary>
+        public static int CacheCapacityLimit { get; } =
+            typeof(CrcOptions).GetNestedTypes().Where(t => t.IsEnum).Sum(t => Enum.GetValues(t).Length);
+
+        /// <summary>Gets or sets the estimated number of threads that will update the storage concurrently. If the number is less than 1, it is increased.</summary>
+        /// <inheritdoc cref="CacheCapacity"/>
+        public static int CacheConcurrencyLevel
+        {
+            get
+            {
+                if (_cacheConcurrencyLevel == default)
+                    CacheConcurrencyLevel = Environment.ProcessorCount;
+                return _cacheConcurrencyLevel;
+            }
+            set
+            {
+                var level = value;
+                if (level < 1)
+                    level = 1;
+                if (level > CacheCapacityLimit)
+                    level = CacheCapacityLimit;
+                var reset = _cacheConcurrencyLevel != default;
+                _cacheConcurrencyLevel = level;
+                if (reset)
+                    Cache = null;
+            }
+        }
+
+        /// <summary>Gets the number of CRC configurations currently stored.</summary>
+        public static int CacheSize => Cache.Count;
+
+        private static IDictionary<Enum, object> Cache
+        {
+            get
+            {
+                if (_cache == default)
+                    Cache = default;
+                return _cache;
+            }
+            set
+            {
+                if (value != default)
+                {
+                    _cache = value;
+                    return;
+                }
+                var cache = new ConcurrentDictionary<Enum, object>(CacheConcurrencyLevel, CacheCapacity);
+                if (_cache?.Count > 0)
+                {
+                    foreach (var (preset, config) in _cache)
+                    {
+                        if (cache.Count >= CacheCapacity)
+                            break;
+                        cache[preset] = config;
+                    }
+                    _cache.Clear();
+                }
+                _cache = cache;
+            }
+        }
+
+        /// <summary>Removes all CRC configurations from internal storage.</summary>
+        public static void ClearCache() =>
+            Cache.Clear();
+
         /// <summary>Loads a predefined CRC-8 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-8 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<byte> GetConfig(CrcOptions.Crc preset) =>
-            preset switch
+        public static ICrcConfig<byte> GetConfig(CrcOptions.Crc preset)
+        {
+            if (GetCachedConfig<byte>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc.Default =>
                     new CrcConfig(8, 0xf4, 0x07),
@@ -72,13 +170,19 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-10 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-10 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc10 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc10 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc10.Default =>
                     new CrcConfig16(10, 0x199, 0x233, default, false, false, default, 0x3ff),
@@ -91,13 +195,19 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-11 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-11 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc11 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc11 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc11.Default =>
                     new CrcConfig16(11, 0x5a3, 0x385, 0x01a),
@@ -107,13 +217,19 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-12 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-12 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc12 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc12 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc12.Default =>
                     new CrcConfig16(12, 0xd4d, 0xf13, 0xfff, false, false, default, 0xfff),
@@ -129,26 +245,38 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-13 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-13 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc13 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc13 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc13.Default =>
                     new CrcConfig16(13, 0x04fa, 0x1cf5, default, false, false, default, 0x1fff),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-14 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-14 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc14 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc14 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc14.Default =>
                     new CrcConfig16(14, 0x082d, 0x2804, default, true, true, default, 0x3fff),
@@ -158,13 +286,19 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-15 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-15 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc15 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc15 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc15.Default =>
                     new CrcConfig16(15, 0x059e, 0x4599),
@@ -174,13 +308,19 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-16 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-16 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc16 preset) =>
-            preset switch
+        public static ICrcConfig<ushort> GetConfig(CrcOptions.Crc16 preset)
+        {
+            if (GetCachedConfig<ushort>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc16.Default =>
                     new CrcConfig16(16, 0xbb3d, 0xa001, default, true, true),
@@ -262,39 +402,57 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-17 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-17 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc17 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc17 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc17.Default =>
                     new CrcConfig32(17, 0x04f03u, 0x1685bu, default, false, false, default, 0x33ffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-21 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-21 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc21 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc21 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc21.Default =>
                     new CrcConfig32(21, 0x0ed841u, 0x102899u, default, false, false, default, 0x1fffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-24 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-24 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc24 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc24 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc24.Default =>
                     new CrcConfig32(24, 0x21cf02u, 0x864cfbu, 0xb704ceu),
@@ -322,39 +480,57 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-30 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-30 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc30 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc30 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc30.Default =>
                     new CrcConfig32(30, 0x04c34abfu, 0x2030b9c7u, 0x3fffffffu, false, false, 0x3fffffffu, 0x3fffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-31 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-31 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc31 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc31 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc31.Default =>
                     new CrcConfig32(31, 0x0ce9e46cu, 0x4c11db7u, 0x7fffffffu, false, false, 0x7fffffffu, 0x7fffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-32 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-32 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc32 preset) =>
-            preset switch
+        public static ICrcConfig<uint> GetConfig(CrcOptions.Crc32 preset)
+        {
+            if (GetCachedConfig<uint>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc32.Default =>
                     new CrcConfig32(32, 0xcbf43926u, 0xedb88320u, 0xffffffffu, true, true, 0xffffffffu),
@@ -391,26 +567,38 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-40 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-40 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ulong> GetConfig(CrcOptions.Crc40 preset) =>
-            preset switch
+        public static ICrcConfig<ulong> GetConfig(CrcOptions.Crc40 preset)
+        {
+            if (GetCachedConfig<ulong>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc40.Default =>
                     new CrcConfig64(40, 0xd4164fc646uL, 0x0004820009uL, default, false, false, 0xffffffffffuL),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-64 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-64 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<ulong> GetConfig(CrcOptions.Crc64 preset) =>
-            preset switch
+        public static ICrcConfig<ulong> GetConfig(CrcOptions.Crc64 preset)
+        {
+            if (GetCachedConfig<ulong>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc64.Default =>
                     new CrcConfig64(64, 0x6c40df5f0b497347uL, 0x42f0e1eba9ea3693uL),
@@ -426,18 +614,41 @@
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
 
         /// <summary>Loads a predefined CRC-82 configuration structure.</summary>
         /// <param name="preset">The preset to be loaded.</param>
         /// <returns>A predefined CRC-82 configuration structure.</returns>
         /// <exception cref="ArgumentOutOfRangeException">preset is invalid.</exception>
-        public static ICrcConfig<BigInteger> GetConfig(CrcOptions.Crc82 preset) =>
-            preset switch
+        public static ICrcConfig<BigInteger> GetConfig(CrcOptions.Crc82 preset)
+        {
+            if (GetCachedConfig<BigInteger>(preset) is { } config)
+                return config;
+            config = preset switch
             {
                 CrcOptions.Crc82.Default =>
                     new CrcConfigBeyond(82, "0x09ea83f625023801fd612", "0x220808a00a2022200c430", default, true, true, default, "0x3ffffffffffffffffffff"),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
+            UpdateConfigCache(preset, config);
+            return config;
+        }
+
+        private static ICrcConfig<TValue> GetCachedConfig<TValue>(Enum preset) where TValue : struct, IComparable, IFormattable
+        {
+            if (Cache.TryGetValue(preset, out var config))
+                return (ICrcConfig<TValue>)config;
+            return null;
+        }
+
+        private static void UpdateConfigCache<TValue>(Enum preset, ICrcConfig<TValue> config) where TValue : struct, IComparable, IFormattable
+        {
+            if (Cache.Count >= CacheCapacity)
+                Cache.Clear();
+            Cache[preset] = config;
+        }
     }
 }

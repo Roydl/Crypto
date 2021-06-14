@@ -306,6 +306,11 @@ namespace Roydl.Crypto.Test.ChecksumTests
         public void Instance_ComputeHash(CrcType crcType, Enum algorithm, TestVarsType varsType, string expectedHash)
         {
             var instance = CreateInstance(crcType, algorithm);
+            Assert.GreaterOrEqual(CrcConfigManager.CacheSize, 1);
+            Assert.AreEqual(88, CrcConfigManager.CacheCapacityLimit);
+            Assert.AreEqual((int)Math.Ceiling(CrcConfigManager.CacheCapacityLimit / 3d), CrcConfigManager.CacheCapacity);
+            Assert.AreEqual(Environment.ProcessorCount, CrcConfigManager.CacheConcurrencyLevel);
+            TestContext.WriteLine(@"Cached: {0:00}/{1:00}", CrcConfigManager.CacheSize, CrcConfigManager.CacheCapacity);
             switch (varsType)
             {
                 case TestVarsType.InitOnly:
