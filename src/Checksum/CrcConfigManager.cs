@@ -41,7 +41,7 @@
             typeof(CrcOptions).GetNestedTypes().Where(t => t.IsEnum).Sum(t => Enum.GetValues(t).Length);
 
         /// <summary>Gets or sets the estimated number of threads that will update the storage concurrently.</summary>
-        /// <remarks>The capacity cannot be less than 1 or greater than <see cref="CacheCapacityLimit"/>; otherwise, it is increased or decreased.</remarks>
+        /// <remarks>The concurrency level cannot be less than 1 or greater than <see cref="CacheCapacityLimit"/>; otherwise, it is increased or decreased.</remarks>
         public static int CacheConcurrencyLevel
         {
             get
