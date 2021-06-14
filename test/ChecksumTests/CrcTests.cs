@@ -1,6 +1,4 @@
-﻿//#define PERF
-
-namespace Roydl.Crypto.Test.ChecksumTests
+﻿namespace Roydl.Crypto.Test.ChecksumTests
 {
     using System;
     using System.Numerics;
@@ -331,51 +329,5 @@ namespace Roydl.Crypto.Test.ChecksumTests
             Assert.AreEqual(expectedHash, instance.Hash);
             Assert.AreEqual(expectedHash, (string)instance);
         }
-
-#if NET5_0_OR_GREATER && RELEASE && PERF
-        private static readonly TestCaseData[] PerfTestData =
-        {
-            new(CrcType.Crc, CrcOptions.Crc.Default),
-            new(CrcType.Crc16, CrcOptions.Crc16.Default),
-            new(CrcType.Crc16, CrcOptions.Crc16.Buypass),
-            new(CrcType.Crc32, CrcOptions.Crc32.Default),
-            new(CrcType.Crc32, CrcOptions.Crc32.Xfer),
-            new(CrcType.Crc64, CrcOptions.Crc64.Default),
-            new(CrcType.Crc64, CrcOptions.Crc64.GoIso),
-            new(CrcType.Crc82, CrcOptions.Crc82.Default)
-        };
-
-        [Test]
-        [Explicit]
-        [NonParallelizable]
-        [TestCaseSource(nameof(PerfTestData))]
-        public void Throughput(CrcType crcType, Enum algorithm)
-        {
-            const int cycles = 3;
-
-            var instance = (IChecksumAlgorithm)CreateInstance(crcType, algorithm);
-
-            var data = new byte[ushort.MaxValue];
-            TestVars.Randomizer.NextBytes(data);
-
-            var sw = TestVars.StopWatch;
-            var rate = 0d;
-
-            for (var i = 0; i < cycles; i++)
-            {
-                var total = 0L;
-                sw.Restart();
-                while (sw.Elapsed < TimeSpan.FromSeconds(cycles))
-                {
-                    instance.ComputeHash(data);
-                    total += data.Length;
-                }
-                sw.Stop();
-                rate = Math.Max(total / sw.Elapsed.TotalSeconds / 1024 / 1024, rate);
-            }
-
-            TestContext.WriteLine(@"Throughput: {0:0.0} MiB/s", rate);
-        }
-#endif
     }
 }
