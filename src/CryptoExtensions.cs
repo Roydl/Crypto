@@ -15,6 +15,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Checksum;
+    using Resources;
 
     /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
     /// <remarks>Note that most of the CRC constants are tagged with <see cref="EditorBrowsableState.Never"/>. You are able to find all available names by performing a <see langword="Go To Definition"/> on <see cref="ChecksumAlgo"/>. It is also possible to convert <see cref="CrcOptions"/> to <see cref="ChecksumAlgo"/>.</remarks>
@@ -471,8 +472,12 @@
         /// <exception cref="NotSupportedException">source does not support reading.</exception>
         /// <returns>A 64-bit unsigned integer that contains the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
-        public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            algorithm.GetDefaultInstance().InternalEncrypt(source, false) switch
+        public static ulong GetCipher<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            var instance = algorithm.GetDefaultInstance();
+            return instance.InternalEncrypt(source, false) switch
             {
                 IChecksumResult<byte> x => x.HashNumber,
                 IChecksumResult<ushort> x => x.HashNumber,
@@ -481,6 +486,7 @@
                 IChecksumResult<BigInteger> x => (ulong)(x.HashNumber & ulong.MaxValue),
                 _ => default
             };
+        }
 
         /// <summary>Hashes this <paramref name="source"/> object with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
         /// <returns>A string that contains the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>.</returns>
@@ -496,6 +502,10 @@
         /// <inheritdoc cref="IChecksumAlgorithm.ComputeFileHash(string)"/>
         public static string GetFileChecksum(this string path, ChecksumAlgo algorithm = ChecksumAlgo.Sha256)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+            if (!File.Exists(path))
+                throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             var instance = algorithm.GetDefaultInstance();
             instance.ComputeFileHash(path);
             return instance.Hash;
@@ -534,14 +544,14 @@
             if (searchOption == SearchOption.AllDirectories && capacity > files.Length && (dirs = dirInfo.GetDirectories()).Any())
                 Parallel.ForEach(dirs, di =>
                 {
-                    var dict = di.GetChecksums(SearchOption.AllDirectories, algorithm);
+                    var dict = di.GetChecksums(algorithm);
                     Parallel.ForEach(dict, pair =>
                     {
                         var i = Interlocked.Increment(ref index);
                         items[i] = pair;
                     });
                 });
-            return items.OrderBy(p => p.Key, StringComparer.CurrentCulture).ToDictionary(p => p.Key, p => p.Value);
+            return items.OrderBy(p => p.Key, StringComparer.Ordinal).ToDictionary(p => p.Key, p => p.Value);
 
             static int GetCapacity(int numberOfFiles, DirectoryInfo dirInfo, SearchOption searchOption)
             {
@@ -570,8 +580,12 @@
         [return: NotNullIfNotNull("source")]
         public static unsafe string GetGuid<TSource>(this TSource source, bool braces = false, ChecksumAlgo algorithm1 = ChecksumAlgo.Crc32, ChecksumAlgo algorithm2 = ChecksumAlgo.Sha256)
         {
-            var span1 = algorithm1.GetDefaultInstance().InternalEncrypt(source, true).RawHash.Span;
-            var span2 = algorithm2.GetDefaultInstance().InternalEncrypt(source, false).RawHash.Span;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            var inst1 = algorithm1.GetDefaultInstance();
+            var inst2 = algorithm2.GetDefaultInstance();
+            var span1 = inst1.InternalEncrypt(source, true).RawHash.Span;
+            var span2 = inst2.InternalEncrypt(source, false).RawHash.Span;
             string str;
             fixed (byte* rawIn1 = &span1[0], rawIn2 = &span2[0])
             {
@@ -614,8 +628,8 @@
         /// <param name="hash">If successful, the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks>
         ///     <list type="table">
-        ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
-        ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
+        ///         <item><term>Known</term> <description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="Half"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
+        ///         <item><term>Otherwise</term> <description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
         ///     </list>
         /// </remarks>
         /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
@@ -627,8 +641,8 @@
         /// <param name="hash">If successful, the result of hashing the specified <paramref name="source"/> object by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks>
         ///     <list type="table">
-        ///         <item><term>Known</term>&#160;<description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
-        ///         <item><term>Otherwise</term>&#160;<description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
+        ///         <item><term>Known</term> <description><see cref="bool"/>, <see cref="sbyte"/>, <see cref="byte"/>, <see cref="short"/>, <see cref="ushort"/>, <see cref="char"/>, <see cref="int"/>, <see cref="uint"/>, <see cref="long"/>, <see cref="ulong"/>, <see cref="float"/>, <see cref="double"/>, <see cref="decimal"/>, <see cref="Enum"/>, <see cref="IntPtr"/>, <see cref="UIntPtr"/>, <see cref="Vector{T}"/>, <see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/>, <see cref="Matrix3x2"/>, <see cref="Matrix4x4"/>, <see cref="Plane"/>, <see cref="Quaternion"/>, <see cref="Complex"/>, <see cref="BigInteger"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>, <see cref="TimeSpan"/>, <see cref="Guid"/>, <see cref="Rune"/>, <see cref="Stream"/>, <see cref="StreamReader"/>, <see cref="FileInfo"/>, any <see cref="IEnumerable{T}"/> <see cref="byte"/> sequence, i.e. <see cref="Array"/>, or any <see cref="IEnumerable{T}"/> <see cref="char"/> sequence, i.e. <see cref="string"/>.</description></item>
+        ///         <item><term>Otherwise</term> <description>An attempt is made to convert <paramref name="source"/> to a byte array for the encryption, which should work for all <see href="https://docs.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types">blittable types</see>. If this fails, <paramref name="source"/> is serialized using <see cref="Utf8JsonWriter"/> and the result is encrypted.</description></item>
         ///     </list>
         /// </remarks>
         /// <returns><see langword="true"/> if the specified <paramref name="source"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>

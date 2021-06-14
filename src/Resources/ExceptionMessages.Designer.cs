@@ -122,5 +122,14 @@ namespace Roydl.Crypto.Resources {
                 return ResourceManager.GetString("InvalidOperationUnsupportedType", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream does not support reading..
+        /// </summary>
+        internal static string NotSupportedStreamRead {
+            get {
+                return ResourceManager.GetString("NotSupportedStreamRead", resourceCulture);
+            }
+        }
     }
 }

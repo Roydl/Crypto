@@ -354,6 +354,8 @@
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead)
+                throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             using var hasher = CreateHashCore();
             int len;
@@ -373,8 +375,8 @@
         public sealed override void ComputeHash(ReadOnlySpan<byte> bytes)
         {
             Reset();
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
+            if (bytes.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             using var hasher = CreateHashCore();
             hasher.AppendData(bytes);
             RawHash = hasher.GetHashAndReset();

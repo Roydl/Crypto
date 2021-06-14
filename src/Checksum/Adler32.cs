@@ -4,6 +4,7 @@
     using System.IO;
     using System.Runtime.CompilerServices;
     using Internal;
+    using Resources;
 
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
@@ -21,6 +22,8 @@
             Reset();
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead)
+                throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             Span<uint> sum = stackalloc[] { 1u, 0u };
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
@@ -36,8 +39,8 @@
         public override void ComputeHash(ReadOnlySpan<byte> bytes)
         {
             Reset();
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
+            if (bytes.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             Span<uint> sum = stackalloc[] { 1u, 0u };
             foreach (var value in bytes)
                 AppendData(value, ref sum);

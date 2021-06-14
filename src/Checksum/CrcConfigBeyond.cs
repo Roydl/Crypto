@@ -5,6 +5,7 @@
     using System.Numerics;
     using System.Runtime.CompilerServices;
     using Internal;
+    using Resources;
 
     /// <summary>Represents a beyond 64-bit CRC configuration structure.
     ///     <para>Note that there is almost no size limit, but the computing power is significantly reduced.</para>
@@ -67,6 +68,8 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead)
+                throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             hash = Init;
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
@@ -82,7 +85,7 @@
         public void ComputeHash(ReadOnlySpan<byte> bytes, out BigInteger hash)
         {
             if (bytes.IsEmpty)
-                throw new ArgumentNullException(nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = Init;
             AppendData(bytes, bytes.Length, ref sum);
             FinalizeHash(ref sum);
@@ -94,7 +97,7 @@
         public void AppendData(ReadOnlySpan<byte> bytes, int len, ref BigInteger hash)
         {
             if (bytes.IsEmpty)
-                throw new ArgumentNullException(nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
             var i = 0;
             while (--len >= 0)

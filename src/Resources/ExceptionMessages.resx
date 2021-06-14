@@ -138,4 +138,7 @@
   <data name="InvalidOperationUnsupportedType" xml:space="preserve">
     <value>The specified type is invalid.</value>
   </data>
+  <data name="NotSupportedStreamRead" xml:space="preserve">
+    <value>Stream does not support reading.</value>
+  </data>
 </root>

@@ -19,7 +19,6 @@
 
         /// <summary>Computes the hash from the specified sequence of bytes.</summary>
         /// <param name="bytes">The sequence of bytes to hash.</param>
-        /// <exception cref="ArgumentNullException">bytes is null.</exception>
         /// <exception cref="ArgumentException">bytes is empty.</exception>
         /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
         void ComputeHash(ReadOnlySpan<byte> bytes);

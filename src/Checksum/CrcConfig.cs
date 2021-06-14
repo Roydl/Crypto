@@ -82,6 +82,8 @@
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead)
+                throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum = Init;
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
@@ -95,7 +97,7 @@
         public void ComputeHash(ReadOnlySpan<byte> bytes, out byte hash)
         {
             if (bytes.IsEmpty)
-                throw new ArgumentNullException(nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = Init;
             AppendData(bytes, bytes.Length, ref sum);
             FinalizeHash(ref sum);
@@ -107,7 +109,7 @@
         public unsafe void AppendData(ReadOnlySpan<byte> bytes, int len, ref byte hash)
         {
             if (bytes.IsEmpty)
-                throw new ArgumentNullException(nameof(bytes));
+                throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
             fixed (byte* table = &Table.Span[0])
             {

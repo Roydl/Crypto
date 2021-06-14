@@ -45,13 +45,15 @@
         /// <param name="stream">The stream with the data to hash.</param>
         /// <param name="hash">The fully computed hash code.</param>
         /// <exception cref="ArgumentNullException">stream is null.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="NotSupportedException">stream does not support reading.</exception>
         /// <remarks><see cref="Init">Init</see>, <see cref="RefIn">RefIn</see>, <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see> are used.</remarks>
         void ComputeHash(Stream stream, out TValue hash);
 
         /// <summary>Computes the hash from the specified sequence of bytes using the configured CRC algorithm.</summary>
         /// <param name="bytes">The sequence of bytes to hash.</param>
         /// <param name="hash">The fully computed hash code.</param>
-        /// <exception cref="ArgumentNullException">stream is null.</exception>
+        /// <exception cref="ArgumentException">bytes is empty.</exception>
         /// <remarks><see cref="Init">Init</see>, <see cref="RefIn">RefIn</see>, <see cref="RefOut">RefOut</see> and <see cref="XorOut">XorOut</see> are used.</remarks>
         void ComputeHash(ReadOnlySpan<byte> bytes, out TValue hash);
 
@@ -60,6 +62,7 @@
         /// <param name="len">The number of bytes to hash.</param>
         /// <param name="hash">The hash code to be computed or its computation that will be continued.</param>
         /// <remarks>Only <see cref="RefIn">RefIn</see> is used.</remarks>
+        /// <inheritdoc cref="ComputeHash(ReadOnlySpan{byte}, out TValue)"/>
         void AppendData(ReadOnlySpan<byte> bytes, int len, ref TValue hash);
 
         /// <summary>Computes the hash from the specified byte value using the CRC algorithm.</summary>
