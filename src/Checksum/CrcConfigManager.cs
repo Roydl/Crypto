@@ -13,7 +13,6 @@
         private static int _cacheCapacity, _cacheConcurrencyLevel;
 
         /// <summary>Gets or sets the initial number of CRC configurations that the storage can contain. The capacity cannot be is less than <see cref="CacheConcurrencyLevel"/> or greater than <see cref="CacheCapacityLimit"/>; otherwise it is increased or decreased.</summary>
-        /// <remarks>If changes are made, the current storage is completely removed.</remarks>
         public static int CacheCapacity
         {
             get
