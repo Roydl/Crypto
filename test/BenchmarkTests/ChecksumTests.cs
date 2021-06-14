@@ -35,7 +35,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
         [TestCaseSource(nameof(BigTestData))]
         [TestCaseSource(nameof(SmallTestData))]
         [Category("Performance")]
-        public void DataThroughput(ChecksumAlgo algorithm, int dataSize)
+        public void Benchmark_DataThroughput(ChecksumAlgo algorithm, int dataSize)
         {
             var inst = algorithm.GetDefaultInstance();
             var data = new byte[dataSize];
@@ -57,7 +57,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
                 rate = Math.Max(total / sw.Elapsed.TotalSeconds / 1024 / 1024, rate);
             }
 
-            TestContext.Write(@"Throughput [Algorithm: {0}; ", algorithm);
+            TestContext.Write(@"  Benchmark Throughput [Algorithm: {0}; ", algorithm);
             switch (dataSize)
             {
                 case > 1024:
