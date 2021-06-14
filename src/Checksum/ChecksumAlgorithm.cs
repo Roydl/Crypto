@@ -16,7 +16,7 @@
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
         /// <inheritdoc/>
-        public virtual string AlgorithmName { get; protected set; }
+        public string AlgorithmName { get; protected set; }
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -332,9 +332,6 @@
     {
         private byte[] _secretKey;
 
-        /// <inheritdoc/>
-        public override string AlgorithmName => HashAlgorithm.Name;
-
         /// <summary>Gets or sets the secret key for <see cref="HMAC"/> hashing. The key can be of any length, but a key longer than the output size of the specified hash algorithm will be hashed to derive a correctly-sized key. Therefore, the recommended size of the secret key is the output size of the specified hash algorithm.</summary>
         /// <remarks>Before overwriting an old key, see <see cref="DestroySecretKey()">DestroySecretKey</see>.</remarks>
         public byte[] SecretKey
@@ -352,6 +349,7 @@
         protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, byte[] secretKey = default) : base(GetBitWidth(algorithm))
         {
             HashAlgorithm = algorithm;
+            AlgorithmName = algorithm.Name;
             SecretKey = secretKey;
         }
 
