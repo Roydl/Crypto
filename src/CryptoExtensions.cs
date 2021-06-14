@@ -477,7 +477,7 @@
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             var instance = algorithm.GetDefaultInstance();
-            return instance.InternalEncrypt(source, false) switch
+            return instance.InternalComputeHash(source, false) switch
             {
                 IChecksumResult<byte> x => x.HashNumber,
                 IChecksumResult<ushort> x => x.HashNumber,
@@ -493,7 +493,7 @@
         /// <inheritdoc cref="GetCipher{TSource}(TSource, ChecksumAlgo)"/>
         [return: NotNullIfNotNull("source")]
         public static string GetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm = ChecksumAlgo.Sha256) =>
-            algorithm.GetDefaultInstance().InternalEncrypt(source, false).Hash;
+            algorithm.GetDefaultInstance().InternalComputeHash(source, false).Hash;
 
         /// <summary>Hashes the file at this <paramref name="path"/> with the specified <paramref name="algorithm"/> and returns the string representation of the computed hash code.</summary>
         /// <param name="path">The full path of the file to hash.</param>
@@ -584,8 +584,8 @@
                 throw new ArgumentNullException(nameof(source));
             var inst1 = algorithm1.GetDefaultInstance();
             var inst2 = algorithm2.GetDefaultInstance();
-            var span1 = inst1.InternalEncrypt(source, true).RawHash.Span;
-            var span2 = inst2.InternalEncrypt(source, false).RawHash.Span;
+            var span1 = inst1.InternalComputeHash(source, true).RawHash.Span;
+            var span2 = inst2.InternalComputeHash(source, false).RawHash.Span;
             string str;
             fixed (byte* rawIn1 = &span1[0], rawIn2 = &span2[0])
             {
@@ -671,7 +671,7 @@
             source.TryGetCipher(ChecksumAlgo.Sha256, out hash);
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, ChecksumAlgo, out ulong)"/>
-        public static bool TryGetChecksum<TSource>([NotNullWhen(true)] this TSource source, ChecksumAlgo algorithm, out string hash)
+        public static bool TryGetChecksum<TSource>(this TSource source, ChecksumAlgo algorithm, [NotNullWhen(true)] out string hash)
         {
             try
             {
@@ -686,7 +686,7 @@
         }
 
         /// <inheritdoc cref="TryGetCipher{TSource}(TSource, out ulong)"/>
-        public static bool TryGetChecksum<TSource>([NotNullWhen(true)] this TSource source, out string hash) =>
+        public static bool TryGetChecksum<TSource>(this TSource source, [NotNullWhen(true)] out string hash) =>
             source.TryGetChecksum(ChecksumAlgo.Sha256, out hash);
 
         /// <summary>Tries to hash all files of this <paramref name="dirInfo"/> object with the specified <paramref name="algorithm"/> and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
@@ -696,7 +696,7 @@
         /// <param name="result">If successful, a sequence of <see cref="string"/>-based <see cref="KeyValuePair"/>&lt;<see langword="FilePath"/>, <see langword="Checksum"/>&gt; objects provided by an <see cref="IDictionary{TKey, TValue}"/> object that contains the result of hashing the files of the specified <paramref name="dirInfo"/> by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
         /// <remarks></remarks>
         /// <returns><see langword="true"/> if the files of the specified <paramref name="dirInfo"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, SearchOption searchOption, ChecksumAlgo algorithm, out IDictionary<string, string> result)
+        public static bool TryGetChecksums(this DirectoryInfo dirInfo, SearchOption searchOption, ChecksumAlgo algorithm, [NotNullWhen(true)] out IDictionary<string, string> result)
         {
             try
             {
@@ -713,11 +713,11 @@
         /// <summary>Tries to hash all files of this <paramref name="dirInfo"/> object with the <see cref="ChecksumAlgo.Sha256"/> algorithm and returns a <see cref="bool"/> value that determines whether the task was successful. All possible exceptions are caught.</summary>
         /// <returns><see langword="true"/> if the files of the specified <paramref name="dirInfo"/> could be hashed by the <see cref="ChecksumAlgo.Sha256"/> algorithm; otherwise, <see langword="false"/>.</returns>
         /// <inheritdoc cref="TryGetChecksums(DirectoryInfo, SearchOption, ChecksumAlgo, out IDictionary{string, string})"/>
-        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, ChecksumAlgo algorithm, out IDictionary<string, string> result) =>
+        public static bool TryGetChecksums(this DirectoryInfo dirInfo, ChecksumAlgo algorithm, [NotNullWhen(true)] out IDictionary<string, string> result) =>
             dirInfo.TryGetChecksums(SearchOption.AllDirectories, algorithm, out result);
 
         /// <inheritdoc cref="TryGetChecksums(DirectoryInfo, ChecksumAlgo, out IDictionary{string, string})"/>
-        public static bool TryGetChecksums([NotNullWhen(true)] this DirectoryInfo dirInfo, out IDictionary<string, string> result) =>
+        public static bool TryGetChecksums(this DirectoryInfo dirInfo, [NotNullWhen(true)] out IDictionary<string, string> result) =>
             dirInfo.TryGetChecksums(SearchOption.AllDirectories, ChecksumAlgo.Sha256, out result);
 
         /// <summary>Creates a default instance of this algorithm.</summary>
@@ -823,7 +823,7 @@
                 _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
             };
 
-        internal static IChecksumResult InternalEncrypt<TSource>(this IChecksumAlgorithm instance, TSource source, bool restoreStreamPos)
+        internal static IChecksumResult InternalComputeHash<TSource>(this IChecksumAlgorithm instance, TSource source, bool restoreStreamPos)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
