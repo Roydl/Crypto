@@ -6,6 +6,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Numerics;
+    using System.Runtime.CompilerServices;
     using System.Security.Cryptography;
     using System.Text;
     using Internal;
@@ -14,6 +15,9 @@
     /// <summary>Represents the base class from which all implementations of checksum encryption algorithms must derive.</summary>
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
+        /// <inheritdoc/>
+        public virtual string AlgorithmName { get; protected set; }
+
         /// <inheritdoc/>
         public int BitWidth { get; }
 
@@ -172,7 +176,7 @@
         /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
         /// <returns>A <see cref="byte"/> array copy of the last computed hash code.</returns>
         public static explicit operator byte[](ChecksumAlgorithm value) =>
-            value.RawHash.Span.ToArray();
+            value.RawHash.ToArray();
 
         /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm"/> to <see cref="string"/>.</summary>
         /// <param name="value">The item to convert to <see cref="string"/>.</param>
@@ -328,6 +332,9 @@
     {
         private byte[] _secretKey;
 
+        /// <inheritdoc/>
+        public override string AlgorithmName => HashAlgorithm.Name;
+
         /// <summary>Gets or sets the secret key for <see cref="HMAC"/> hashing. The key can be of any length, but a key longer than the output size of the specified hash algorithm will be hashed to derive a correctly-sized key. Therefore, the recommended size of the secret key is the output size of the specified hash algorithm.</summary>
         /// <remarks>Before overwriting an old key, see <see cref="DestroySecretKey()">DestroySecretKey</see>.</remarks>
         public byte[] SecretKey
@@ -336,7 +343,7 @@
             set => _secretKey = value;
         }
 
-        private HashAlgorithmName Algorithm { get; }
+        private HashAlgorithmName HashAlgorithm { get; }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="algorithm">The built-in algorithm to use.</param>
@@ -344,7 +351,7 @@
         /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
         protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, byte[] secretKey = default) : base(GetBitWidth(algorithm))
         {
-            Algorithm = algorithm;
+            HashAlgorithm = algorithm;
             SecretKey = secretKey;
         }
 
@@ -357,18 +364,18 @@
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-            using var hasher = CreateHashCore();
+            using var instance = CreateAlgorithm();
             int len;
             while ((len = stream.Read(bytes)) > 0)
             {
                 if (bytes.Length == len)
                 {
-                    hasher.AppendData(bytes);
+                    instance.AppendData(bytes);
                     continue;
                 }
-                hasher.AppendData(bytes[..len]);
+                instance.AppendData(bytes[..len]);
             }
-            RawHash = hasher.GetHashAndReset();
+            FinalizeHash(instance);
         }
 
         /// <inheritdoc/>
@@ -377,9 +384,9 @@
             Reset();
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
-            using var hasher = CreateHashCore();
-            hasher.AppendData(bytes);
-            RawHash = hasher.GetHashAndReset();
+            using var instance = CreateAlgorithm();
+            instance.AppendData(bytes);
+            FinalizeHash(instance);
         }
 
         /// <inheritdoc cref="IChecksumAlgorithm.ComputeHash(string)"/>
@@ -428,7 +435,19 @@
                 _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
             };
 
-        private IncrementalHash CreateHashCore() =>
-            SecretKey != null ? IncrementalHash.CreateHMAC(Algorithm, SecretKey) : IncrementalHash.CreateHash(Algorithm);
+        private IncrementalHash CreateAlgorithm() =>
+            SecretKey != null ? IncrementalHash.CreateHMAC(HashAlgorithm, SecretKey) : IncrementalHash.CreateHash(HashAlgorithm);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void FinalizeHash(IncrementalHash algorithm)
+        {
+            if (algorithm == null)
+                throw new ArgumentNullException(nameof(algorithm));
+#if NET5_0_OR_GREATER
+            RawHash = algorithm.GetCurrentHash();
+#else
+            RawHash = algorithm.GetHashAndReset();
+#endif
+        }
     }
 }

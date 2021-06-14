@@ -24,20 +24,20 @@
 
         private static readonly TestCaseData[] TestDataDefault =
         {
-            new(TestSetting.Default, TestVarsType.TestStream, ExpectedTestHash),
-            new(TestSetting.Default, TestVarsType.TestBytes, ExpectedTestHash),
-            new(TestSetting.Default, TestVarsType.TestString, ExpectedTestHash),
-            new(TestSetting.Default, TestVarsType.TestFile, ExpectedTestHash),
-            new(TestSetting.Default, TestVarsType.RangeString, ExpectedRangeHash)
+            new(Algorithm, TestSetting.Default, TestVarsType.TestStream, ExpectedTestHash),
+            new(Algorithm, TestSetting.Default, TestVarsType.TestBytes, ExpectedTestHash),
+            new(Algorithm, TestSetting.Default, TestVarsType.TestString, ExpectedTestHash),
+            new(Algorithm, TestSetting.Default, TestVarsType.TestFile, ExpectedTestHash),
+            new(Algorithm, TestSetting.Default, TestVarsType.RangeString, ExpectedRangeHash)
         };
 
         private static readonly TestCaseData[] TestDataHmac =
         {
-            new(TestSetting.Hmac, TestVarsType.TestStream, HmacExpectedTestHash),
-            new(TestSetting.Hmac, TestVarsType.TestBytes, HmacExpectedTestHash),
-            new(TestSetting.Hmac, TestVarsType.TestString, HmacExpectedTestHash),
-            new(TestSetting.Hmac, TestVarsType.TestFile, HmacExpectedTestHash),
-            new(TestSetting.Hmac, TestVarsType.RangeString, HmacExpectedRangeHash)
+            new(Algorithm, TestSetting.Hmac, TestVarsType.TestStream, HmacExpectedTestHash),
+            new(Algorithm, TestSetting.Hmac, TestVarsType.TestBytes, HmacExpectedTestHash),
+            new(Algorithm, TestSetting.Hmac, TestVarsType.TestString, HmacExpectedTestHash),
+            new(Algorithm, TestSetting.Hmac, TestVarsType.TestFile, HmacExpectedTestHash),
+            new(Algorithm, TestSetting.Hmac, TestVarsType.RangeString, HmacExpectedRangeHash)
         };
 
         private static Md5 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
@@ -77,7 +77,7 @@
         [Test]
         [TestCaseSource(nameof(TestDataDefault))]
         [Category("Extension")]
-        public void Extension_GetChecksum(TestSetting _, TestVarsType varsType, string expectedHash)
+        public void Extension_GetChecksum(ChecksumAlgo _, TestSetting __, TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
@@ -106,29 +106,15 @@
             Assert.AreEqual(expectedHash, hash);
         }
 
-#if DEBUG
         [Test]
-        [Explicit]
-        [Category("Extension")]
-        [Platform(Include = TestVars.PlatformWin)]
-        public void Extension_GetChecksums()
-        {
-            var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums(Algorithm);
-            Assert.GreaterOrEqual(items.Count, 2383);
-            foreach (var (_, checksum) in items)
-                Assert.AreEqual(HashSize, checksum.Length);
-        }
-#endif
-
-        [Test]
-        [TestCase(BitWidth, HashSize, RawHashSize)]
+        [TestCase(Algorithm, BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void Instance__Ctor(int bitWidth, int hashSize, int rawHashSize)
+        public void Instance__Ctor(ChecksumAlgo _, int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Md5();
             Assert.IsInstanceOf(typeof(Md5), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
-            Assert.AreNotSame(_instanceDefault, instanceDefault);
+            Assert.IsNotNull(instanceDefault.AlgorithmName);
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
@@ -139,7 +125,7 @@
         [TestCaseSource(nameof(TestDataDefault))]
         [TestCaseSource(nameof(TestDataHmac))]
         [Category("Method")]
-        public void Instance_ComputeHash(TestSetting setting, TestVarsType varsType, string expectedHash)
+        public void Instance_ComputeHash(ChecksumAlgo _, TestSetting setting, TestVarsType varsType, string expectedHash)
         {
             _instanceDefault.SecretKey = setting == TestSetting.Hmac ? TestVars.TestSecretKey : null;
             switch (varsType)
@@ -169,10 +155,11 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
-        public void Instance_DestroySecretKey()
+        public void Instance_DestroySecretKey(ChecksumAlgo _)
         {
             var secretKey = new WeakReference(TestVars.GetRandomBytes(64));
             var instance = new Md5((byte[])secretKey.Target);
@@ -199,8 +186,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_Equals()
+        public void Instance_Equals(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -215,8 +203,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_GetHashCode()
+        public void Instance_GetHashCode(ChecksumAlgo _)
         {
             Assert.AreEqual(_instanceDefault.GetHashCode(), new Md5().GetHashCode());
             Assert.AreNotEqual(new Adler32().GetHashCode(), _instanceDefault.GetHashCode());
@@ -232,8 +221,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Operator")]
-        public void Instance_Operators()
+        public void Instance_Operators(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -259,8 +249,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_ToString()
+        public void Instance_ToString(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceByteArray.ToString());

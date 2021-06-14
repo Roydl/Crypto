@@ -21,11 +21,11 @@
 
         private static readonly TestCaseData[] TestData =
         {
-            new(TestVarsType.TestStream, ExpectedTestHash),
-            new(TestVarsType.TestBytes, ExpectedTestHash),
-            new(TestVarsType.TestString, ExpectedTestHash),
-            new(TestVarsType.TestFile, ExpectedTestHash),
-            new(TestVarsType.RangeString, ExpectedRangeHash)
+            new(Algorithm, TestVarsType.TestStream, ExpectedTestHash),
+            new(Algorithm, TestVarsType.TestBytes, ExpectedTestHash),
+            new(Algorithm, TestVarsType.TestString, ExpectedTestHash),
+            new(Algorithm, TestVarsType.TestFile, ExpectedTestHash),
+            new(Algorithm, TestVarsType.RangeString, ExpectedRangeHash)
         };
 
         private static Adler32 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
@@ -65,7 +65,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void Extension_GetChecksum(TestVarsType varsType, string expectedHash)
+        public void Extension_GetChecksum(ChecksumAlgo _, TestVarsType varsType, string expectedHash)
         {
             string hash;
             switch (varsType)
@@ -94,24 +94,10 @@
             Assert.AreEqual(expectedHash, hash);
         }
 
-#if DEBUG
-        [Test]
-        [Explicit]
-        [Category("Extension")]
-        [Platform(Include = TestVars.PlatformWin)]
-        public void Extension_GetChecksums()
-        {
-            var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums(Algorithm);
-            Assert.GreaterOrEqual(items.Count, 2383);
-            foreach (var (_, checksum) in items)
-                Assert.AreEqual(HashSize, checksum.Length);
-        }
-#endif
-
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Extension")]
-        public void Extension_GetCipher(TestVarsType varsType, string expectedHash)
+        public void Extension_GetCipher(ChecksumAlgo _, TestVarsType varsType, string expectedHash)
         {
             ulong hash;
             switch (varsType)
@@ -139,14 +125,15 @@
         }
 
         [Test]
-        [TestCase(BitWidth, HashSize, RawHashSize)]
+        [TestCase(Algorithm, BitWidth, HashSize, RawHashSize)]
         [Category("New")]
-        public void Instance__Ctor(int bitWidth, int hashSize, int rawHashSize)
+        public void Instance__Ctor(ChecksumAlgo _, int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Adler32();
             Assert.IsInstanceOf(typeof(Adler32), instanceDefault);
             Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
+            Assert.IsNotNull(instanceDefault.AlgorithmName);
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
@@ -156,7 +143,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Method")]
-        public void Instance_ComputeHash(TestVarsType varsType, string expectedHash)
+        public void Instance_ComputeHash(ChecksumAlgo _, TestVarsType varsType, string expectedHash)
         {
             switch (varsType)
             {
@@ -185,8 +172,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_Equals()
+        public void Instance_Equals(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -201,8 +189,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_GetHashCode()
+        public void Instance_GetHashCode(ChecksumAlgo _)
         {
             Assert.AreEqual(_instanceDefault.GetHashCode(), new Adler32().GetHashCode());
             Assert.AreNotEqual(new Crc<byte>().GetHashCode(), _instanceDefault.GetHashCode());
@@ -218,8 +207,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Operator")]
-        public void Instance_Operators()
+        public void Instance_Operators(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.Hash);
 
@@ -245,8 +235,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("Method")]
-        public void Instance_ToString()
+        public void Instance_ToString(ChecksumAlgo _)
         {
             Assert.AreEqual(ExpectedTestHash, _instanceStream.ToString());
             Assert.AreEqual(ExpectedTestHash, _instanceByteArray.ToString());

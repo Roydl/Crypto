@@ -14,16 +14,22 @@
     [Platform(Include = TestVars.PlatformCross)]
     public class RijndaelTests
     {
+        public enum SymmetricKeyAlgo
+        {
+            Rijndael
+        }
+
+        private const SymmetricKeyAlgo Algorithm = SymmetricKeyAlgo.Rijndael;
         private static readonly string TestFileSrcPath = TestVars.GetTempFilePath(nameof(Rijndael));
         private static readonly string TestFileDestPath = TestVars.GetTempFilePath(nameof(Rijndael));
 
         private static readonly TestCaseData[] TestData =
         {
-            new(TestVarsType.TestStream),
-            new(TestVarsType.TestBytes),
-            new(TestVarsType.TestString),
-            new(TestVarsType.TestFile),
-            new(TestVarsType.RangeString)
+            new(Algorithm, TestVarsType.TestStream),
+            new(Algorithm, TestVarsType.TestBytes),
+            new(Algorithm, TestVarsType.TestString),
+            new(Algorithm, TestVarsType.TestFile),
+            new(Algorithm, TestVarsType.RangeString)
         };
 
         private static Rijndael _instance128, _instance192, _instance256;
@@ -48,8 +54,9 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Category("New")]
-        public void Instance__Ctor()
+        public void Instance__Ctor(SymmetricKeyAlgo _)
         {
             var instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small);
             Assert.IsInstanceOf(typeof(Rijndael), instance128);
@@ -92,11 +99,12 @@
         }
 
         [Test]
+        [TestCase(Algorithm)]
         [Retry(3)]
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
-        public void Instance_DestroySecretData()
+        public void Instance_DestroySecretData(SymmetricKeyAlgo _)
         {
             var pass = new WeakReference(TestVars.GetRandomBytes(256));
             var salt = new WeakReference(TestVars.GetRandomBytes(128));
@@ -135,7 +143,7 @@
         [Test]
         [TestCaseSource(nameof(TestData))]
         [Category("Method")]
-        public void Instance_Encrypt_Decrypt(TestVarsType varsType)
+        public void Instance_Encrypt_Decrypt(SymmetricKeyAlgo _, TestVarsType varsType)
         {
             foreach (var instance in new[] { _instance128, _instance192, _instance256 })
             {

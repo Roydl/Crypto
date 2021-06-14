@@ -6,6 +6,9 @@
     /// <summary>Represents the interface for checksum encryption algorithms.</summary>
     public interface IChecksumAlgorithm : IChecksumResult
     {
+        /// <summary>Gets the algorithm name.</summary>
+        string AlgorithmName { get; }
+
         /// <summary>Gets the bit width of a computed hash.</summary>
         int BitWidth { get; }
 

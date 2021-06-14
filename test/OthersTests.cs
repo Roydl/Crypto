@@ -21,25 +21,37 @@
         [Test]
         [TestCase(575792, null, null)]
         [Category("Method")]
-        public void CombineHashCodes(int expected, object obj1, object obj2) =>
+        public void CryptoUtils_CombineHashCodes(int expected, object obj1, object obj2) =>
             Assert.AreEqual(expected, CryptoUtils.CombineHashCodes(obj1, obj2));
 
         [Test]
         [TestCase(271354309, 10294120, 68356525)]
-        public void CombineHashCodes(int expected, int hashCode1, int hashCode2) =>
+        public void CryptoUtils_CombineHashCodes(int expected, int hashCode1, int hashCode2) =>
             Assert.AreEqual(expected, CryptoUtils.CombineHashCodes(hashCode1, hashCode2));
+
+        [Test]
+        [Explicit]
+        [Category("Extension")]
+        [Platform(Include = TestVars.PlatformWin)]
+        public void Extension_GetChecksums()
+        {
+            var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums();
+            Assert.GreaterOrEqual(items.Count, 2383);
+            foreach (var (_, checksum) in items)
+                Assert.AreEqual(256 / 4, checksum.Length);
+        }
 
         [Test]
         [TestCase(TestVarsType.QuoteString, "9a775baf-7038-728b-8fb4-26b9a910764a")]
         [Category("Extension")]
         [Description("Computes a CRC-32 and a SHA-256 hash and combines both to form a GUID.")]
-        public void GetGuid(TestVarsType _, string expectedGuid) =>
+        public void Extension_GetGuid(TestVarsType _, string expectedGuid) =>
             Assert.AreEqual(expectedGuid, TestVars.QuoteStr.GetGuid());
 
         [Test]
         [TestCaseSource(nameof(GetGuidTestData))]
         [Category("Extension")]
-        public void GetGuid(TestVarsType varsType, ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, string expectedGuid)
+        public void Extension_GetGuid(TestVarsType varsType, ChecksumAlgo algorithm1, ChecksumAlgo algorithm2, bool braces, string expectedGuid)
         {
             string guid;
             switch (varsType)

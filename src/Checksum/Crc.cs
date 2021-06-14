@@ -89,7 +89,7 @@
         /// </remarks>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
         public Crc() : base(GetBitWidth(), GetStringSize(GetBitWidth())) =>
-            Current = GetConfig(default);
+            Current = ValidateConfig(default);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="byte"/>.</para>
@@ -97,83 +97,83 @@
         /// <param name="preset">The config preset.</param>
         /// <exception cref="InvalidOperationException">TValue is invalid, i.e. not supported.</exception>
         public Crc(CrcOptions.Crc preset) : base(8) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="ushort"/>.</para>
         /// </summary>
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
         public Crc(CrcOptions.Crc10 preset) : base(10, GetStringSize(10)) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc11 preset) : base(11, GetStringSize(11)) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc12 preset) : base(12, GetStringSize(12)) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc13 preset) : base(13) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc14 preset) : base(14) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc15 preset) : base(15) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc10)"/>
         public Crc(CrcOptions.Crc16 preset) : base(16) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="uint"/>.</para>
         /// </summary>
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
         public Crc(CrcOptions.Crc17 preset) : base(17, GetStringSize(17)) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
         public Crc(CrcOptions.Crc21 preset) : base(21) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
         public Crc(CrcOptions.Crc24 preset) : base(24) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
         public Crc(CrcOptions.Crc30 preset) : base(30) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
         public Crc(CrcOptions.Crc31 preset) : base(31) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc17)"/>
         public Crc(CrcOptions.Crc32 preset) : base(32) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="ulong"/>.</para>
         /// </summary>
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
         public Crc(CrcOptions.Crc40 preset) : base(40) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc40)"/>
         public Crc(CrcOptions.Crc64 preset) : base(64) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.
         ///     <para>The generic type of the specified <paramref name="preset"/> must be <see cref="BigInteger"/>.</para>
         /// </summary>
         /// <inheritdoc cref="Crc{TValue}(CrcOptions.Crc)"/>
         public Crc(CrcOptions.Crc82 preset) : base(82, GetStringSize(82)) =>
-            Current = GetConfig(preset);
+            Current = ValidateConfig(preset);
 
         /// <summary>Initializes a new instance of the <see cref="Crc{TValue}"/> class.</summary>
         /// <param name="config">The CRC config.</param>
@@ -242,8 +242,44 @@
             }
         }
 
-        private static ICrcConfig<TValue> GetConfig(Enum preset)
+        private static string GetName(Enum preset)
         {
+            var width = preset switch
+            {
+                CrcOptions.Crc => 8,
+                CrcOptions.Crc10 => 10,
+                CrcOptions.Crc11 => 11,
+                CrcOptions.Crc12 => 12,
+                CrcOptions.Crc13 => 13,
+                CrcOptions.Crc14 => 14,
+                CrcOptions.Crc15 => 15,
+                CrcOptions.Crc16 => 16,
+                CrcOptions.Crc17 => 17,
+                CrcOptions.Crc21 => 21,
+                CrcOptions.Crc24 => 24,
+                CrcOptions.Crc30 => 30,
+                CrcOptions.Crc31 => 31,
+                CrcOptions.Crc32 => 32,
+                CrcOptions.Crc40 => 40,
+                CrcOptions.Crc64 => 64,
+                CrcOptions.Crc82 => 82,
+                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
+            };
+            var name = preset.ToString();
+            return $"CRC{width}{(name == "Default" ? null : $"/{name.ToUpperInvariant()}")}";
+        }
+
+        private ICrcConfig<TValue> ValidateConfig(Enum preset)
+        {
+            preset ??= default(TValue) switch
+            {
+                byte => CrcOptions.Crc.Default,
+                ushort => CrcOptions.Crc16.Default,
+                uint => CrcOptions.Crc32.Default,
+                ulong => CrcOptions.Crc64.Default,
+                BigInteger => CrcOptions.Crc82.Default,
+                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
+            };
             object config = preset switch
             {
                 CrcOptions.Crc x => CrcConfigManager.GetConfig(x),
@@ -263,16 +299,9 @@
                 CrcOptions.Crc40 x => CrcConfigManager.GetConfig(x),
                 CrcOptions.Crc64 x => CrcConfigManager.GetConfig(x),
                 CrcOptions.Crc82 x => CrcConfigManager.GetConfig(x),
-                _ => default(TValue) switch
-                {
-                    byte => CrcConfigManager.GetConfig(CrcOptions.Crc.Default),
-                    ushort => CrcConfigManager.GetConfig(CrcOptions.Crc16.Default),
-                    uint => CrcConfigManager.GetConfig(CrcOptions.Crc32.Default),
-                    ulong => CrcConfigManager.GetConfig(CrcOptions.Crc64.Default),
-                    BigInteger => CrcConfigManager.GetConfig(CrcOptions.Crc82.Default),
-                    _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
-                }
+                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
             };
+            AlgorithmName = GetName(preset);
             return (ICrcConfig<TValue>)config;
         }
 

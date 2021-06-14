@@ -10,7 +10,7 @@
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
     {
         /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
-        public Adler32() : base(32) { }
+        public Adler32() : base(32) => AlgorithmName = nameof(Adler32);
 
         /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
         /// <returns>A newly created <see cref="Adler32"/> instance.</returns>
