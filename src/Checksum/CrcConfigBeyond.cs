@@ -73,15 +73,13 @@
                 throw new ArgumentNullException(nameof(stream));
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
-            hash = Init;
+            var sum = Init;
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
             while ((len = stream.Read(bytes)) > 0)
-            {
-                for (var i = 0; i < len; i++)
-                    AppendData(bytes[i], Table.Span, ref hash);
-            }
-            FinalizeHash(ref hash);
+                AppendData(bytes, len, ref sum);
+            FinalizeHash(ref sum);
+            hash = sum;
         }
 
         /// <inheritdoc/>

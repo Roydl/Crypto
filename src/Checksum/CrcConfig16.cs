@@ -103,8 +103,8 @@
                 {
                     var row = Rows;
                     var pos = 0;
-                    sum = (ushort)((table[--row * Columns + (((sum >> 00) & 0xff) ^ bytes[i + pos++])] ^
-                                    table[--row * Columns + (((sum >> 08) & 0xff) ^ bytes[i + pos++])] ^
+                    sum = (ushort)((table[--row * Columns + (((sum >> 0) & 0xff) ^ bytes[i + pos++])] ^
+                                    table[--row * Columns + (((sum >> 8) & 0xff) ^ bytes[i + pos++])] ^
                                     table[--row * Columns + bytes[i + pos++]] ^
                                     table[--row * Columns + bytes[i + pos++]] ^
                                     table[--row * Columns + bytes[i + pos++]] ^
