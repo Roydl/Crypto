@@ -12,6 +12,9 @@
     /// </summary>
     public readonly struct CrcConfigBeyond : ICrcConfig<BigInteger>
     {
+        private const int Columns = 1 << 8;
+        private const int Rows = 1 << 4;
+
         /// <inheritdoc/>
         public int BitWidth { get; }
 
@@ -100,8 +103,29 @@
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
             var i = 0;
+            var table = Table.Span;
+            while (RefIn && len >= Rows)
+            {
+                var row = Rows;
+                var pos = 0;
+                var bts = 8;
+                var cur = sum;
+                sum = table[(int)(--row * Columns + ((cur & 0xff) ^ bytes[i + pos++]))];
+                for (; pos < Rows; pos++)
+                {
+                    if (bts < BitWidth)
+                    {
+                        sum ^= table[(int)(--row * Columns + (((cur >> bts) & 0xff) ^ bytes[i + pos]))];
+                        bts += 8;
+                        continue;
+                    }
+                    sum ^= table[--row * Columns + bytes[i + pos]];
+                }
+                i += Rows;
+                len -= Rows;
+            }
             while (--len >= 0)
-                AppendData(bytes[i++], Table.Span, ref sum);
+                AppendData(bytes[i++], table, ref sum);
             hash = sum;
         }
 
@@ -145,21 +169,25 @@
         private static ReadOnlyMemory<BigInteger> CreateTable(int bitWidth, BigInteger poly, BigInteger mask, bool refIn)
         {
             var top = (BigInteger)(1 << (bitWidth - 1));
-            var mem = new BigInteger[1 << 8].AsMemory();
+            var rows = refIn ? Rows : 1;
+            var mem = new BigInteger[rows * Columns].AsMemory();
             var span = mem.Span;
-            for (var i = 0; i < span.Length; i++)
+            for (var i = 0; i < Columns; i++)
             {
                 var x = (BigInteger)i;
-                if (refIn)
-                    for (var j = 0; j < 8; j++)
-                        x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
-                else
+                for (var j = 0; j < rows; j++)
                 {
-                    x <<= bitWidth - 8;
-                    for (var j = 0; j < 8; j++)
-                        x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                    if (refIn)
+                        for (var k = 0; k < 8; k++)
+                            x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                    else
+                    {
+                        x <<= bitWidth - 8;
+                        for (var k = 0; k < 8; k++)
+                            x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                    }
+                    span[j * Columns + i] = x & mask;
                 }
-                span[i] = x & mask;
             }
             return mem;
         }

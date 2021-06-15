@@ -101,29 +101,26 @@
                 var i = 0;
                 while (RefIn && len >= Rows)
                 {
-                    var x = sum;
-
-                    sum = table[11 * Columns + bytes[i + 04]] ^
-                          table[10 * Columns + bytes[i + 05]] ^
-                          table[09 * Columns + bytes[i + 06]] ^
-                          table[08 * Columns + bytes[i + 07]] ^
-                          table[07 * Columns + bytes[i + 08]] ^
-                          table[06 * Columns + bytes[i + 09]] ^
-                          table[05 * Columns + bytes[i + 10]] ^
-                          table[04 * Columns + bytes[i + 11]] ^
-                          table[03 * Columns + bytes[i + 12]] ^
-                          table[02 * Columns + bytes[i + 13]] ^
-                          table[01 * Columns + bytes[i + 14]] ^
-                          table[00 * Columns + bytes[i + 15]];
-
-                    sum ^= table[15 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
-                           table[14 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
-                           table[13 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
-                           table[12 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])];
-
+                    var row = Rows;
+                    var pos = 0;
+                    sum = (table[--row * Columns + (((sum >> 00) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 08) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 16) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 24) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos]]) & Mask;
                     i += Rows;
                     len -= Rows;
-                    sum &= Mask;
                 }
                 while (--len >= 0)
                     AppendData(bytes[i++], table, ref sum);

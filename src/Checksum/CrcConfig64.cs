@@ -10,7 +10,7 @@
     public readonly struct CrcConfig64 : ICrcConfig<ulong>
     {
         private const int Columns = 1 << 8;
-        private const int Rows = 1 << 5;
+        private const int Rows = 1 << 4;
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -101,45 +101,26 @@
                 var i = 0;
                 while (RefIn && len >= Rows)
                 {
-                    var x = sum;
-
-                    sum = table[23 * Columns + bytes[i + 08]] ^
-                          table[22 * Columns + bytes[i + 09]] ^
-                          table[21 * Columns + bytes[i + 10]] ^
-                          table[20 * Columns + bytes[i + 11]] ^
-                          table[19 * Columns + bytes[i + 12]] ^
-                          table[18 * Columns + bytes[i + 13]] ^
-                          table[17 * Columns + bytes[i + 14]] ^
-                          table[16 * Columns + bytes[i + 15]] ^
-                          table[15 * Columns + bytes[i + 16]] ^
-                          table[14 * Columns + bytes[i + 17]] ^
-                          table[13 * Columns + bytes[i + 18]] ^
-                          table[12 * Columns + bytes[i + 19]] ^
-                          table[11 * Columns + bytes[i + 20]] ^
-                          table[10 * Columns + bytes[i + 21]] ^
-                          table[09 * Columns + bytes[i + 22]] ^
-                          table[08 * Columns + bytes[i + 23]] ^
-                          table[07 * Columns + bytes[i + 24]] ^
-                          table[06 * Columns + bytes[i + 25]] ^
-                          table[05 * Columns + bytes[i + 26]] ^
-                          table[04 * Columns + bytes[i + 27]] ^
-                          table[03 * Columns + bytes[i + 28]] ^
-                          table[02 * Columns + bytes[i + 29]] ^
-                          table[01 * Columns + bytes[i + 30]] ^
-                          table[00 * Columns + bytes[i + 31]];
-
-                    sum ^= table[31 * Columns + (((x >> 00) & 0xff) ^ bytes[i + 0])] ^
-                           table[30 * Columns + (((x >> 08) & 0xff) ^ bytes[i + 1])] ^
-                           table[29 * Columns + (((x >> 16) & 0xff) ^ bytes[i + 2])] ^
-                           table[28 * Columns + (((x >> 24) & 0xff) ^ bytes[i + 3])] ^
-                           table[27 * Columns + (((x >> 32) & 0xff) ^ bytes[i + 4])] ^
-                           table[26 * Columns + (((x >> 40) & 0xff) ^ bytes[i + 5])] ^
-                           table[25 * Columns + (((x >> 48) & 0xff) ^ bytes[i + 6])] ^
-                           table[24 * Columns + (((x >> 56) & 0xff) ^ bytes[i + 7])];
-
+                    ulong row = Rows;
+                    var pos = 0;
+                    sum = (table[--row * Columns + (((sum >> 00) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 08) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 16) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 24) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 32) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 40) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 48) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + (((sum >> 56) & 0xff) ^ bytes[i + pos++])] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos++]] ^
+                           table[--row * Columns + bytes[i + pos]]) & Mask;
                     i += Rows;
                     len -= Rows;
-                    sum &= Mask;
                 }
                 while (--len >= 0)
                     AppendData(bytes[i++], table, ref sum);

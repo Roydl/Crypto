@@ -9,6 +9,9 @@
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
     {
+        private const int BlockSize = 8;
+        private const uint ModAdler = 0xfff1u;
+
         /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
         public Adler32() : base(32) => AlgorithmName = nameof(Adler32);
 
@@ -28,10 +31,7 @@
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
             int len;
             while ((len = stream.Read(bytes)) > 0)
-            {
-                for (var i = 0; i < len; i++)
-                    AppendData(bytes[i], ref sum);
-            }
+                AppendData(bytes, len, ref sum);
             FinalizeHash(sum);
         }
 
@@ -42,25 +42,45 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             Span<uint> sum = stackalloc[] { 1u, 0u };
-            foreach (var value in bytes)
-                AppendData(value, ref sum);
+            AppendData(bytes, bytes.Length, ref sum);
             FinalizeHash(sum);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AppendData(ReadOnlySpan<byte> bytes, int len, ref Span<uint> hash)
+        {
+            var sum = hash;
+            var i = 0;
+            while (len >= BlockSize)
+            {
+                for (var j = 0; j < BlockSize; j++)
+                {
+                    sum[0] += bytes[i + j];
+                    sum[1] += sum[0];
+                }
+                if (sum[1] >= ModAdler)
+                    sum[1] -= ModAdler;
+
+                i += BlockSize;
+                len -= BlockSize;
+                if (len % 0x8000 == 0)
+                    sum[0] %= ModAdler;
+            }
+            while (--len >= 0)
+                AppendData(bytes[i++], ref sum);
+            hash = sum;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void AppendData(byte value, ref Span<uint> hash)
         {
-            if (hash.Length < 2)
-                throw new IndexOutOfRangeException();
-            hash[0] = (hash[0] + value) % 0xfff1;
-            hash[1] = (hash[1] + hash[0]) % 0xfff1;
+            hash[0] = (hash[0] + value) % ModAdler;
+            hash[1] = (hash[1] + hash[0]) % ModAdler;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FinalizeHash(ReadOnlySpan<uint> hash)
         {
-            if (hash.Length < 2)
-                throw new IndexOutOfRangeException();
             var sum = ((hash[1] << 16) | hash[0]) & uint.MaxValue;
             HashNumber = sum;
             RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
