@@ -357,8 +357,8 @@
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc31,
 
-        /// <summary>CRC-32/ISO-HDLC.
-        ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24, XZ.</para>
+        /// <summary>CRC-32/C.
+        ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
         /// </summary>
         Crc32,
 
@@ -381,12 +381,6 @@
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32BZip2,
-
-        /// <summary>CRC-32/C.
-        ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        Crc32C,
 
         /// <summary>CRC-32/D.
         ///     <para><b>Alias:</b> BASE91-D.</para>
@@ -412,6 +406,11 @@
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Xfer,
 
+        /// <summary>CRC-32/XZ.
+        ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24.</para>
+        /// </summary>
+        Crc32Xz,
+
         /// <summary>CRC-40.
         ///     <para><b>Alias:</b> GSM.</para>
         /// </summary>
@@ -430,7 +429,6 @@
         /// <summary>CRC-64/XZ.
         ///     <para><b>Alias:</b> GO-ECMA.</para>
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64Xz,
 
         /// <summary>CRC-64/GO-ISO.</summary>
@@ -801,7 +799,6 @@
                 ChecksumAlgo.Crc32 => Crc.Create(CrcOptions.Crc32.Default),
                 ChecksumAlgo.Crc32Autosar => Crc.Create(CrcOptions.Crc32.Autosar),
                 ChecksumAlgo.Crc32BZip2 => Crc.Create(CrcOptions.Crc32.BZip2),
-                ChecksumAlgo.Crc32C => Crc.Create(CrcOptions.Crc32.C),
                 ChecksumAlgo.Crc32CdRomEdc => Crc.Create(CrcOptions.Crc32.CdRomEdc),
                 ChecksumAlgo.Crc32D => Crc.Create(CrcOptions.Crc32.D),
                 ChecksumAlgo.Crc32JamCrc => Crc.Create(CrcOptions.Crc32.JamCrc),
@@ -809,6 +806,7 @@
                 ChecksumAlgo.Crc32Posix => Crc.Create(CrcOptions.Crc32.Posix),
                 ChecksumAlgo.Crc32Q => Crc.Create(CrcOptions.Crc32.Q),
                 ChecksumAlgo.Crc32Xfer => Crc.Create(CrcOptions.Crc32.Xfer),
+                ChecksumAlgo.Crc32Xz => Crc.Create(CrcOptions.Crc32.Xz),
                 ChecksumAlgo.Crc40 => Crc.Create(CrcOptions.Crc40.Default),
                 ChecksumAlgo.Crc64 => Crc.Create(CrcOptions.Crc64.Default),
                 ChecksumAlgo.Crc64GoIso => Crc.Create(CrcOptions.Crc64.GoIso),

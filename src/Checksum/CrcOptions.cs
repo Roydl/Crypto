@@ -335,8 +335,8 @@
         public enum Crc32
         {
             /// ReSharper disable CommentTypo
-            /// <summary>CRC-32/ISO-HDLC.
-            ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24, XZ.</para>
+            /// <summary>CRC-32/C.
+            ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
             /// </summary>
             Default = ChecksumAlgo.Crc32,
 
@@ -356,11 +356,6 @@
             /// </summary>
             BZip2 = ChecksumAlgo.Crc32BZip2,
 
-            /// <summary>CRC-32/C.
-            ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
-            /// </summary>
-            C = ChecksumAlgo.Crc32C,
-
             /// <summary>CRC-32/D.
             ///     <para><b>Alias:</b> BASE91-D.</para>
             /// </summary>
@@ -378,8 +373,13 @@
             Posix = ChecksumAlgo.Crc32Posix,
 
             /// <summary>CRC-32/XFER.</summary>
+            Xfer = ChecksumAlgo.Crc32Xfer,
+
+            /// <summary>CRC-32/XZ.
+            ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24.</para>
+            /// </summary>
             /// ReSharper restore CommentTypo
-            Xfer = ChecksumAlgo.Crc32Xfer
+            Xz = ChecksumAlgo.Crc32Xz
         }
 
         /// <summary>Specifies which CRC-40 configuration should be loaded.</summary>

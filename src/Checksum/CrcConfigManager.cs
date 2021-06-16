@@ -533,7 +533,7 @@
             config = preset switch
             {
                 CrcOptions.Crc32.Default =>
-                    new CrcConfig32(32, 0xcbf43926u, 0xedb88320u, 0xffffffffu, true, true, 0xffffffffu),
+                    new CrcConfig32(32, 0xe3069283u, 0x82f63b78u, 0xffffffffu, true, true, 0xffffffffu),
 
                 CrcOptions.Crc32.Autosar =>
                     new CrcConfig32(32, 0x1697d06au, 0xc8df352fu, 0xffffffffu, true, true, 0xffffffffu),
@@ -546,9 +546,6 @@
 
                 CrcOptions.Crc32.BZip2 =>
                     new CrcConfig32(32, 0xfc891918u, 0x04c11db7u, 0xffffffffu, false, false, 0xffffffffu),
-
-                CrcOptions.Crc32.C =>
-                    new CrcConfig32(32, 0xe3069283u, 0x82f63b78u, 0xffffffffu, true, true, 0xffffffffu),
 
                 CrcOptions.Crc32.D =>
                     new CrcConfig32(32, 0x87315576u, 0xd419cc15u, 0xffffffffu, true, true, 0xffffffffu),
@@ -564,6 +561,9 @@
 
                 CrcOptions.Crc32.Xfer =>
                     new CrcConfig32(32, 0xbd0be338u, 0x000000afu),
+
+                CrcOptions.Crc32.Xz =>
+                    new CrcConfig32(32, 0xcbf43926u, 0xedb88320u, 0xffffffffu, true, true, 0xffffffffu),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(preset), preset, null)
             };
