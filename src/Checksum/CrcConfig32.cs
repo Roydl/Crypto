@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
+    using System.Runtime.Intrinsics.X86;
     using Internal;
     using Resources;
 
@@ -11,6 +12,7 @@
     {
         private const int Columns = 1 << 8;
         private const int Rows = 1 << 4;
+        private readonly bool _hw, _hw64;
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -47,6 +49,8 @@
                 throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
             if (sizeof(uint) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
+            _hw = Sse42.IsSupported && bitWidth == 32 && check == 0xe3069283u;
+            _hw64 = _hw && Sse42.X64.IsSupported;
             if (mask == default)
                 mask = NumericHelper.CreateBitMask<uint>(bitWidth);
             BitWidth = bitWidth;
@@ -96,9 +100,37 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
+            var i = 0;
+            if (_hw)
+            {
+                if (_hw64)
+                {
+                    const int size64 = sizeof(ulong);
+                    ulong sum64 = sum;
+                    while (len >= size64)
+                    {
+                        var data = CryptoUtils.GetUInt64(bytes.Slice(i, size64), BitConverter.IsLittleEndian);
+                        sum64 = Sse42.X64.Crc32(sum64, data);
+                        i += size64;
+                        len -= size64;
+                    }
+                    sum = (uint)(sum64 & Mask);
+                }
+                const int size = sizeof(uint);
+                while (len >= size)
+                {
+                    var data = CryptoUtils.GetUInt32(bytes.Slice(i, size), BitConverter.IsLittleEndian);
+                    sum = Sse42.Crc32(sum, data);
+                    i += size;
+                    len -= size;
+                }
+                while (--len >= 0)
+                    sum = Sse42.Crc32(sum, bytes[i++]);
+                hash = sum;
+                return;
+            }
             fixed (uint* table = &Table.Span[0])
             {
-                var i = 0;
                 while (RefIn && len >= Rows)
                 {
                     var row = Rows;
@@ -132,6 +164,11 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref uint hash)
         {
+            if (_hw)
+            {
+                hash = Sse42.Crc32(hash, value);
+                return;
+            }
             fixed (uint* table = &Table.Span[0])
                 AppendData(value, table, ref hash);
         }
