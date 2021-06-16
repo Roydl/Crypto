@@ -100,8 +100,8 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
-            var i = 0;
             var table = Table.Span;
+            var i = 0;
             while (RefIn && len >= Rows)
             {
                 var row = Rows;
