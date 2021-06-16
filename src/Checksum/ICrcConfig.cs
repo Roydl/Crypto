@@ -38,7 +38,7 @@
         TValue XorOut { get; }
 
         /// <summary>Gets the generated hash table of the configured CRC algorithm.</summary>
-        /// <remarks>For more information, see <see cref="Poly">Poly</see>.</remarks>
+        /// <remarks>When using the <see cref="CrcOptions.Crc32.Default">standard</see> configuration, the table is empty if SSE 4.2 is supported by the CPU .</remarks>
         ReadOnlyMemory<TValue> Table { get; }
 
         /// <summary>Computes the hash from the data of the specified stream using the configured CRC algorithm.</summary>

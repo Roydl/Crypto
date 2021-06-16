@@ -61,7 +61,7 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = CreateTable(bitWidth, poly, mask, refIn);
+            Table = _hw ? null : CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
                 CrcConfig.ThrowIfInvalid(this);
         }
