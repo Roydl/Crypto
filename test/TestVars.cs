@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using NUnit.Framework;
 
     public enum TestSetting
     {
@@ -24,7 +25,8 @@
 
     public static class TestVars
     {
-        public const string PlatformCross = "Win32NT,Linux";
+        public const string PlatformCross = PlatformWin + "," + PlatformLnx;
+        public const string PlatformLnx = "Linux";
         public const string PlatformWin = "Win32NT";
         public const string QuoteStr = "We know what we are, but know not what we may be.";
         public const string TestStr = "Test";
@@ -66,9 +68,7 @@
 
         public static string GetTempFilePath(string name)
         {
-            var dir = Environment.CurrentDirectory;
-            if (!Directory.Exists(dir)) // broken dir on some test platforms 
-                dir = AppDomain.CurrentDomain.BaseDirectory;
+            var dir = TestContext.CurrentContext.TestDirectory;
             return Path.Combine(dir, $"test-{name}-{Guid.NewGuid()}.tmp");
         }
     }

@@ -209,8 +209,8 @@
 
             #region CRC-32
 
-            new(CrcType.Crc32, CrcOptions.Crc32.Default, TestVarsType.TestString, "784dd132"),
-            new(CrcType.Crc32, CrcOptions.Crc32.Default, TestVarsType.RangeString, "7ad6d652"),
+            new(CrcType.Crc32, CrcOptions.Crc32.Default, TestVarsType.TestString, "5185664b"),
+            new(CrcType.Crc32, CrcOptions.Crc32.Default, TestVarsType.RangeString, "09cd6072"),
 
             new(CrcType.Crc32, CrcOptions.Crc32.Autosar, TestVarsType.TestString, "d8132eb0"),
             new(CrcType.Crc32, CrcOptions.Crc32.Autosar, TestVarsType.RangeString, "a628d0d8"),
@@ -223,9 +223,6 @@
 
             new(CrcType.Crc32, CrcOptions.Crc32.BZip2, TestVarsType.TestString, "d962895d"),
             new(CrcType.Crc32, CrcOptions.Crc32.BZip2, TestVarsType.RangeString, "45cbc18b"),
-
-            new(CrcType.Crc32, CrcOptions.Crc32.C, TestVarsType.TestString, "5185664b"),
-            new(CrcType.Crc32, CrcOptions.Crc32.C, TestVarsType.RangeString, "09cd6072"),
 
             new(CrcType.Crc32, CrcOptions.Crc32.D, TestVarsType.TestString, "d1ebff71"),
             new(CrcType.Crc32, CrcOptions.Crc32.D, TestVarsType.RangeString, "ab5be79c"),
@@ -241,6 +238,9 @@
 
             new(CrcType.Crc32, CrcOptions.Crc32.Xfer, TestVarsType.TestString, "b006037d"),
             new(CrcType.Crc32, CrcOptions.Crc32.Xfer, TestVarsType.RangeString, "7964bec3"),
+
+            new(CrcType.Crc32, CrcOptions.Crc32.Xz, TestVarsType.TestString, "784dd132"),
+            new(CrcType.Crc32, CrcOptions.Crc32.Xz, TestVarsType.RangeString, "7ad6d652"),
 
             #endregion
 
