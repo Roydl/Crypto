@@ -10,6 +10,7 @@
     {
         internal static TInt CreateBitMask<TInt>(int bitWidth) where TInt : struct, IComparable, IFormattable
         {
+            // safe creation of a `0xff` like integral mask by bit-width
             var size = (int)MathF.Ceiling(bitWidth / 8f);
             switch (0xff.FromTo<int, TInt>())
             {
@@ -77,8 +78,12 @@
 
         internal static TInt ReverseBits<TInt>(this TInt value) where TInt : struct, IComparable, IFormattable
         {
-            // string conversion is slower than shifting bits,
-            // but it's more accurate for some unusual bit widths
+            /*
+               it's only used once in finalizer, so it's okay if the
+               performance is slightly reduced if we can process all
+               bit-widths in return without having to deal with zero
+               paddings
+            */
             var bits = value switch
             {
                 sbyte x => Convert.ToString(x, 2),
@@ -115,13 +120,14 @@
             if (typeof(TIntFrom) == typeof(TIntTo))
                 return (TIntTo)(object)value;
 
-            /* slower and inaccurate when downsizing
+            /*
+                slower and inaccurate when downsizing
 
                 var current = value;
                 return Unsafe.As<TIntFrom, TIntTo>(ref current);
             */
 
-            // pretty fast unchecked assignment
+            // pretty quick and safe unchecked assignment
             return default(TIntTo) switch
             {
                 sbyte => value switch
