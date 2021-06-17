@@ -111,7 +111,7 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
-            fixed (byte* table = &Table.Span[0])
+            fixed (byte* table = Table.Span)
             {
                 var i = 0;
                 while (--len >= 0)
@@ -124,7 +124,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref byte hash)
         {
-            fixed (byte* table = &Table.Span[0])
+            fixed (byte* table = Table.Span)
                 AppendData(value, table, ref hash);
         }
 
@@ -154,9 +154,9 @@
         private unsafe void AppendData(byte value, byte* table, ref byte hash)
         {
             if (RefIn)
-                hash = (byte)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
+                hash = (byte)(((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask);
             else
-                hash = (byte)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+                hash = (byte)(((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask);
         }
 
         private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)

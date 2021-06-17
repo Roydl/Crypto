@@ -96,35 +96,36 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
-            fixed (ushort* table = &Table.Span[0])
-            {
-                var i = 0;
-                while (RefIn && len >= Rows)
+            fixed (ushort* table = Table.Span)
+                fixed (byte* input = bytes)
                 {
-                    var row = Rows;
-                    var pos = 0;
-                    sum = (ushort)((table[--row * Columns + (((sum >> 0) & 0xff) ^ bytes[i + pos++])] ^
-                                    table[--row * Columns + (((sum >> 8) & 0xff) ^ bytes[i + pos++])] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos++]] ^
-                                    table[--row * Columns + bytes[i + pos]]) & Mask);
-                    i += Rows;
-                    len -= Rows;
+                    var i = 0;
+                    while (RefIn && len >= Rows)
+                    {
+                        var row = Rows;
+                        var pos = 0;
+                        sum = (ushort)(((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                                        (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                                        (table + --row * Columns + (input + i + pos)[0])[0]) & Mask);
+                        i += Rows;
+                        len -= Rows;
+                    }
+                    while (--len >= 0)
+                        AppendData(bytes[i++], table, ref sum);
                 }
-                while (--len >= 0)
-                    AppendData(bytes[i++], table, ref sum);
-            }
             hash = sum;
         }
 
@@ -132,7 +133,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref ushort hash)
         {
-            fixed (ushort* table = &Table.Span[0])
+            fixed (ushort* table = Table.Span)
                 AppendData(value, table, ref hash);
         }
 
@@ -162,9 +163,9 @@
         private unsafe void AppendData(byte value, ushort* table, ref ushort hash)
         {
             if (RefIn)
-                hash = (ushort)(((hash >> 8) ^ table[value ^ (hash & 0xff)]) & Mask);
+                hash = (ushort)(((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask);
             else
-                hash = (ushort)((table[((hash >> (BitWidth - 8)) ^ value) & 0xff] ^ (hash << 8)) & Mask);
+                hash = (ushort)(((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask);
         }
 
         private static ReadOnlyMemory<ushort> CreateTable(int width, ushort poly, ushort mask, bool refIn)

@@ -96,35 +96,36 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
-            fixed (ulong* table = &Table.Span[0])
-            {
-                var i = 0;
-                while (RefIn && len >= Rows)
+            fixed (ulong* table = Table.Span)
+                fixed (byte* input = bytes)
                 {
-                    ulong row = Rows;
-                    var pos = 0;
-                    sum = (table[--row * Columns + (((sum >> 00) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 08) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 16) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 24) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 32) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 40) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 48) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 56) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos]]) & Mask;
-                    i += Rows;
-                    len -= Rows;
+                    var i = 0;
+                    while (RefIn && len >= Rows)
+                    {
+                        ulong row = Rows;
+                        var pos = 0;
+                        sum = ((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 16) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 24) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 32) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 40) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 48) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 56) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos)[0])[0]) & Mask;
+                        i += Rows;
+                        len -= Rows;
+                    }
+                    while (--len >= 0)
+                        AppendData(bytes[i++], table, ref sum);
                 }
-                while (--len >= 0)
-                    AppendData(bytes[i++], table, ref sum);
-            }
             hash = sum;
         }
 
@@ -132,7 +133,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref ulong hash)
         {
-            fixed (ulong* table = &Table.Span[0])
+            fixed (ulong* table = Table.Span)
                 AppendData(value, table, ref hash);
         }
 
@@ -162,9 +163,9 @@
         private unsafe void AppendData(byte value, ulong* table, ref ulong hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
+                hash = ((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask;
             else
-                hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+                hash = ((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask;
         }
 
         private static ReadOnlyMemory<ulong> CreateTable(int bitWidth, ulong poly, ulong mask, bool refIn)

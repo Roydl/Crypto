@@ -129,34 +129,35 @@
                 hash = sum;
                 return;
             }
-            fixed (uint* table = &Table.Span[0])
-            {
-                while (RefIn && len >= Rows)
+            fixed (uint* table = Table.Span)
+                fixed (byte* input = bytes)
                 {
-                    var row = Rows;
-                    var pos = 0;
-                    sum = (table[--row * Columns + (((sum >> 00) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 08) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 16) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + (((sum >> 24) & 0xff) ^ bytes[i + pos++])] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos++]] ^
-                           table[--row * Columns + bytes[i + pos]]) & Mask;
-                    i += Rows;
-                    len -= Rows;
+                    while (RefIn && len >= Rows)
+                    {
+                        var row = Rows;
+                        var pos = 0;
+                        sum = ((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 16) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (((sum >> 24) & 0xff) ^ (input + i + pos++)[0]))[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
+                               (table + --row * Columns + (input + i + pos)[0])[0]) & Mask;
+                        i += Rows;
+                        len -= Rows;
+                    }
+                    while (--len >= 0)
+                        AppendData(bytes[i++], table, ref sum);
                 }
-                while (--len >= 0)
-                    AppendData(bytes[i++], table, ref sum);
-            }
             hash = sum;
         }
 
@@ -169,7 +170,7 @@
                 hash = Sse42.Crc32(hash, value);
                 return;
             }
-            fixed (uint* table = &Table.Span[0])
+            fixed (uint* table = Table.Span)
                 AppendData(value, table, ref hash);
         }
 
@@ -199,9 +200,9 @@
         private unsafe void AppendData(byte value, uint* table, ref uint hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
+                hash = ((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask;
             else
-                hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+                hash = ((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask;
         }
 
         private static ReadOnlyMemory<uint> CreateTable(int bitWidth, uint poly, uint mask, bool refIn)
