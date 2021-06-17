@@ -23,6 +23,7 @@
     {
         /// ReSharper disable CommentTypo
         /// <summary>Adler-32.</summary>
+        /// <remarks><b>Performance</b>: Highly optimized. Faster than non-optimized CRC algorithms, but slower than optimized ones.</remarks>
         Adler32,
 
         #region CRC-8
