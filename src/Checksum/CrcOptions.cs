@@ -145,6 +145,7 @@
             /// <summary>CRC-14.
             ///     <para><b>Alias:</b> DARC.</para>
             /// </summary>
+            /// <remarks><b>Performance</b>: Highly optimized.</remarks>
             Default = ChecksumAlgo.Crc14,
 
             /// <summary>CRC-14/GSM.</summary>
@@ -169,9 +170,11 @@
             /// <summary>CRC-16.
             ///     <para><b>Alias:</b> ARC, IBM, LHA.</para>
             /// </summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Default = ChecksumAlgo.Crc16,
 
             /// <summary>CRC-16/A.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             A = ChecksumAlgo.Crc16A,
 
             /// ReSharper disable CommentTypo
@@ -214,6 +217,7 @@
             /// <summary>CRC-16/IBM-3740.
             ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
             /// </summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Ibm3740 = ChecksumAlgo.Crc16Ibm3740,
 
             /// <summary>CRC-16/IBM-SDLC.
@@ -222,6 +226,7 @@
             IbmSdlc = ChecksumAlgo.Crc16IbmSdlc,
 
             /// <summary>CRC-16/KERMIT.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Kermit = ChecksumAlgo.Crc16Kermit,
 
             /// <summary>CRC-16/LJ1200.</summary>
@@ -229,15 +234,19 @@
 
             /// <summary>CRC-16/MAXIM.</summary>
             /// <para><b>Alias:</b> MAXIM-DOW</para>
+            /// <inheritdoc cref="Crc14.Default"/>
             Maxim = ChecksumAlgo.Crc16Maxim,
 
             /// <summary>CRC-16/MCRF4XX.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Mcrf4Xx = ChecksumAlgo.Crc16Mcrf4Xx,
 
             /// <summary>CRC-16/MODBUS.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             ModBus = ChecksumAlgo.Crc16ModBus,
 
             /// <summary>CRC-16/RIELLO.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Riello = ChecksumAlgo.Crc16Riello,
 
             /// <summary>CRC-16/SPI-FUJITSU.
@@ -252,9 +261,11 @@
             TeleDisk = ChecksumAlgo.Crc16TeleDisk,
 
             /// <summary>CRC-16/TMS37157.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Tms37157 = ChecksumAlgo.Crc16Tms37157,
 
             /// <summary>CRC-16/USB.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Usb = ChecksumAlgo.Crc16Usb,
 
             /// <summary>CRC-16/XMODEM.</summary>
@@ -290,6 +301,7 @@
             Default = ChecksumAlgo.Crc24,
 
             /// <summary>CRC-24/BLE.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Ble = ChecksumAlgo.Crc24Ble,
 
             /// <summary>CRC-24/LTE-A.</summary>
@@ -338,12 +350,15 @@
             /// <summary>CRC-32/C.
             ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
             /// </summary>
+            /// <remarks><b>Performance</b>: If SSE 4.2 is supported by the CPU, the hashing is hardware-based and yields ground-breaking performance; otherwise, it is software-based, but still highly optimized.</remarks>
             Default = ChecksumAlgo.Crc32,
 
             /// <summary>CRC-32/AUTOSAR.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Autosar = ChecksumAlgo.Crc32Autosar,
 
             /// <summary>CRC-32/CD-ROM-EDC.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             CdRomEdc = ChecksumAlgo.Crc32CdRomEdc,
 
             /// <summary>CRC-32/Q.
@@ -359,9 +374,11 @@
             /// <summary>CRC-32/D.
             ///     <para><b>Alias:</b> BASE91-D.</para>
             /// </summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             D = ChecksumAlgo.Crc32D,
 
             /// <summary>CRC-32/JAMCRC.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             JamCrc = ChecksumAlgo.Crc32JamCrc,
 
             /// <summary>CRC-32/MPEG-2.</summary>
@@ -378,6 +395,7 @@
             /// <summary>CRC-32/XZ.
             ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24.</para>
             /// </summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             /// ReSharper restore CommentTypo
             Xz = ChecksumAlgo.Crc32Xz
         }
@@ -405,9 +423,11 @@
             /// <summary>CRC-64/XZ.
             ///     <para><b>Alias:</b> GO-ECMA.</para>
             /// </summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             Xz = ChecksumAlgo.Crc64Xz,
 
             /// <summary>CRC-64/GO-ISO.</summary>
+            /// <inheritdoc cref="Crc14.Default"/>
             GoIso = ChecksumAlgo.Crc64GoIso
         }
 
