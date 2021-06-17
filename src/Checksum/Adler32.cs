@@ -60,7 +60,7 @@
             var sum1 = hash1;
             var sum2 = hash2;
             var i = 0;
-            if (!Sse2.IsSupported)
+            if (Sse2.IsSupported)
             {
                 while (len >= BlockSize)
                 {
