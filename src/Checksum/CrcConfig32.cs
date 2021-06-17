@@ -114,7 +114,8 @@
                         i += size64;
                         len -= size64;
                     }
-                    sum = (uint)(sum64 & Mask);
+                    if (sum != sum64)
+                        sum = (uint)(sum64 & Mask);
                 }
                 const int size = sizeof(uint);
                 while (len >= size)
