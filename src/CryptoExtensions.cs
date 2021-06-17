@@ -25,421 +25,376 @@
         /// <summary>Adler-32.</summary>
         Adler32,
 
-        /// <summary>CRC-8.
-        ///     <para><b>Alias:</b> SMBUS.</para>
-        /// </summary>
+        #region CRC-8
+
+        /// <inheritdoc cref="CrcOptions.Crc.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8,
 
-        /// <summary>CRC-8/AUTOSAR.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Autosar"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Autosar,
 
-        /// <summary>CRC-8/BLUETOOTH.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Bluetooth"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Bluetooth,
 
-        /// <summary>CRC-8/CDMA2000.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Cdma2000"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Cdma2000,
 
-        /// <summary>CRC-8/DARC.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Darc"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Darc,
 
-        /// <summary>CRC-8/DVB-S2.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.DvbS2"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8DvbS2,
 
-        /// <summary>CRC-8/GSM-A.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.GsmA"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8GsmA,
 
-        /// <summary>CRC-8/GSM-B.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.GsmB"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8GsmB,
 
-        /// <summary>CRC-8/I-432-1.
-        ///     <para><b>Alias:</b> ITU.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc.I4321"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8I4321,
 
-        /// <summary>CRC-8/I-CODE.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.ICode"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8ICode,
 
-        /// <summary>CRC-8/LTE.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Lte"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Lte,
 
-        /// <summary>CRC-8/MAXIM.
-        ///     <para><b>Alias:</b> MAXIM-DOW, DOW-CRC.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Maxim"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Maxim,
 
-        /// <summary>CRC-8/MIFARE-MAD.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.MifareMad"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8MifareMad,
 
-        /// <summary>CRC-8/NRSC-5.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Nrsc5"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Nrsc5,
 
-        /// <summary>CRC-8/OPENSAFETY.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.OpenSafety"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8OpenSafety,
 
-        /// <summary>CRC-8/ROHC.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Rohc"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Rohc,
 
-        /// <summary>CRC-8/SAE-J1850.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.SaeJ1850"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8SaeJ1850,
 
-        /// <summary>CRC-8/TECH-3250.
-        ///     <para><b>Alias:</b> AES, EBU.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Tech3250"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Tech3250,
 
-        /// <summary>CRC-8/WCDMA.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc.Wcdma"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc8Wcdma,
 
-        /// <summary>CRC-10.
-        ///     <para><b>Alias:</b> ATM, I-610.</para>
-        /// </summary>
+        #endregion
+
+        #region CRC-10 to CRC-15
+
+        /// <inheritdoc cref="CrcOptions.Crc10.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10,
 
-        /// <summary>CRC-10/CDMA2000.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc10.Cdma2000"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10Cdma2000,
 
-        /// <summary>CRC-10/GSM.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc10.Gsm"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc10Gsm,
 
-        /// <summary>CRC-11.
-        ///     <para><b>Alias:</b> FLEXRAY.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc11.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc11,
 
-        /// <summary>CRC-11/UMTS.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc11.Umts"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc11Umts,
 
-        /// <summary>CRC-12.
-        ///     <para><b>Alias:</b> CDMA2000.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc12.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12,
 
-        /// <summary>CRC-12/DECT.
-        ///     <para><b>Alias:</b> X-CRC-12.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc12.Dect"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Dect,
 
-        /// <summary>CRC-12/GSM.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc12.Gsm"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Gsm,
 
-        /// <summary>CRC-12/UMTS.
-        ///     <para><b>Alias:</b> 3GPP.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc12.Umts"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc12Umts,
 
-        /// <summary>CRC-13.
-        ///     <para><b>Alias:</b> BBC.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc13.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc13,
 
-        /// <summary>CRC-14.
-        ///     <para><b>Alias:</b> DARC.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc14.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc14,
 
-        /// <summary>CRC-14/GSM.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc14.Gsm"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc14Gsm,
 
-        /// <summary>CRC-15.
-        ///     <para><b>Alias:</b> CAN.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc15.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc15,
 
-        /// <summary>CRC-15/MPT1327.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc15.Mpt1327"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc15Mpt1327,
 
-        /// <summary>CRC-16.
-        ///     <para><b>Alias:</b> ARC, IBM, LHA.</para>
-        /// </summary>
+        #endregion
+
+        #region CRC-16
+
+        /// <inheritdoc cref="CrcOptions.Crc16.Default"/>
         Crc16,
 
-        /// <summary>CRC-16/A.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.A"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16A,
 
-        /// <summary>CRC-16/BUYPASS.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Buypass"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Buypass,
 
-        /// <summary>CRC-16/CDMA2000.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Cdma2000"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Cdma2000,
 
-        /// <summary>CRC-16/CMS.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Cms"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Cms,
 
-        /// <summary>CRC-16/DDS-110.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Dds110"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Dds110,
 
-        /// <summary>CRC-16/DECT-R.
-        ///     <para><b>Alias:</b> R-CRC-16</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.DectR"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16DectR,
 
-        /// <summary>CRC-16/DECT-X.
-        ///     <para><b>Alias:</b> X-CRC-16</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.DectX"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16DectX,
 
-        /// <summary>CRC-16/DNP.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Dnp"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Dnp,
 
-        /// <summary>CRC-16/EN-13757.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.En13757"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16En13757,
 
-        /// <summary>CRC-16/GENIBUS.
-        ///     <para><b>Alias:</b> DARC, EPC, EPC-C1G2, I-CODE</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Genibus"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Genibus,
 
-        /// <summary>CRC-16/GSM.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Gsm"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Gsm,
 
-        /// <summary>CRC-16/IBM-3740.
-        ///     <para><b>Alias:</b> AUTOSAR, CCITT-FALSE</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Ibm3740"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Ibm3740,
 
-        /// <summary>CRC-16/IBM-SDLC.
-        ///     <para><b>Alias:</b> ISO-HDLC, ISO-IEC-14443-3-B, CRC-B, X-25</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.IbmSdlc"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16IbmSdlc,
 
-        /// <summary>CRC-16/KERMIT.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Kermit"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Kermit,
 
-        /// <summary>CRC-16/LJ1200.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Lj1200"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Lj1200,
 
-        /// <summary>CRC-16/MAXIM.</summary>
-        /// <para><b>Alias:</b> MAXIM-DOW</para>
+        /// <inheritdoc cref="CrcOptions.Crc16.Maxim"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Maxim,
 
-        /// <summary>CRC-16/MCRF4XX.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Mcrf4Xx"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Mcrf4Xx,
 
-        /// <summary>CRC-16/MODBUS.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.ModBus"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16ModBus,
 
-        /// <summary>CRC-16/RIELLO.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Riello"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Riello,
 
-        /// <summary>CRC-16/SPI-FUJITSU.
-        ///     <para><b>Alias:</b> AUG-CCITT</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.SpiFujitsu"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16SpiFujitsu,
 
-        /// <summary>CRC-16/T10-DIF.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.T10Dif"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16T10Dif,
 
-        /// <summary>CRC-16/TELEDISK.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.TeleDisk"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16TeleDisk,
 
-        /// <summary>CRC-16/TMS37157.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Tms37157"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Tms37157,
 
-        /// <summary>CRC-16/USB.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.Usb"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16Usb,
 
-        /// <summary>CRC-16/XMODEM.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc16.XModem"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc16XModem,
 
-        /// <summary>CRC-17.
-        ///     <para><b>Alias:</b> CAN-FD.</para>
-        /// </summary>
+        #endregion
+
+        #region CRC-17 to CRC-31
+
+        /// <inheritdoc cref="CrcOptions.Crc17.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc17,
 
-        /// <summary>CRC-21.
-        ///     <para><b>Alias:</b> CAN-FD.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc21.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc21,
 
-        /// <summary>CRC-24.
-        ///     <para><b>Alias:</b> OPENPGP.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24,
 
-        /// <summary>CRC-24/BLE.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.Ble"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Ble,
 
-        /// <summary>CRC-24/LTE-A.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.LteA"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24LteA,
 
-        /// <summary>CRC-24/LTE-B.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.LteB"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24LteB,
 
-        /// <summary>CRC-24/FLEXRAY-A.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.FlexRayA"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24FlexRayA,
 
-        /// <summary>CRC-24/FLEXRAY-B.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.FlexRayB"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24FlexRayB,
 
-        /// <summary>CRC-24/INTERLAKEN.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.Interlaken"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Interlaken,
 
-        /// <summary>CRC-24/OS-9.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc24.Os9"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc24Os9,
 
-        /// <summary>CRC-30.
-        ///     <para><b>Alias:</b> CDMA.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc30.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc30,
 
-        /// <summary>CRC-31.
-        ///     <para><b>Alias:</b> PHILIPS.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc31.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc31,
 
-        /// <summary>CRC-32/C.
-        ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
-        /// </summary>
+        #endregion
+
+        #region CRC-32
+
+        /// <inheritdoc cref="CrcOptions.Crc32.Default"/>
         Crc32,
 
-        /// <summary>CRC-32/AUTOSAR.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Autosar"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Autosar,
 
-        /// <summary>CRC-32/CD-ROM-EDC.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.CdRomEdc"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32CdRomEdc,
 
-        /// <summary>CRC-32/Q.
-        ///     <para><b>Alias:</b> AIXM.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Q"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Q,
 
-        /// <summary>CRC-32/BZIP2.
-        ///     <para><b>Alias:</b> AAL5, DECT-B, B-CRC.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.BZip2"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32BZip2,
 
-        /// <summary>CRC-32/D.
-        ///     <para><b>Alias:</b> BASE91-D.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.D"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32D,
 
-        /// <summary>CRC-32/JAMCRC.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.JamCrc"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32JamCrc,
 
-        /// <summary>CRC-32/MPEG-2.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Mpeg2"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Mpeg2,
 
-        /// <summary>CRC-32/POSIX.
-        ///     <para><b>Alias:</b> CKSUM.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Posix"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Posix,
 
-        /// <summary>CRC-32/XFER.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Xfer"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc32Xfer,
 
-        /// <summary>CRC-32/XZ.
-        ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc32.Xz"/>
         Crc32Xz,
 
-        /// <summary>CRC-40.
-        ///     <para><b>Alias:</b> GSM.</para>
-        /// </summary>
+        #endregion
+
+        #region CRC-40 to CRC-82
+
+        /// <inheritdoc cref="CrcOptions.Crc40.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc40,
 
-        /// <summary>CRC-64.
-        ///     <para><b>Alias:</b> ECMA-182.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc64.Default"/>
         Crc64,
 
-        /// <summary>CRC-64/WE.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc64.We"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64We,
 
-        /// <summary>CRC-64/XZ.
-        ///     <para><b>Alias:</b> GO-ECMA.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc64.Xz"/>
         Crc64Xz,
 
-        /// <summary>CRC-64/GO-ISO.</summary>
+        /// <inheritdoc cref="CrcOptions.Crc64.GoIso"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc64GoIso,
 
-        /// <summary>CRC-82.
-        ///     <para><b>Alias:</b> DARC.</para>
-        /// </summary>
+        /// <inheritdoc cref="CrcOptions.Crc82.Default"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         Crc82,
+
+        #endregion
 
         /// <summary>MD5-128.</summary>
         Md5,
