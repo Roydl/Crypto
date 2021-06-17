@@ -14,15 +14,17 @@ namespace Roydl.Crypto.Test.BenchmarkTests
     [NonParallelizable]
     [Platform(Include = TestVars.PlatformCross)]
     [Category("Performance")]
-    public class ChecksumTests
+    public class ChecksumPerformanceTests
     {
-        private const int BenchmarkRepeats = 60;
+        private const int BenchmarkRepeats = 20;
 
         private static readonly TestCaseData[] BenchmarkTestData =
         {
+            new(ChecksumAlgo.Adler32, 65536),
             new(ChecksumAlgo.Crc16, 65536),
             new(ChecksumAlgo.Crc32, 65536),
             new(ChecksumAlgo.Crc32Xz, 65536),
+            new(ChecksumAlgo.Crc32Posix, 65536),
             new(ChecksumAlgo.Crc64, 65536),
             new(ChecksumAlgo.Crc64Xz, 65536),
             new(ChecksumAlgo.Sha256, 65536)
@@ -40,7 +42,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
             Parallel.ForEach(BenchmarkResults, pair =>
             {
                 var (key, value) = pair;
-                var file = Path.Combine(dir, $"__Benchmark-{key}.txt");
+                var file = Path.Combine(dir, $"__Benchmark-{string.Concat(key.Split(Path.GetInvalidFileNameChars()))}.txt");
                 var sorted = value.OrderByDescending(x => x).ToArray();
                 var digits = BenchmarkRepeats.ToString(NumberFormatInfo.InvariantInfo).Length;
                 var content =
