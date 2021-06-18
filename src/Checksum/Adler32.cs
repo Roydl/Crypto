@@ -62,7 +62,7 @@
             var i = 0;
             if (Sse2.IsSupported)
             {
-                while (len >= BlockSize)
+                for (; len >= BlockSize; i += BlockSize, len -= BlockSize)
                 {
                     var v1 = Vector128.Create(sum1);
                     var v2 = Vector128.Create(sum2);
@@ -76,15 +76,13 @@
                     sum2 = Sse2.ConvertToUInt32(v2);
                     if (sum2 >= ModAdler)
                         sum2 -= ModAdler;
-                    i += BlockSize;
-                    len -= BlockSize;
                     if (len % 0x8000 == 0)
                         sum1 %= ModAdler;
                 }
             }
             else
             {
-                while (len >= BlockSize)
+                for (; len >= BlockSize; i += BlockSize, len -= BlockSize)
                 {
                     for (var j = 0; j < BlockSize; j++)
                     {
@@ -93,8 +91,6 @@
                     }
                     if (sum2 >= ModAdler)
                         sum2 -= ModAdler;
-                    i += BlockSize;
-                    len -= BlockSize;
                     if (len % 0x8000 == 0)
                         sum1 %= ModAdler;
                 }

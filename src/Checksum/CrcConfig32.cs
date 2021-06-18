@@ -69,11 +69,11 @@
             {
                 32 => check switch
                 {
-                    0xe3069283u => 1, // iSCSI: ARM or CPU with SSE4.2 supported
-                    0xcbf43926u => 2, // PKZip: ARM only
-                    _ => 0
+                    0xe3069283u => 1, // iSCSI: allows hardware mode on `ARM` or `CPU + SSE4.2 support`
+                    0xcbf43926u => 2, // PKZip: allows hardware mode on `ARM`
+                    _ => 0 // Default: Software mode
                 },
-                _ => 0 // no hardware mode supported
+                _ => 0 // Default
             };
 
             switch (_mode)
@@ -134,19 +134,20 @@
                 const int size64 = sizeof(ulong);
                 switch (_mode)
                 {
+                    /*
+                        adding `if` or `switch` inside `while` or `for` results in
+                        significant performance degradation, so we cannot simply
+                        merge the loops below
+                    */
 #if NET5_0_OR_GREATER
                     case > 0 when Arm64.IsSupported:
                     {
-                        while (len >= size64)
-                        {
-                            sum = _mode switch
-                            {
-                                2 => Arm64.ComputeCrc32(sum, Unsafe.Read<ulong>(input + i)),
-                                _ => Arm64.ComputeCrc32C(sum, Unsafe.Read<ulong>(input + i)),
-                            };
-                            i += size64;
-                            len -= size64;
-                        }
+                        if (_mode > 1)
+                            for (; len >= size64; i += size64, len -= size64)
+                                sum = Arm64.ComputeCrc32(sum, Unsafe.Read<ulong>(input + i));
+                        else
+                            for (; len >= size64; i += size64, len -= size64)
+                                sum = Arm64.ComputeCrc32C(sum, Unsafe.Read<ulong>(input + i));
                         while (--len >= 0)
                             AppendData(input[i++], ref sum);
                         hash = sum;
@@ -158,29 +159,25 @@
                         if (Sse42.X64.IsSupported)
                         {
                             ulong sum64 = sum;
-                            while (len >= size64)
-                            {
+                            for (; len >= size64; i += size64, len -= size64)
                                 sum64 = Sse42.X64.Crc32(sum64, Unsafe.Read<ulong>(input + i));
-                                i += size64;
-                                len -= size64;
-                            }
                             if (sum != sum64)
                                 sum = (uint)(sum64 & Mask);
                         }
-                        while (len >= size32)
-                        {
+                        for (; len >= size32; i += size32, len -= size32)
                             sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
-                            i += size32;
-                            len -= size32;
-                        }
                         while (--len >= 0)
-                           AppendData(input[i++], ref sum);
+                            AppendData(input[i++], ref sum);
                         hash = sum;
                         return;
                     }
                 }
                 fixed (uint* table = Table.Span)
                 {
+                    /*
+                        replacing `i + pos++` with `i++` or replacing `--row` with
+                        constants, both lead to a significant drop in performance
+                    */
                     while (RefIn && len >= Rows)
                     {
                         var row = Rows;
