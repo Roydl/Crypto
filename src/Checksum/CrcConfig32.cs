@@ -12,7 +12,7 @@
     {
         private const int Columns = 1 << 8;
         private const int Rows = 1 << 4;
-        private readonly bool _hw, _hw64;
+        private readonly bool _sse42, _sse42X64;
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -49,8 +49,8 @@
                 throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
             if (sizeof(uint) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
-            _hw = Sse42.IsSupported && bitWidth == 32 && check == 0xe3069283u;
-            _hw64 = _hw && Sse42.X64.IsSupported;
+            _sse42 = Sse42.IsSupported && bitWidth == 32 && check == 0xe3069283u;
+            _sse42X64 = _sse42 && Sse42.X64.IsSupported;
             if (mask == default)
                 mask = NumericHelper.CreateBitMask<uint>(bitWidth);
             BitWidth = bitWidth;
@@ -61,7 +61,7 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = _hw ? null : CreateTable(bitWidth, poly, mask, refIn);
+            Table = _sse42 ? null : CreateTable(bitWidth, poly, mask, refIn);
             if (!skipValidation)
                 CrcConfig.ThrowIfInvalid(this);
         }
@@ -101,64 +101,64 @@
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             var sum = hash;
             var i = 0;
-            if (_hw)
+            fixed (byte* input = bytes)
             {
-                if (_hw64)
+                if (_sse42)
                 {
-                    const int size64 = sizeof(ulong);
-                    ulong sum64 = sum;
-                    while (len >= size64)
+                    if (_sse42X64)
                     {
-                        var data = CryptoUtils.GetUInt64(bytes.Slice(i, size64), BitConverter.IsLittleEndian);
-                        sum64 = Sse42.X64.Crc32(sum64, data);
-                        i += size64;
-                        len -= size64;
+                        const int size64 = sizeof(ulong);
+                        ulong sum64 = sum;
+                        while (len >= size64)
+                        {
+                            sum64 = Sse42.X64.Crc32(sum64, Unsafe.Read<ulong>(input + i));
+                            i += size64;
+                            len -= size64;
+                        }
+                        if (sum != sum64)
+                            sum = (uint)(sum64 & Mask);
                     }
-                    if (sum != sum64)
-                        sum = (uint)(sum64 & Mask);
+                    const int size = sizeof(uint);
+                    while (len >= size)
+                    {
+                        sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
+                        i += size;
+                        len -= size;
+                    }
+                    while (--len >= 0)
+                        sum = Sse42.Crc32(sum, input[i++]);
+                    hash = sum;
+                    return;
                 }
-                const int size = sizeof(uint);
-                while (len >= size)
-                {
-                    var data = CryptoUtils.GetUInt32(bytes.Slice(i, size), BitConverter.IsLittleEndian);
-                    sum = Sse42.Crc32(sum, data);
-                    i += size;
-                    len -= size;
-                }
-                while (--len >= 0)
-                    sum = Sse42.Crc32(sum, bytes[i++]);
-                hash = sum;
-                return;
-            }
-            fixed (uint* table = Table.Span)
-                fixed (byte* input = bytes)
+                fixed (uint* table = Table.Span)
                 {
                     while (RefIn && len >= Rows)
                     {
                         var row = Rows;
                         var pos = 0;
-                        sum = ((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 16) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 24) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos)[0])[0]) & Mask;
+                        sum = (Unsafe.Read<uint>(table + --row * Columns + (((sum >> 00) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 08) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 16) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 24) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask;
                         i += Rows;
                         len -= Rows;
                     }
                     while (--len >= 0)
-                        AppendData(bytes[i++], table, ref sum);
+                        AppendData(input[i++], table, ref sum);
                 }
+            }
             hash = sum;
         }
 
@@ -166,7 +166,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref uint hash)
         {
-            if (_hw)
+            if (_sse42)
             {
                 hash = Sse42.Crc32(hash, value);
                 return;
@@ -201,9 +201,9 @@
         private unsafe void AppendData(byte value, uint* table, ref uint hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask;
+                hash = ((hash >> 8) ^ Unsafe.Read<uint>(table + (value ^ (hash & 0xff)))) & Mask;
             else
-                hash = ((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask;
+                hash = (Unsafe.Read<uint>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask;
         }
 
         private static ReadOnlyMemory<uint> CreateTable(int bitWidth, uint poly, uint mask, bool refIn)

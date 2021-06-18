@@ -154,9 +154,9 @@
         private unsafe void AppendData(byte value, byte* table, ref byte hash)
         {
             if (RefIn)
-                hash = (byte)(((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask);
+                hash = (byte)(((hash >> 8) ^ Unsafe.Read<byte>(table + (value ^ (hash & 0xff)))) & Mask);
             else
-                hash = (byte)(((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask);
+                hash = (byte)((Unsafe.Read<byte>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask);
         }
 
         private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)

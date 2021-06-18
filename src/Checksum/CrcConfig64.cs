@@ -104,27 +104,27 @@
                     {
                         ulong row = Rows;
                         var pos = 0;
-                        sum = ((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 16) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 24) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 32) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 40) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 48) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (((sum >> 56) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                               (table + --row * Columns + (input + i + pos)[0])[0]) & Mask;
+                        sum = (Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 00) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 08) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 16) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 24) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 32) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 40) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 48) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + (((sum >> 56) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask;
                         i += Rows;
                         len -= Rows;
                     }
                     while (--len >= 0)
-                        AppendData(bytes[i++], table, ref sum);
+                        AppendData(input[i++], table, ref sum);
                 }
             hash = sum;
         }
@@ -163,9 +163,9 @@
         private unsafe void AppendData(byte value, ulong* table, ref ulong hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask;
+                hash = ((hash >> 8) ^ Unsafe.Read<ulong>(table + (value ^ (hash & 0xff)))) & Mask;
             else
-                hash = ((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask;
+                hash = (Unsafe.Read<ulong>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask;
         }
 
         private static ReadOnlyMemory<ulong> CreateTable(int bitWidth, ulong poly, ulong mask, bool refIn)

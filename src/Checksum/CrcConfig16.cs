@@ -104,27 +104,27 @@
                     {
                         var row = Rows;
                         var pos = 0;
-                        sum = (ushort)(((table + --row * Columns + (((sum >> 00) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                                        (table + --row * Columns + (((sum >> 08) & 0xff) ^ (input + i + pos++)[0]))[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos++)[0])[0] ^
-                                        (table + --row * Columns + (input + i + pos)[0])[0]) & Mask);
+                        sum = (ushort)((Unsafe.Read<ushort>(table + --row * Columns + (((sum >> 00) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + (((sum >> 08) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask);
                         i += Rows;
                         len -= Rows;
                     }
                     while (--len >= 0)
-                        AppendData(bytes[i++], table, ref sum);
+                        AppendData(input[i++], table, ref sum);
                 }
             hash = sum;
         }
@@ -163,9 +163,9 @@
         private unsafe void AppendData(byte value, ushort* table, ref ushort hash)
         {
             if (RefIn)
-                hash = (ushort)(((hash >> 8) ^ (table + (value ^ (hash & 0xff)))[0]) & Mask);
+                hash = (ushort)(((hash >> 8) ^ Unsafe.Read<ushort>(table + (value ^ (hash & 0xff)))) & Mask);
             else
-                hash = (ushort)(((table + (((hash >> (BitWidth - 8)) ^ value) & 0xff))[0] ^ (hash << 8)) & Mask);
+                hash = (ushort)((Unsafe.Read<ushort>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask);
         }
 
         private static ReadOnlyMemory<ushort> CreateTable(int width, ushort poly, ushort mask, bool refIn)

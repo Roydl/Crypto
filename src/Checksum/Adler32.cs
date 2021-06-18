@@ -68,7 +68,7 @@
                     var v2 = Vector128.Create(sum2);
                     for (var j = 0; j < BlockSize; j++)
                     {
-                        v1 = Sse2.Add(v1, Vector128.Create((uint)(input + i + j)[0]));
+                        v1 = Sse2.Add(v1, Vector128.Create((uint)Unsafe.Read<byte>(input + i + j)));
                         v2 = Sse2.Add(v1, v2);
                     }
                     sum1 = Sse2.ConvertToUInt32(v1);
@@ -87,7 +87,7 @@
                 {
                     for (var j = 0; j < BlockSize; j++)
                     {
-                        sum1 += (input + i + j)[0];
+                        sum1 += Unsafe.Read<byte>(input + i + j);
                         sum2 += sum1;
                     }
                     if (sum2 >= ModAdler)
