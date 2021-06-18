@@ -151,7 +151,7 @@
                         return;
                     }
 #endif
-                    case 1 when Sse42.IsSupported || Sse42.X64.IsSupported:
+                    case 1 when Sse42.IsSupported:
                     {
                         if (Sse42.X64.IsSupported)
                         {
@@ -165,17 +165,14 @@
                             if (sum != sum64)
                                 sum = (uint)(sum64 & Mask);
                         }
-                        if (Sse42.IsSupported)
+                        while (len >= size32)
                         {
-                            while (len >= size32)
-                            {
-                                sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
-                                i += size32;
-                                len -= size32;
-                            }
-                            while (--len >= 0)
-                                sum = Sse42.Crc32(sum, input[i++]);
+                            sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
+                            i += size32;
+                            len -= size32;
                         }
+                        while (--len >= 0)
+                            sum = Sse42.Crc32(sum, input[i++]);
                         hash = sum;
                         return;
                     }
