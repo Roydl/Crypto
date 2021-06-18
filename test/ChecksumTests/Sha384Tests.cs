@@ -118,7 +118,7 @@
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
-            Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
+            Assert.AreEqual(true, instanceDefault.RawHash.IsEmpty);
         }
 
         [Test]
@@ -154,6 +154,7 @@
             Assert.AreEqual(expectedHash, _instanceDefault.Hash);
         }
 
+#if RELEASE
         [Test]
         [TestCase(Algorithm)]
         [MaxTime(3000)]
@@ -184,6 +185,7 @@
             Assert.IsNull(secretKey.Target);
             Assert.IsFalse(secretKey.IsAlive);
         }
+#endif
 
         [Test]
         [TestCase(Algorithm)]
@@ -235,16 +237,16 @@
             Assert.IsFalse(_instanceStream != _instanceString);
             Assert.IsFalse(_instanceStream != _instanceFilePath);
 
-            Assert.AreEqual(_instanceStream.RawHash.Span.ToArray(), (byte[])_instanceByteArray);
-            Assert.AreEqual((sbyte)(_instanceStream.HashNumber & sbyte.MaxValue), (sbyte)_instanceByteArray);
-            Assert.AreEqual((byte)(_instanceStream.HashNumber & byte.MaxValue), (byte)_instanceByteArray);
-            Assert.AreEqual((short)(_instanceStream.HashNumber & short.MaxValue), (short)_instanceByteArray);
-            Assert.AreEqual((ushort)(_instanceStream.HashNumber & ushort.MaxValue), (ushort)_instanceByteArray);
-            Assert.AreEqual((int)(_instanceStream.HashNumber & int.MaxValue), (int)_instanceByteArray);
-            Assert.AreEqual((uint)(_instanceStream.HashNumber & uint.MaxValue), (uint)_instanceByteArray);
-            Assert.AreEqual((long)(_instanceStream.HashNumber & long.MaxValue), (long)_instanceByteArray);
-            Assert.AreEqual((ulong)(_instanceStream.HashNumber & ulong.MaxValue), (ulong)_instanceByteArray);
-            Assert.AreEqual(_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.RawHash.ToArray(), (byte[])_instanceByteArray);
+            Assert.AreEqual((sbyte)(_instanceStream.CipherHash & sbyte.MaxValue), (sbyte)_instanceByteArray);
+            Assert.AreEqual((byte)(_instanceStream.CipherHash & byte.MaxValue), (byte)_instanceByteArray);
+            Assert.AreEqual((short)(_instanceStream.CipherHash & short.MaxValue), (short)_instanceByteArray);
+            Assert.AreEqual((ushort)(_instanceStream.CipherHash & ushort.MaxValue), (ushort)_instanceByteArray);
+            Assert.AreEqual((int)(_instanceStream.CipherHash & int.MaxValue), (int)_instanceByteArray);
+            Assert.AreEqual((uint)(_instanceStream.CipherHash & uint.MaxValue), (uint)_instanceByteArray);
+            Assert.AreEqual((long)(_instanceStream.CipherHash & long.MaxValue), (long)_instanceByteArray);
+            Assert.AreEqual((ulong)(_instanceStream.CipherHash & ulong.MaxValue), (ulong)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.CipherHash, (BigInteger)_instanceByteArray);
             Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 

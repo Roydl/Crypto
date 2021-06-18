@@ -98,9 +98,9 @@
             Assert.NotNull(instance256.Salt);
         }
 
+#if RELEASE
         [Test]
         [TestCase(Algorithm)]
-        [Retry(3)]
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
@@ -139,6 +139,7 @@
             Assert.IsFalse(pass.IsAlive);
             Assert.IsFalse(salt.IsAlive);
         }
+#endif
 
         [Test]
         [TestCaseSource(nameof(TestData))]

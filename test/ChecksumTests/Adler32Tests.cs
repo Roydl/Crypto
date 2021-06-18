@@ -137,7 +137,7 @@
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
             Assert.AreEqual(rawHashSize, instanceDefault.RawHashSize);
-            Assert.AreEqual(default(ReadOnlyMemory<byte>), instanceDefault.RawHash);
+            Assert.AreEqual(true, instanceDefault.RawHash.IsEmpty);
         }
 
         [Test]
@@ -222,15 +222,15 @@
             Assert.IsFalse(_instanceStream != _instanceFilePath);
 
             Assert.AreEqual(_instanceStream.RawHash.ToArray(), (byte[])_instanceByteArray);
-            Assert.AreEqual((sbyte)_instanceStream.HashNumber, (sbyte)_instanceByteArray);
-            Assert.AreEqual((byte)_instanceStream.HashNumber, (byte)_instanceByteArray);
-            Assert.AreEqual((short)_instanceStream.HashNumber, (short)_instanceByteArray);
-            Assert.AreEqual((ushort)_instanceStream.HashNumber, (ushort)_instanceByteArray);
-            Assert.AreEqual((int)_instanceStream.HashNumber, (int)_instanceByteArray);
-            Assert.AreEqual(_instanceStream.HashNumber, (uint)_instanceByteArray);
-            Assert.AreEqual((long)_instanceStream.HashNumber, (long)_instanceByteArray);
-            Assert.AreEqual((ulong)_instanceStream.HashNumber, (ulong)_instanceByteArray);
-            Assert.AreEqual((BigInteger)_instanceStream.HashNumber, (BigInteger)_instanceByteArray);
+            Assert.AreEqual((sbyte)_instanceStream.CipherHash, (sbyte)_instanceByteArray);
+            Assert.AreEqual((byte)_instanceStream.CipherHash, (byte)_instanceByteArray);
+            Assert.AreEqual((short)_instanceStream.CipherHash, (short)_instanceByteArray);
+            Assert.AreEqual((ushort)_instanceStream.CipherHash, (ushort)_instanceByteArray);
+            Assert.AreEqual((int)_instanceStream.CipherHash, (int)_instanceByteArray);
+            Assert.AreEqual(_instanceStream.CipherHash, (uint)_instanceByteArray);
+            Assert.AreEqual((long)_instanceStream.CipherHash, (long)_instanceByteArray);
+            Assert.AreEqual((ulong)_instanceStream.CipherHash, (ulong)_instanceByteArray);
+            Assert.AreEqual((BigInteger)_instanceStream.CipherHash, (BigInteger)_instanceByteArray);
             Assert.AreEqual(_instanceStream.Hash, (string)_instanceByteArray);
         }
 

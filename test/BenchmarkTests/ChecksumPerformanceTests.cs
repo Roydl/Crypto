@@ -1,4 +1,4 @@
-﻿#if NET5_0_OR_GREATER
+﻿#if NET5_0_OR_GREATER && RELEASE
 namespace Roydl.Crypto.Test.BenchmarkTests
 {
     using System;
