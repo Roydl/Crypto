@@ -18,7 +18,7 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.1.2</Version>
+    <Version>1.2.0</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
     <PackageReleaseNotes>**❗This release contains a lot of breaking changes❗**
