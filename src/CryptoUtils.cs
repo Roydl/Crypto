@@ -4,6 +4,7 @@
     using System.Buffers.Binary;
     using System.Numerics;
     using System.Runtime.CompilerServices;
+    using Internal;
     using Resources;
 
     /// <summary>Provides some basic utilities.</summary>
@@ -65,6 +66,40 @@
                         hash = CombineHashCodes(hash, objects[i]?.GetHashCode() ?? 23011);
                     return hash;
             }
+        }
+
+        /// <summary>Returns the specified sequence of bytes as its hexadecimal string representation.</summary>
+        /// <param name="source">The sequence of bytes to convert.</param>
+        /// <param name="size">Determines the size of the output string. If the value is greater than 0 but is less than length of <paramref name="source"/>, only the last bytes are converted. If the value is greater than length of <paramref name="source"/>, the result is padded with zeros at the beginning.</param>
+        /// <param name="uppercase"><see langword="true"/> to convert letters to uppercase; otherwise, <see langword="false"/>.</param>
+        /// <remarks>Note that this feature is highly performance optimized.</remarks>
+        /// <returns>A hexadecimal string that represents the specified sequence of bytes.</returns>
+        public static string GetString(ReadOnlySpan<byte> source, int size = default, bool uppercase = false)
+        {
+            if (source.IsEmpty)
+                return string.Empty;
+            var hex = uppercase switch
+            {
+                true => NumericHelper.HexLookupUpper,
+                false => NumericHelper.HexLookupLower
+            };
+            var len = source.Length;
+            if (size < 1)
+                size = len * 2;
+            Span<char> span = stackalloc char[size];
+            if (size > len * 2)
+                span.Fill('0');
+            for (int i = len, j = size - 1; i > 0; --i)
+            {
+                var b = source[i - 1];
+                span[j] = hex[b & 0xf];
+                if (--j < 0)
+                    break;
+                span[j] = hex[b >> 4];
+                if (--j < 0)
+                    break;
+            }
+            return new string(span);
         }
 
         /// <summary>Returns the specified <typeparamref name="TValue"/> value as a sequence of bytes.</summary>

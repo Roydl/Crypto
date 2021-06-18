@@ -135,7 +135,7 @@
         /// <inheritdoc/>
         [return: NotNull]
         public string ToString(bool uppercase) =>
-            RawHash.ToHexStr(HashSize, uppercase);
+            CryptoUtils.GetString(RawHash, HashSize, uppercase);
 
         /// <inheritdoc cref="IChecksumResult.ToString()"/>
         [return: NotNull]
