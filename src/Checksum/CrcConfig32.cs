@@ -6,13 +6,17 @@
     using System.Runtime.Intrinsics.X86;
     using Internal;
     using Resources;
+#if NET5_0_OR_GREATER
+    using Arm = System.Runtime.Intrinsics.Arm.Crc32;
+    using Arm64 = System.Runtime.Intrinsics.Arm.Crc32.Arm64;
+#endif
 
     /// <summary>Represents a 32-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig32 : ICrcConfig<uint>
     {
         private const int Columns = 1 << 8;
         private const int Rows = 1 << 4;
-        private readonly bool _sse42, _sse42X64;
+        private readonly int _mode;
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -49,8 +53,7 @@
                 throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
             if (sizeof(uint) < (int)MathF.Floor(bitWidth / 8f))
                 throw new ArgumentException(ExceptionMessages.ArgumentBitsTypeRatioInvalid);
-            _sse42 = Sse42.IsSupported && bitWidth == 32 && check == 0xe3069283u;
-            _sse42X64 = _sse42 && Sse42.X64.IsSupported;
+
             if (mask == default)
                 mask = NumericHelper.CreateBitMask<uint>(bitWidth);
             BitWidth = bitWidth;
@@ -61,7 +64,31 @@
             RefOut = refOut;
             XorOut = xorOut;
             Mask = mask;
-            Table = _sse42 ? null : CreateTable(bitWidth, poly, mask, refIn);
+
+            _mode = bitWidth switch
+            {
+                32 => check switch
+                {
+                    0xe3069283u => 1, // iSCSI: ARM or CPU with SSE4.2 supported
+                    0xcbf43926u => 2, // PKZip: ARM only
+                    _ => 0
+                },
+                _ => 0 // no hardware mode supported
+            };
+
+            switch (_mode)
+            {
+#if NET5_0_OR_GREATER
+                case > 0 when Arm.IsSupported || Arm64.IsSupported:
+#endif
+                case 1 when Sse42.IsSupported || Sse42.X64.IsSupported:
+                    Table = null;
+                    break;
+                default:
+                    Table = CreateTable(bitWidth, poly, mask, refIn);
+                    break;
+            }
+
             if (!skipValidation)
                 CrcConfig.ThrowIfInvalid(this);
         }
@@ -103,32 +130,55 @@
             var i = 0;
             fixed (byte* input = bytes)
             {
-                if (_sse42)
+                const int size32 = sizeof(uint);
+                const int size64 = sizeof(ulong);
+                switch (_mode)
                 {
-                    if (_sse42X64)
+#if NET5_0_OR_GREATER
+                    case > 0 when Arm64.IsSupported:
                     {
-                        const int size64 = sizeof(ulong);
-                        ulong sum64 = sum;
                         while (len >= size64)
                         {
-                            sum64 = Sse42.X64.Crc32(sum64, Unsafe.Read<ulong>(input + i));
+                            sum = _mode switch
+                            {
+                                2 => Arm64.ComputeCrc32(sum, Unsafe.Read<ulong>(input + i)),
+                                _ => Arm64.ComputeCrc32C(sum, Unsafe.Read<ulong>(input + i)),
+                            };
                             i += size64;
                             len -= size64;
                         }
-                        if (sum != sum64)
-                            sum = (uint)(sum64 & Mask);
+                        hash = sum;
+                        return;
                     }
-                    const int size = sizeof(uint);
-                    while (len >= size)
+#endif
+                    case 1 when Sse42.IsSupported || Sse42.X64.IsSupported:
                     {
-                        sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
-                        i += size;
-                        len -= size;
+                        if (Sse42.X64.IsSupported)
+                        {
+                            ulong sum64 = sum;
+                            while (len >= size64)
+                            {
+                                sum64 = Sse42.X64.Crc32(sum64, Unsafe.Read<ulong>(input + i));
+                                i += size64;
+                                len -= size64;
+                            }
+                            if (sum != sum64)
+                                sum = (uint)(sum64 & Mask);
+                        }
+                        if (Sse42.IsSupported)
+                        {
+                            while (len >= size32)
+                            {
+                                sum = Sse42.Crc32(sum, Unsafe.Read<uint>(input + i));
+                                i += size32;
+                                len -= size32;
+                            }
+                            while (--len >= 0)
+                                sum = Sse42.Crc32(sum, input[i++]);
+                        }
+                        hash = sum;
+                        return;
                     }
-                    while (--len >= 0)
-                        sum = Sse42.Crc32(sum, input[i++]);
-                    hash = sum;
-                    return;
                 }
                 fixed (uint* table = Table.Span)
                 {
@@ -166,10 +216,19 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void AppendData(byte value, ref uint hash)
         {
-            if (_sse42)
+            switch (_mode)
             {
-                hash = Sse42.Crc32(hash, value);
-                return;
+#if NET5_0_OR_GREATER
+                case 2 when Arm.IsSupported:
+                    hash = Arm.ComputeCrc32(hash, value);
+                    return;
+                case 1 when Arm.IsSupported:
+                    hash = Arm.ComputeCrc32C(hash, value);
+                    return;
+#endif
+                case 1 when Sse42.IsSupported:
+                    hash = Sse42.Crc32(hash, value);
+                    return;
             }
             fixed (uint* table = Table.Span)
                 AppendData(value, table, ref hash);
