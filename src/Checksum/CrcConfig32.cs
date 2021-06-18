@@ -71,9 +71,9 @@
                 {
                     0xe3069283u => 1, // iSCSI: allows hardware mode on `ARM` or `CPU + SSE4.2 support`
                     0xcbf43926u => 2, // PKZip: allows hardware mode on `ARM`
-                    _ => 0 // Default: Software mode
+                    _ => 0 // Default
                 },
-                _ => 0 // Default
+                _ => 0 // Default: software mode
             };
 
             switch (_mode)
