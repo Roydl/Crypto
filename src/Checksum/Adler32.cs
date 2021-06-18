@@ -68,7 +68,8 @@
                     var v2 = Vector128.Create(sum2);
                     for (var j = 0; j < BlockSize; j++)
                     {
-                        v1 = Sse2.Add(v1, Vector128.Create((uint)Unsafe.Read<byte>(input + i + j)));
+                        var b = Vector128.Create((uint)Unsafe.Read<byte>(input + i + j));
+                        v1 = Sse2.Add(v1, b);
                         v2 = Sse2.Add(v1, v2);
                     }
                     sum1 = Sse2.ConvertToUInt32(v1);
