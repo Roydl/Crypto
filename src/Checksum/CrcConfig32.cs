@@ -147,6 +147,8 @@
                             i += size64;
                             len -= size64;
                         }
+                        while (--len >= 0)
+                            AppendData(input[i++], ref sum);
                         hash = sum;
                         return;
                     }
@@ -172,7 +174,7 @@
                             len -= size32;
                         }
                         while (--len >= 0)
-                            sum = Sse42.Crc32(sum, input[i++]);
+                           AppendData(input[i++], ref sum);
                         hash = sum;
                         return;
                     }
