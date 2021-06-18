@@ -12,9 +12,11 @@
     using Internal;
     using Resources;
 
-    /// <summary>Represents the base class from which all implementations of checksum encryption algorithms must derive.</summary>
+    /// <summary>Represents the base class from which all implementations of checksum algorithms must derive.</summary>
     public abstract class ChecksumAlgorithm : IChecksumAlgorithm, IEquatable<ChecksumAlgorithm>
     {
+        private byte[] _rawHash;
+
         /// <inheritdoc/>
         public string AlgorithmName { get; protected set; }
 
@@ -35,7 +37,7 @@
         }
 
         /// <inheritdoc/>
-        public ReadOnlyMemory<byte> RawHash { get; protected set; }
+        public ReadOnlySpan<byte> RawHash => _rawHash;
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="bitWidth">The bit width of a computed hash.</param>
@@ -108,12 +110,8 @@
         }
 
         /// <inheritdoc/>
-        public virtual void Reset()
-        {
-            if (RawHash.IsEmpty)
-                return;
-            RawHash = default;
-        }
+        public virtual void Reset() =>
+            Update(default);
 
         /// <summary>Determines whether this instance have same values as the specified <see cref="ChecksumAlgorithm"/> instance.</summary>
         /// <param name="other">The <see cref="ChecksumAlgorithm"/> instance to compare.</param>
@@ -122,7 +120,7 @@
         {
             if (other == null || HashSize != other.HashSize)
                 return false;
-            return RawHash.IsEmpty ? other.RawHash.IsEmpty : RawHash.Span.SequenceEqual(other.RawHash.Span);
+            return RawHash.IsEmpty ? other.RawHash.IsEmpty : RawHash.SequenceEqual(other.RawHash);
         }
 
         /// <inheritdoc/>
@@ -139,10 +137,15 @@
         public string ToString(bool uppercase) =>
             RawHash.ToHexStr(HashSize, uppercase);
 
-        /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
+        /// <inheritdoc cref="IChecksumResult.ToString()"/>
         [return: NotNull]
         public sealed override string ToString() =>
             ToString(false);
+
+        /// <summary>Updates the saved hashes of this instance.</summary>
+        /// <param name="bytes">The sequence of bytes that represents the computed hash.</param>
+        protected void Update(byte[] bytes) =>
+            _rawHash = bytes;
 
         /// <summary>Determines whether two specified <see cref="ChecksumAlgorithm"/> instances have same values.</summary>
         /// <param name="left">The first <see cref="ChecksumAlgorithm"/> instance to compare.</param>
@@ -170,23 +173,24 @@
     }
 
     /// <typeparam name="TAlgo">The hash algorithm type.</typeparam>
-    /// <typeparam name="TCipher">The integral type of <see cref="HashNumber"/>.</typeparam>
+    /// <typeparam name="TCipher">The integral type of <see cref="CipherHash"/>.</typeparam>
     /// <inheritdoc cref="ChecksumAlgorithm"/>
     public abstract class ChecksumAlgorithm<TAlgo, TCipher> : ChecksumAlgorithm, IChecksumAlgorithm<TCipher>, IEquatable<TAlgo> where TAlgo : IChecksumAlgorithm<TCipher> where TCipher : struct, IComparable, IFormattable
     {
-        private TCipher _hashNumber;
+        private readonly EqualityComparer<TCipher> _comparer = EqualityComparer<TCipher>.Default;
+        private TCipher _cipherHash;
 
         /// <inheritdoc/>
-        public TCipher HashNumber
+        public TCipher CipherHash
         {
             get
             {
-                if (RawHash.IsEmpty || !EqualityComparer<TCipher>.Default.Equals(_hashNumber, default))
-                    return _hashNumber;
+                if (RawHash.IsEmpty || !_comparer.Equals(_cipherHash, default))
+                    return _cipherHash;
 
                 // Fallback (should be set from the underlying types if necessary)
-                var span = RawHash.Span;
-                _hashNumber = _hashNumber switch
+                var span = RawHash;
+                _cipherHash = _cipherHash switch
                 {
                     byte => (TCipher)(object)(!BitConverter.IsLittleEndian ? span[^1] : span[0]),
                     ushort => (TCipher)(object)CryptoUtils.GetUInt16(span, !BitConverter.IsLittleEndian),
@@ -195,9 +199,8 @@
                     BigInteger => (TCipher)(object)new BigInteger(span, true, !BitConverter.IsLittleEndian),
                     _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
                 };
-                return _hashNumber;
+                return _cipherHash;
             }
-            protected set => _hashNumber = value;
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class.</summary>
@@ -209,11 +212,11 @@
         /// <inheritdoc/>
         public bool Equals(TAlgo other)
         {
-            if (other == null || HashSize != other.HashSize || HashNumber.GetType() != other.HashNumber.GetType())
+            if (other == null || HashSize != other.HashSize || CipherHash.GetType() != other.CipherHash.GetType())
                 return false;
             if (RawHash.IsEmpty)
                 return other.RawHash.IsEmpty;
-            return EqualityComparer<TCipher>.Default.Equals(HashNumber, other.HashNumber) && RawHash.Span.SequenceEqual(other.RawHash.Span);
+            return _comparer.Equals(CipherHash, other.CipherHash) && RawHash.SequenceEqual(other.RawHash);
         }
 
         /// <inheritdoc/>
@@ -226,10 +229,20 @@
             GetType().GetHashCode();
 
         /// <inheritdoc/>
-        public override void Reset()
+        public override void Reset() =>
+            Update(default);
+
+        /// <summary>Updates the saved hashes of this instance.</summary>
+        /// <param name="cipher">The cipher that represents the computed hash.</param>
+        protected void Update(TCipher cipher)
         {
-            base.Reset();
-            HashNumber = default;
+            _cipherHash = cipher;
+            if (_comparer.Equals(cipher, default))
+            {
+                Update(default(byte[]));
+                return;
+            }
+            Update(CryptoUtils.GetByteArray(cipher, !BitConverter.IsLittleEndian));
         }
 
         /// <summary>Determines whether two specified <typeparamref name="TAlgo"/> instances have same values.</summary>
@@ -248,55 +261,55 @@
         /// <param name="value">The item to convert to <see cref="sbyte"/>.</param>
         /// <returns>The <see cref="sbyte"/> representation of the last computed hash code.</returns>
         public static explicit operator sbyte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, sbyte>();
+            value.CipherHash.FromTo<TCipher, sbyte>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="byte"/>.</summary>
         /// <param name="value">The item to convert to <see cref="byte"/>.</param>
         /// <returns>The <see cref="byte"/> representation of the last computed hash code.</returns>
         public static explicit operator byte(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, byte>();
+            value.CipherHash.FromTo<TCipher, byte>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="short"/>.</summary>
         /// <param name="value">The item to convert to <see cref="short"/>.</param>
         /// <returns>The <see cref="short"/> representation of the last computed hash code.</returns>
         public static explicit operator short(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, short>();
+            value.CipherHash.FromTo<TCipher, short>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="ushort"/>.</summary>
         /// <param name="value">The item to convert to <see cref="ushort"/>.</param>
         /// <returns>The <see cref="ushort"/> representation of the last computed hash code.</returns>
         public static explicit operator ushort(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, ushort>();
+            value.CipherHash.FromTo<TCipher, ushort>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="int"/>.</summary>
         /// <param name="value">The item to convert to <see cref="int"/>.</param>
         /// <returns>The <see cref="int"/> representation of the last computed hash code.</returns>
         public static explicit operator int(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, int>();
+            value.CipherHash.FromTo<TCipher, int>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="uint"/>.</summary>
         /// <param name="value">The item to convert to <see cref="uint"/>.</param>
         /// <returns>The <see cref="uint"/> representation of the last computed hash code.</returns>
         public static explicit operator uint(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, uint>();
+            value.CipherHash.FromTo<TCipher, uint>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="long"/>.</summary>
         /// <param name="value">The item to convert to <see cref="long"/>.</param>
         /// <returns>The <see cref="long"/> representation of the last computed hash code.</returns>
         public static explicit operator long(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, long>();
+            value.CipherHash.FromTo<TCipher, long>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="ulong"/>.</summary>
         /// <param name="value">The item to convert to <see cref="ulong"/>.</param>
         /// <returns>The <see cref="ulong"/> representation of the last computed hash code.</returns>
         public static explicit operator ulong(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, ulong>();
+            value.CipherHash.FromTo<TCipher, ulong>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="BigInteger"/>.</summary>
         /// <param name="value">The item to convert to <see cref="BigInteger"/>.</param>
         /// <returns>The <see cref="BigInteger"/> representation of the last computed hash code.</returns>
         public static explicit operator BigInteger(ChecksumAlgorithm<TAlgo, TCipher> value) =>
-            value.HashNumber.FromTo<TCipher, BigInteger>();
+            value.CipherHash.FromTo<TCipher, BigInteger>();
 
         /// <summary>Defines an explicit conversion from <typeparamref name="TAlgo"/> to <see cref="byte"/> array.</summary>
         /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
@@ -346,7 +359,7 @@
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
-            using var instance = CreateAlgorithm();
+            using var instance = CreateIncrementalHashInstance();
             int len;
             while ((len = stream.Read(bytes)) > 0)
             {
@@ -366,7 +379,7 @@
             Reset();
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
-            using var instance = CreateAlgorithm();
+            using var instance = CreateIncrementalHashInstance();
             instance.AppendData(bytes);
             FinalizeHash(instance);
         }
@@ -417,7 +430,7 @@
                 _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
             };
 
-        private IncrementalHash CreateAlgorithm() =>
+        private IncrementalHash CreateIncrementalHashInstance() =>
             SecretKey != null ? IncrementalHash.CreateHMAC(HashAlgorithm, SecretKey) : IncrementalHash.CreateHash(HashAlgorithm);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -426,9 +439,9 @@
             if (algorithm == null)
                 throw new ArgumentNullException(nameof(algorithm));
 #if NET5_0_OR_GREATER
-            RawHash = algorithm.GetCurrentHash();
+            Update(algorithm.GetCurrentHash());
 #else
-            RawHash = algorithm.GetHashAndReset();
+            Update(algorithm.GetHashAndReset());
 #endif
         }
     }

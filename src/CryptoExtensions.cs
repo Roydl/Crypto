@@ -434,11 +434,11 @@
             var instance = algorithm.GetDefaultInstance();
             return instance.InternalComputeHash(source, false) switch
             {
-                IChecksumResult<byte> x => x.HashNumber,
-                IChecksumResult<ushort> x => x.HashNumber,
-                IChecksumResult<uint> x => x.HashNumber,
-                IChecksumResult<ulong> x => x.HashNumber,
-                IChecksumResult<BigInteger> x => (ulong)(x.HashNumber & ulong.MaxValue),
+                IChecksumResult<byte> x => x.CipherHash,
+                IChecksumResult<ushort> x => x.CipherHash,
+                IChecksumResult<uint> x => x.CipherHash,
+                IChecksumResult<ulong> x => x.CipherHash,
+                IChecksumResult<BigInteger> x => (ulong)(x.CipherHash & ulong.MaxValue),
                 _ => default
             };
         }
@@ -539,8 +539,8 @@
                 throw new ArgumentNullException(nameof(source));
             var inst1 = algorithm1.GetDefaultInstance();
             var inst2 = algorithm2.GetDefaultInstance();
-            var span1 = inst1.InternalComputeHash(source, true).RawHash.Span;
-            var span2 = inst2.InternalComputeHash(source, false).RawHash.Span;
+            var span1 = inst1.InternalComputeHash(source, true).RawHash;
+            var span2 = inst2.InternalComputeHash(source, false).RawHash;
             string str;
             fixed (byte* rawIn1 = span1, rawIn2 = span2)
             {

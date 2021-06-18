@@ -17,13 +17,13 @@
         /// <exception cref="ArgumentNullException">stream is null.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         /// <exception cref="NotSupportedException">stream does not support reading.</exception>
-        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
+        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.CipherHash">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
         void ComputeHash(Stream stream);
 
         /// <summary>Computes the hash from the specified sequence of bytes.</summary>
         /// <param name="bytes">The sequence of bytes to hash.</param>
         /// <exception cref="ArgumentException">bytes is empty.</exception>
-        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
+        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.CipherHash">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
         void ComputeHash(ReadOnlySpan<byte> bytes);
 
         /// <summary>Computes the hash from the specified text or file.</summary>
@@ -46,7 +46,7 @@
         /// <param name="fileInfo">The file to hash.</param>
         /// <exception cref="ArgumentNullException">fileInfo is null.</exception>
         /// <exception cref="FileNotFoundException">File cannot be found.</exception>
-        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.HashNumber">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
+        /// <remarks>For more information, see <see cref="IChecksumResult.Hash">Hash</see>, <see cref="IChecksumResult{TValue}.CipherHash">HashNumber</see> and <see cref="IChecksumResult.RawHash">RawHash</see>.</remarks>
         void ComputeHash(FileInfo fileInfo);
 
         /// <summary>Computes the hash from the specified file.</summary>
@@ -56,17 +56,9 @@
         /// <exception cref="FileNotFoundException">path cannot be found.</exception>
         /// <inheritdoc cref="ComputeHash(FileInfo)"/>
         void ComputeFileHash(string path);
-
-        /// <summary>Converts the <see cref="IChecksumResult.RawHash">RawHash</see> of this instance to its equivalent string representation.</summary>
-        /// <param name="uppercase"><see langword="true"/> to convert letters to uppercase; otherwise, <see langword="false"/>.</param>
-        /// <returns>The string representation of the last computed hash code.</returns>
-        string ToString(bool uppercase);
-
-        /// <inheritdoc cref="ToString(bool)"/>
-        string ToString();
     }
 
     /// <summary>Represents the interface for checksum encryption algorithms.</summary>
-    /// <typeparam name="TCipher">The integral type of <see cref="IChecksumResult{TValue}.HashNumber"/>.</typeparam>
+    /// <typeparam name="TCipher">The integral type of <see cref="IChecksumResult{TValue}.CipherHash"/>.</typeparam>
     public interface IChecksumAlgorithm<out TCipher> : IChecksumAlgorithm, IChecksumResult<TCipher> where TCipher : struct, IComparable, IFormattable { }
 }

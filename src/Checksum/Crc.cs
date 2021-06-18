@@ -201,7 +201,7 @@
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
             Current.ComputeHash(stream, out var sum);
-            FinalizeHash(sum);
+            Update(sum);
         }
 
         /// <inheritdoc/>
@@ -211,7 +211,7 @@
             if (bytes.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(bytes));
             Current.ComputeHash(bytes, out var sum);
-            FinalizeHash(sum);
+            Update(sum);
         }
 
         private static int GetBitWidth() =>
@@ -303,12 +303,6 @@
             };
             AlgorithmName = GetName(preset);
             return (ICrcConfig<TValue>)config;
-        }
-
-        private void FinalizeHash(TValue hash)
-        {
-            HashNumber = hash;
-            RawHash = CryptoUtils.GetByteArray(hash, !BitConverter.IsLittleEndian);
         }
     }
 }

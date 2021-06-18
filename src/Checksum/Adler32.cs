@@ -111,12 +111,7 @@
             hash2 = (hash2 + hash1) % ModAdler;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void FinalizeHash(uint hash1, uint hash2)
-        {
-            var sum = ((hash2 << 16) | hash1) & uint.MaxValue;
-            HashNumber = sum;
-            RawHash = CryptoUtils.GetByteArray(sum, !BitConverter.IsLittleEndian);
-        }
+        private void FinalizeHash(uint hash1, uint hash2) =>
+            Update(((hash2 << 16) | hash1) & uint.MaxValue);
     }
 }
