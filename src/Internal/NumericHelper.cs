@@ -8,6 +8,22 @@
 
     internal static class NumericHelper
     {
+        internal static ReadOnlySpan<char> HexLookupUpper => new[]
+        {
+            '0', '1', '2', '3',
+            '4', '5', '6', '7',
+            '8', '9', 'A', 'B',
+            'C', 'D', 'E', 'F'
+        };
+
+        internal static ReadOnlySpan<char> HexLookupLower => new[]
+        {
+            '0', '1', '2', '3',
+            '4', '5', '6', '7',
+            '8', '9', 'a', 'b',
+            'c', 'd', 'e', 'f'
+        };
+
         internal static TInt CreateBitMask<TInt>(int bitWidth) where TInt : struct, IComparable, IFormattable
         {
             // safe creation of a `0xff` like integral mask by bit-width
@@ -242,15 +258,39 @@
             };
         }
 
-        internal static string ToHexStr<TInt>(this TInt num, int padding, bool prefix) where TInt : struct, IComparable, IFormattable
+        internal static string ToHexStr(this ReadOnlySpan<byte> bytes, int size, bool upper)
         {
-            var str = num.ToString("x2", null);
-            if (padding > 2)
-                str = str.PadLeft(padding, '0');
-            if (prefix)
-                str = $"0x{str}";
-            return str;
+            if (bytes.IsEmpty)
+                return string.Empty;
+            var hex = upper switch
+            {
+                true => HexLookupUpper,
+                false => HexLookupLower
+            };
+            var len = bytes.Length;
+            if (size < 1)
+                size = len * 2;
+            Span<char> span = stackalloc char[size];
+            if (size > len * 2)
+                span.Fill('0');
+            for (int i = len, j = size - 1; i > 0; --i)
+            {
+                var b = bytes[i - 1];
+                span[j] = hex[b & 0xf];
+                if (--j < 0)
+                    break;
+                span[j] = hex[b >> 4];
+                if (--j < 0)
+                    break;
+            }
+            return new string(span);
         }
+
+        internal static string ToHexStr(this ReadOnlyMemory<byte> bytes, int size, bool upper) =>
+            bytes.Span.ToHexStr(size, upper);
+
+        internal static string ToHexStr(this byte[] bytes, int size, bool upper) =>
+            ((ReadOnlySpan<byte>)bytes).ToHexStr(size, upper);
 
         internal static BigInteger ToBigInt([AllowNull] this string value)
         {

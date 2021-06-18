@@ -136,24 +136,8 @@
 
         /// <inheritdoc/>
         [return: NotNull]
-        public unsafe string ToString(bool uppercase)
-        {
-            if (RawHash.IsEmpty)
-                return string.Empty;
-            string str;
-            fixed (byte* raw = &RawHash.Span[0])
-            {
-                var len = RawHash.Length;
-                var sb = new StringBuilder(len * 2);
-                for (var i = 0; i < len; i++)
-                    sb.AppendFormat(uppercase ? "{0:X2}" : "{0:x2}", raw[i]);
-                while (sb.Length < HashSize)
-                    sb.Insert(0, '0');
-                str = sb.Length > HashSize ? sb.ToString(sb.Length - HashSize, HashSize) : sb.ToString();
-                sb.Clear();
-            }
-            return str;
-        }
+        public string ToString(bool uppercase) =>
+            RawHash.ToHexStr(HashSize, uppercase);
 
         /// <inheritdoc cref="IChecksumAlgorithm.ToString()"/>
         [return: NotNull]

@@ -15,6 +15,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Checksum;
+    using Internal;
     using Resources;
 
     /// <summary>Specifies enumerated constants used to define an algorithm for encrypting data.</summary>
@@ -541,7 +542,7 @@
             var span1 = inst1.InternalComputeHash(source, true).RawHash.Span;
             var span2 = inst2.InternalComputeHash(source, false).RawHash.Span;
             string str;
-            fixed (byte* rawIn1 = &span1[0], rawIn2 = &span2[0])
+            fixed (byte* rawIn1 = span1, rawIn2 = span2)
             {
                 Span<byte> rawOut = stackalloc byte[16];
                 var len1 = span1.Length;
@@ -554,6 +555,7 @@
                     ref var e2 = ref rawIn2[i2 < len2 ? i2++ : i2 = 0];
                     rawOut[i] = (byte)CryptoUtils.CombineHashCodes(e1, e2);
                 }
+                var hx = NumericHelper.HexLookupLower;
                 var sb = new StringBuilder(braces ? 38 : 36);
                 if (braces)
                     sb.Append('{');
@@ -562,7 +564,11 @@
                 {
                     var width = i < 1 ? 4 : i >= 4 ? 6 : 2;
                     for (var j = 0; j < width; j++)
-                        sb.AppendFormat("{0:x2}", rawOut[i1++]);
+                    {
+                        var b = rawOut[i1++];
+                        sb.Append(hx[b >> 4]);
+                        sb.Append(hx[b & 0xf]);
+                    }
                     if (i < 4)
                         sb.Append('-');
                 }

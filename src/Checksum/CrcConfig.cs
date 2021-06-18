@@ -187,15 +187,21 @@
                 return;
             var exc = new InvalidDataException(ExceptionMessages.InvalidDataCrcValidation);
             var size = (int)MathF.Ceiling(item.BitWidth / 4f);
-            exc.Data.Add("Current", current.ToHexStr(size, true));
-            exc.Data.Add("Expected", item.Check.ToHexStr(size, true));
-            exc.Data.Add(nameof(item.Poly), item.Poly.ToHexStr(size, true));
-            exc.Data.Add(nameof(item.Init), item.Init.ToHexStr(size, true));
+            exc.Data.Add("Current", LocalToHexStr(current, size));
+            exc.Data.Add("Expected", LocalToHexStr(item.Check, size));
+            exc.Data.Add(nameof(item.Poly), LocalToHexStr(item.Poly, size));
+            exc.Data.Add(nameof(item.Init), LocalToHexStr(item.Init, size));
             exc.Data.Add(nameof(item.RefIn), item.RefIn.ToString());
             exc.Data.Add(nameof(item.RefOut), item.RefOut.ToString());
-            exc.Data.Add(nameof(item.XorOut), item.XorOut.ToHexStr(size, true));
-            exc.Data.Add(nameof(item.Mask), item.Mask.ToHexStr(size, true));
+            exc.Data.Add(nameof(item.XorOut), LocalToHexStr(item.XorOut, size));
+            exc.Data.Add(nameof(item.Mask), LocalToHexStr(item.Mask, size));
             throw exc;
+
+            static string LocalToHexStr(TValue num, int size)
+            {
+                var bytes = CryptoUtils.GetByteArray(num, !BitConverter.IsLittleEndian);
+                return $"0x{bytes.ToHexStr(size, false)}";
+            }
         }
     }
 }
