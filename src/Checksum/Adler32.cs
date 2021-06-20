@@ -11,7 +11,7 @@
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
     {
-        private const int BlockSize = 16;
+        private const int ChunkSize = 16;
         private const uint ModAdler = 0xfff1u;
 
         /// <summary>Initializes a new instance of the <see cref="Adler32"/> class.</summary>
@@ -62,29 +62,31 @@
             var i = 0;
             if (Sse2.IsSupported)
             {
-                for (; len >= BlockSize; i += BlockSize, len -= BlockSize)
+                var vsum1 = Vector128.Create(sum1);
+                var vsum2 = Vector128.Create(sum2);
+                var vmodA = Vector128.Create(ModAdler);
+                for (; len >= ChunkSize; i += ChunkSize, len -= ChunkSize)
                 {
-                    var v1 = Vector128.Create(sum1);
-                    var v2 = Vector128.Create(sum2);
-                    for (var j = 0; j < BlockSize; j++)
+                    for (var j = 0; j < ChunkSize; j++)
                     {
-                        var b = Vector128.Create((uint)Unsafe.Read<byte>(input + i + j));
-                        v1 = Sse2.Add(v1, b);
-                        v2 = Sse2.Add(v1, v2);
+                        var vb = Vector128.Create((uint)Unsafe.Read<byte>(input + i + j));
+                        vsum1 = Sse2.Add(vsum1, vb);
+                        vsum2 = Sse2.Add(vsum1, vsum2);
                     }
-                    sum1 = Sse2.ConvertToUInt32(v1);
-                    sum2 = Sse2.ConvertToUInt32(v2);
-                    if (sum2 >= ModAdler)
-                        sum2 -= ModAdler;
-                    if (len % 0x8000 == 0)
-                        sum1 %= ModAdler;
+                    if (Sse2.ConvertToUInt32(vsum2) >= ModAdler)
+                        vsum2 = Sse2.Subtract(vsum2, vmodA);
+                    if (len % 0x8000 != 0)
+                        continue;
+                    vsum1 = Vector128.Create(Sse2.ConvertToUInt32(vsum1) % ModAdler);
                 }
+                sum1 = Sse2.ConvertToUInt32(vsum1);
+                sum2 = Sse2.ConvertToUInt32(vsum2);
             }
             else
             {
-                for (; len >= BlockSize; i += BlockSize, len -= BlockSize)
+                for (; len >= ChunkSize; i += ChunkSize, len -= ChunkSize)
                 {
-                    for (var j = 0; j < BlockSize; j++)
+                    for (var j = 0; j < ChunkSize; j++)
                     {
                         sum1 += Unsafe.Read<byte>(input + i + j);
                         sum2 += sum1;
