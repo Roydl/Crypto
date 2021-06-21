@@ -73,11 +73,10 @@
                         vsum1 = Sse2.Add(vsum1, vb);
                         vsum2 = Sse2.Add(vsum1, vsum2);
                     }
+                    if (len % 0x8000 == 0)
+                        vsum1 = Vector128.Create(Sse2.ConvertToUInt32(vsum1) % ModAdler);
                     if (Sse2.ConvertToUInt32(vsum2) >= ModAdler)
                         vsum2 = Sse2.Subtract(vsum2, vmodA);
-                    if (len % 0x8000 != 0)
-                        continue;
-                    vsum1 = Vector128.Create(Sse2.ConvertToUInt32(vsum1) % ModAdler);
                 }
                 sum1 = Sse2.ConvertToUInt32(vsum1);
                 sum2 = Sse2.ConvertToUInt32(vsum2);
@@ -91,10 +90,10 @@
                         sum1 += Unsafe.Read<byte>(input + i + j);
                         sum2 += sum1;
                     }
-                    if (sum2 >= ModAdler)
-                        sum2 -= ModAdler;
                     if (len % 0x8000 == 0)
                         sum1 %= ModAdler;
+                    if (sum2 >= ModAdler)
+                        sum2 -= ModAdler;
                 }
             }
             while (--len >= 0)
