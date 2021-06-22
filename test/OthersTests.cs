@@ -37,7 +37,7 @@
         public void Extension_GetChecksums()
         {
             var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums();
-            Assert.GreaterOrEqual(items.Count, 2383);
+            Assert.GreaterOrEqual(items.Count, 2370);
             foreach (var (_, checksum) in items)
                 Assert.AreEqual(256 / 4, checksum.Length);
         }
