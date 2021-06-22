@@ -98,16 +98,12 @@
             sum1 %= ModAdler;
             sum2 %= ModAdler;
             while (--len >= 0)
-                AppendData(input[i++], ref sum1, ref sum2);
+            {
+                sum1 = (sum1 + input[i++]) % ModAdler;
+                sum2 = (sum1 + sum2) % ModAdler;
+            }
             hash1 = sum1;
             hash2 = sum2;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void AppendData(byte value, ref uint hash1, ref uint hash2)
-        {
-            hash1 = (hash1 + value) % ModAdler;
-            hash2 = (hash2 + hash1) % ModAdler;
         }
 
         private void FinalizeHash(uint hash1, uint hash2) =>
