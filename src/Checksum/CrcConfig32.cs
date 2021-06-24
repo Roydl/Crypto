@@ -69,8 +69,8 @@
             {
                 32 => check switch
                 {
-                    0xe3069283u => 1, // `iSCSI` config, which is available for hardware mode on `ARM` and `CPU + SSE4.2`
-                    0xcbf43926u => 2, // `PKZip` config, which is only available for hardware mode on` ARM` 
+                    0xe3069283u => 1, // `iSCSI` config, which is available for hardware mode on `ARM` and `SSE4.2 CPU`
+                    0xcbf43926u => 2, // `PKZip` config, which is only available for hardware mode on `ARM` 
                     _ => 0 // Default 
                 },
                 _ => 0 // Software mode by default 
