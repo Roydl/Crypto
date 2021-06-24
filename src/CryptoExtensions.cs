@@ -654,7 +654,7 @@
         /// <param name="searchOption">One of the enumeration values that specifies whether the operation should include only the current directory or all subdirectories.</param>
         /// <param name="algorithm">The algorithm to use.</param>
         /// <param name="result">If successful, a sequence of <see cref="string"/>-based <see cref="KeyValuePair"/>&lt;<see langword="FilePath"/>, <see langword="Checksum"/>&gt; objects provided by an <see cref="IDictionary{TKey, TValue}"/> object that contains the result of hashing the files of the specified <paramref name="dirInfo"/> by the specified <paramref name="algorithm"/>; otherwise, <see langword="default"/>.</param>
-        /// <remarks></remarks>
+        /// <remarks>Note that the performance of this function has been optimized and should only be limited by the read speed of the hard disk.</remarks>
         /// <returns><see langword="true"/> if the files of the specified <paramref name="dirInfo"/> could be hashed by the specified <paramref name="algorithm"/>; otherwise, <see langword="false"/>.</returns>
         public static bool TryGetChecksums(this DirectoryInfo dirInfo, SearchOption searchOption, ChecksumAlgo algorithm, [NotNullWhen(true)] out IDictionary<string, string> result)
         {

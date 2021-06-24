@@ -10,7 +10,7 @@
     <Company>Roy Schroedel</Company>
     <Authors>Roy Schroedel</Authors>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Provides a handy and performant way to hash data using Adler32, CRC (8-bit to 82-bit, and customizable without bit restriction), MD5, SHA-1 and SHA-2 (256-bit, 384-bit and 512-bit), including HMAC keyed hashing for some types. Functions for encrypting and decrypting data with Rijndael (128-bit, 192-bit and 256-bit) are also offered.</Description>
+    <Description>The idea was to create a simple way to hash any type of data. So, there are generic extensions for almost any type. Some algorithms are performance optimized and probably more powerful than any other pure C# library of its kind.</Description>
     <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
     <PackageIcon>LOGO.png</PackageIcon>
     <RepositoryUrl>https://github.com/Roydl/Crypto</RepositoryUrl>

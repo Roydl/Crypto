@@ -28,6 +28,7 @@
 
         /// <param name="hashes">A sequence of 32-bit signed integers.</param>
         /// <inheritdoc cref="CombineHashCodes(int, int)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CombineHashCodes(params int[] hashes)
         {
             switch (hashes?.Length)
@@ -72,7 +73,7 @@
         /// <param name="source">The sequence of bytes to convert.</param>
         /// <param name="size">Determines the size of the output string. If the value is greater than 0 but is less than length of <paramref name="source"/>, only the last bytes are converted. If the value is greater than length of <paramref name="source"/>, the result is padded with zeros at the beginning.</param>
         /// <param name="uppercase"><see langword="true"/> to convert letters to uppercase; otherwise, <see langword="false"/>.</param>
-        /// <remarks>Note that this feature is highly performance optimized.</remarks>
+        /// <remarks>Note that the performance of this function has been extremely optimized.</remarks>
         /// <returns>A hexadecimal string that represents the specified sequence of bytes.</returns>
         public static string GetString(ReadOnlySpan<byte> source, int size = default, bool uppercase = false)
         {
@@ -89,9 +90,9 @@
             Span<char> span = stackalloc char[size];
             if (size > len * 2)
                 span.Fill('0');
-            for (int i = len, j = size - 1; i > 0; --i)
+            for (int i = 1, j = size - 1; i <= len; i++)
             {
-                var b = source[i - 1];
+                var b = source[^i];
                 span[j] = hex[b & 0xf];
                 if (--j < 0)
                     break;

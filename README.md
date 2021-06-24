@@ -15,26 +15,45 @@
 <a href="https://www.si13n7.de"><img src="https://img.shields.io/website/https/www.si13n7.de?style=for-the-badge&down_color=critical&down_message=down&label=mirror&up_color=success&up_message=up&logo=data%3Aimage%2Fpng%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEwSURBVDhPxZJNSgNBEIXnCp5AcCO4CmaTRRaKBhdCFkGCCKLgz2Y2RiQgCiqZzmi3CG4COj0X8ApewSt4Ba%2FQ9leZGpyVG8GComtq3qv3qmeS%2Fw9nikHMd5sVn3bqLx7zom1NcW8z%2F6G9CjoPm722rPEv45EJ21vD0O30AvX12IWDvTRsrPXrnjPlUYO0u3McVpZXhch5cnguZ7vVDWfpjRAZgPqc%2BIMEgKQe9Pfr0xn%2FBqZJjAUNQKilp5cC1gHYYz8Usc3OQsTz9HZWK5BMJwFDwrbWbuIXhfhg%2FDpWuE2mK5lEgQtiz4baU14u3V09i5peiipy6qVAxFWtZiflJiq8AAiIZx1CnxpStGmEpEHDZf4r2pUd%2BMjYxomoxJofo4L%2FHqyR57OF6vEvIkm%2BAYRc%2BWd4P97CAAAAAElFTkSuQmCC" title="Visit the developer&apos;s mirror website" alt="Mirror"></a>
 </p>
 
-
 # Roydl.Crypto
 
-The idea was to create a handy way to hash and encrypt data, which can be used in any situation.
+The idea was to create a simple way to hash any type of data. So, there are generic extensions for almost any type. A handful algorithms are currently offered, but more will be added over time. Some algorithms are performance optimized and probably more powerful than any other pure C# library of its kind.
+
+## Install:
+```julia
+$ dotnet add package Roydl.Crypto
+```
 
 ### Checksum Algorithms:
 
-| Name | Hash Size | Algorithm | Type |
-| ---- | ---- | ---- | ---- |
-| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) |
-| CRC | 8-bit to 82-bit (no limit for custom) | Choose from [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) or create your own | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) |
-| MD5 | 128-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
-| SHA-1 | 160-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
-| SHA-2 | 256-bit to 512-bit | Built-in + HMAC keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) |
+| Name | Bit Width | Algorithm | Type | Hardware Support |
+| :---- | ----: | :---- | :---- | :----: |
+| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | SSE2 _(limited)_ |
+| CRC | _from_ 8-bit<br>_to_ 82-bit | [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) available + customizable | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | iSCSI @ SSE4.2 <br> iSCSI + PKZip @ ARM |
+| MD5 | 128-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacmd5?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
+| SHA-1 | 160-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha1?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
+| SHA-2 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
 
-#### Usage:
+### Checksum Performance:
+
+_Especially for Alder and CRC, the performance in software mode should be much better than with any other pure C# library, but similar to libraries that work with C/C++ imports. However, I couldn't find any other library with hardware support, not even with imports. So the performance should be better in some cases._
+
+| Algorithm | Library | Mode | Speed |
+| :---- | :----: | :----: | ----: |
+| Adler-32 | **This** | Software | **1566,2 MiB/s** |
+| Adler-32 | **This** | Hardware | **2099,4 MiB/s** |
+| CRC-32 | [Crc32.NET](https://github.com/force-net/Crc32.NET) | Software | 1602,7 MB/s |
+| CRC-32 | **This** | Software | **2040,9 MiB/s** |
+| CRC-32 | **This** | Hardware | **8393.9 MiB/s** |
+| SHA-256 | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-5.0) | Software | 1846,7 MiB/s |
+
+_In the test case, a 64 KiB packet with random bytes is generated, which is sent over and over again within 9 seconds by the function that computes the hash. During this process, it is determined several times how much data could be hashed within 1 second. It seems like 9 seconds is the sweet spot. Increasing this time does not provide more accurate results. However, repetitions offer better results by saving all results, determining the maximum and minimum values and thus identifying fluctuations. The most accurate result seems to be the average of 20 repetitions. You can find the test case [here](https://github.com/Roydl/Crypto/blob/master/test/BenchmarkTests/ChecksumPerformanceTests.cs)._
+
+### Usage:
 
 The `GetChecksum` extension method retrieves a **string** representation of the computed hash.
 
-The **value** can be almost anything. No matter if it is **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**.
+_The **value** can be almost anything. No matter if it is **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**._
 
 Not every type makes sense, but is supported anyway.
 
@@ -76,7 +95,7 @@ An instances provides a computed hash in several variants.
 
 ```cs
 ReadOnlyMemory<byte> rawHash = instance.RawHash;
-BigInteger cipher = instance.HashNumber; // The type depends on the hash size in bits, e.g. CRC-32 is `UInt32`
+BigInteger cipher = instance.CipherHash; // The type depends on the hash size in bits, e.g. CRC-32 is `UInt32`
 string lowercase = instance.Hash;
 string uppercase = instance.ToString(true);
 ```
@@ -96,7 +115,7 @@ bool equ = (instance1 == instance2);
 bool neq = (instance1 != instance2);
 ```
 
-#### CRC customization:
+### CRC customization:
 
 If you need a different CRC algorithm, you can easily create your own variation.
 
@@ -132,14 +151,14 @@ The **value** can be from type **Stream**, **byte[]**, **string**, **FileInfo**,
 
 ```cs
 var crc = new Crc<uint>(config);
-crc.Encrypt(value);
+crc.ComputeHash(value);
 ```
 
 As mentioned earlier, instances offer computed hashes in several variants. It follows the same rules that have already been explained above.
 
 ```cs
 ReadOnlyMemory<byte> rawHash = crc.RawHash;
-uint cipher = crc.HashNumber;
+uint cipher = crc.CipherHash;
 string lowercase = crc.Hash;
 ```
 
@@ -155,19 +174,19 @@ Check out the [CRC configuration manager](https://github.com/Roydl/Crypto/blob/m
 | Rijndael | `128` bit block size; optional: `128`, `192` or `256` bit key size, `cipher` and `padding` modes |
 
 
-#### Usage:
+### Usage:
 ```cs
 byte[] password = new byte[] { /* some bytes */ };
 byte[] salt = new byte[] { /* some bytes */ };
 using var aes = new Rijndael(password, salt, 1000, SymmetricKeySize.Large);
 
-byte[] encryptedBytes = aes.EncryptBytes(new byte[] { /* some bytes */ });
+byte[] encryptedBytes = aes.Encrypt(new byte[] { /* some bytes */ });
 byte[] encryptedFile = aes.EncryptFile("C:\\FileToEncrypt.example");
 aes.EncryptFile("C:\\FileToEncrypt.example", "C:\\EncryptedFile.example");
 
 aes.EncryptStream(streamToEncrypt, encryptedStream);
 
-byte[] decryptedBytes = aes.DecryptBytes(new byte[] { /* some bytes */ });
+byte[] decryptedBytes = aes.Decrypt(new byte[] { /* some bytes */ });
 byte[] decryptedFile = aes.DecryptFile("C:\\Some\\File.source");
 aes.DecryptFile("C:\\FileToDecrypt.example", "C:\\DecryptedFile.example");
 
