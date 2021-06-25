@@ -42,7 +42,7 @@ _Especially for Alder and CRC, the performance in software mode should be much b
 | :---- | :----: | :----: | ----: |
 | Adler-32 | **This** | Software | **1566,2 MiB/s** |
 | Adler-32 | **This** | Hardware | **2099,4 MiB/s** |
-| CRC-32 | [Crc32.NET](https://github.com/force-net/Crc32.NET) | Software | 1602,7 MB/s |
+| CRC-32 | [Crc32.NET](https://github.com/force-net/Crc32.NET) | Software | 1602,7 MiB/s |
 | CRC-32 | **This** | Software | **2040,9 MiB/s** |
 | CRC-32 | **This** | Hardware | **8393.9 MiB/s** |
 | SHA-256 | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-5.0) | Software | 1846,7 MiB/s |
