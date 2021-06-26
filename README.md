@@ -53,7 +53,7 @@ _In the test case, a 64 KiB packet with random bytes is generated, which is sent
 
 The `GetChecksum` extension method retrieves a **string** representation of the computed hash.
 
-_The **value** can be almost anything. No matter if it is **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**._
+_The **value** can be almost anything. **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**._
 
 Not every type makes sense, but is supported anyway.
 
@@ -79,23 +79,20 @@ ulong hash = value.GetCipher(ChecksumAlgo.Crc64);
 Note that `HMAC` keyed-hashing is only supported for cryptographic algorithms via instances by setting a secret key.
 
 ```cs
-Sha512 instance = new Sha512()
-{
-    SecretKey = new byte[128] { /* some bytes */ }
-};
+Sha512 instance = Sha512.Create(new byte[128] { /* some bytes */ });
 ```
 
-The `Encrypt` methods uses the secret key until `DestroySecretKey` or `Dispose` is called.
+The `ComputeHash` methods uses the secret key until `DestroySecretKey` is called.
 
 ```cs
-instance.Encrypt(value);
+instance.ComputeHash(value);
 ```
 
-An instances provides a computed hash in several variants.
+An instance provides a computed hash in several variants.
 
 ```cs
-ReadOnlyMemory<byte> rawHash = instance.RawHash;
-BigInteger cipher = instance.CipherHash; // The type depends on the hash size in bits, e.g. CRC-32 is `UInt32`
+ReadOnlySpan<byte> rawHash = instance.RawHash;
+BigInteger cipher = instance.CipherHash; // The integral type depends on the bit length, e.g. CRC-32 is `UInt32`
 string lowercase = instance.Hash;
 string uppercase = instance.ToString(true);
 ```
@@ -104,11 +101,11 @@ Casting is also supported to get a hash.
 
 ```cs
 byte[] copyOfRawHash = (byte[])instance;
-ulong cipher = (ulong)instance; // Numeric conversions are unchecked
+ulong cipher = (ulong)instance; // Numeric conversions are unchecked conversions of the `instance.CipherHash` field 
 string lowercase = (string)instance;
 ```
 
-Instances also provide equality operators.
+Instances also provide equality operators for quick comparison.
 
 ```cs
 bool equ = (instance1 == instance2);
@@ -162,7 +159,7 @@ uint cipher = crc.CipherHash;
 string lowercase = crc.Hash;
 ```
 
-Check out the [CRC configuration manager](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfigManager.cs) to see more examples.
+Check out the [CRC configuration manager](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfigManager.cs#L108) to see more examples.
 
 ---
 
@@ -179,18 +176,8 @@ Check out the [CRC configuration manager](https://github.com/Roydl/Crypto/blob/m
 byte[] password = new byte[] { /* some bytes */ };
 byte[] salt = new byte[] { /* some bytes */ };
 using var aes = new Rijndael(password, salt, 1000, SymmetricKeySize.Large);
-
-byte[] encryptedBytes = aes.Encrypt(new byte[] { /* some bytes */ });
-byte[] encryptedFile = aes.EncryptFile("C:\\FileToEncrypt.example");
-aes.EncryptFile("C:\\FileToEncrypt.example", "C:\\EncryptedFile.example");
-
-aes.EncryptStream(streamToEncrypt, encryptedStream);
-
-byte[] decryptedBytes = aes.Decrypt(new byte[] { /* some bytes */ });
-byte[] decryptedFile = aes.DecryptFile("C:\\Some\\File.source");
-aes.DecryptFile("C:\\FileToDecrypt.example", "C:\\DecryptedFile.example");
-
-aes.DecryptStream(streamToDecrypt, decryptedStream);
+aes.Encrypt(streamToEncrypt, encryptedStream);
+aes.Decrypt(streamToDecrypt, decryptedStream);
 ```
 
 ---
