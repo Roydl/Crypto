@@ -29,7 +29,12 @@
         /// <summary>Removes the saved hashes from this instance.</summary>
         void Reset();
 
-        /// <summary>Converts the <see cref="IChecksumResult.RawHash">RawHash</see> of this instance to its equivalent string representation.</summary>
+        /// <summary>Copies the contents of the <see cref="RawHash">RawHash</see> into a new array.</summary>
+        /// <returns>An array containing the last computed hash.</returns>
+        [return: NotNull]
+        byte[] ToArray();
+
+        /// <summary>Converts the <see cref="RawHash">RawHash</see> of this instance to its equivalent string representation.</summary>
         /// <param name="uppercase"><see langword="true"/> to convert letters to uppercase; otherwise, <see langword="false"/>.</param>
         /// <returns>The string representation of the last computed hash.</returns>
         [return: NotNull]

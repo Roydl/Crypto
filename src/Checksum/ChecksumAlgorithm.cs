@@ -134,6 +134,11 @@
 
         /// <inheritdoc/>
         [return: NotNull]
+        public byte[] ToArray() =>
+            RawHash.ToArray();
+
+        /// <inheritdoc/>
+        [return: NotNull]
         public string ToString(bool uppercase) =>
             CryptoUtils.GetString(RawHash, HashSize, uppercase);
 
@@ -163,7 +168,7 @@
         /// <param name="value">The item to convert to <see cref="byte"/> array.</param>
         /// <returns>A <see cref="byte"/> array copy of the last computed hash code.</returns>
         public static explicit operator byte[](ChecksumAlgorithm value) =>
-            value.RawHash.ToArray();
+            value.ToArray();
 
         /// <summary>Defines an explicit conversion from <see cref="ChecksumAlgorithm"/> to <see cref="string"/>.</summary>
         /// <param name="value">The item to convert to <see cref="string"/>.</param>
