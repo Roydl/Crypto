@@ -28,32 +28,32 @@ $ dotnet add package Roydl.Crypto
 
 | Name | Bit Width | Algorithm | Type | Hardware Support |
 | :---- | ----: | :---- | :---- | :----: |
-| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | SSE2 _(limited)_ |
-| CRC | _from_ 8-bit<br>_to_ 82-bit | [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) available + customizable | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | iSCSI @ SSE4.2 <br> iSCSI + PKZip @ ARM |
+| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | SSE2 CPU _(limited)_ |
+| CRC | _from_ 8-bit<br>_to_ 82-bit | [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) available + customizable | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | iSCSI @ SSE4.2 CPU <br> iSCSI+PKZip @ ARM |
 | MD5 | 128-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacmd5?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
 | SHA-1 | 160-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha1?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
 | SHA-2 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
 
 ### Checksum Performance:
 
-_Especially for Alder and CRC, the performance in software mode should be much better than with any other pure C# library, but similar to libraries that work with C/C++ imports. However, I couldn't find any other library with hardware support, not even with imports. So the performance should be better in some cases._
+_Especially for Alder and CRC, the performance in software mode should be much better than with any other pure C# library, but similar to libraries that work with C/C++ imports. However, I couldn't find any other library with hardware support, not even with imports._
 
 | Algorithm | Library | Mode | Speed |
 | :---- | :----: | :----: | ----: |
-| Adler-32 | **This** | Software | **1566,2 MiB/s** |
-| Adler-32 | **This** | Hardware | **2099,4 MiB/s** |
+| Adler-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/Adler32.cs#L83) | Software | **1566,2 MiB/s** |
+| Adler-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/Adler32.cs#L63) | Hardware | **2099,4 MiB/s** |
 | CRC-32 | [Crc32.NET](https://github.com/force-net/Crc32.NET) | Software | 1602,7 MiB/s |
-| CRC-32 | **This** | Software | **2040,9 MiB/s** |
-| CRC-32 | **This** | Hardware | **8393.9 MiB/s** |
-| SHA-256 | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-5.0) | Software | 1846,7 MiB/s |
+| CRC-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfig32.cs#L175) | Software | **2040,9 MiB/s** |
+| CRC-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfig32.cs#L157) | Hardware | **8393.9 MiB/s** |
+| SHA-256 | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.incrementalhash?view=net-5.0) | Software | 1846,7 MiB/s |
 
-_In the test case, a 64 KiB packet with random bytes is generated, which is sent over and over again within 9 seconds by the function that computes the hash. During this process, it is determined several times how much data could be hashed within 1 second. It seems like 9 seconds is the sweet spot. Increasing this time does not provide more accurate results. However, repetitions offer better results by saving all results, determining the maximum and minimum values and thus identifying fluctuations. The most accurate result seems to be the average of 20 repetitions. You can find the test case [here](https://github.com/Roydl/Crypto/blob/master/test/BenchmarkTests/ChecksumPerformanceTests.cs)._
+_In the test case, a 64 KiB packet with random bytes is generated, which is sent over and over again within 9 seconds by the function that computes the hash. During this process, it is determined several times how much data could be hashed within 1 second. It seems like 9 seconds is the sweet spot. Increasing this time does not provide more accurate results. However, repetitions offer better results by saving all results, determining the maximum and minimum values and thus identifying fluctuations. The most accurate result seems to be the average of 20 repetitions. You can find the test case [here](https://github.com/Roydl/Crypto/blob/master/test/BenchmarkTests/ChecksumPerformanceTests.cs#L63)._
 
 ### Usage:
 
 The `GetChecksum` extension method retrieves a **string** representation of the computed hash.
 
-_The **value** can be almost anything. **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**._
+_The **value** can be almost anything. **bool**, **sbyte**, **byte**, **short**, **ushort**, **char**, **int**, **uint**, **long**, **ulong**, **Half**, **float**, **double**, **decimal**, **Enum**, **IntPtr**, **UIntPtr**, **Vector{T}**, **Vector2**, **Vector3**, **Vector4**, **Matrix3x2**, **Matrix4x4**, **Plane**, **Quaternion**, **Complex**, **BigInteger**, **DateTime**, **DateTimeOffset**, **TimeSpan**, **Guid**, **Rune**, **Stream**, **StreamReader**, **FileInfo**, any **IEnumerable{T}** **byte** sequence, i.e. **Array**, or any **IEnumerable{T}** **char** sequence, i.e. **string**, any many more._
 
 Not every type makes sense, but is supported anyway.
 
