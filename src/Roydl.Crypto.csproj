@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Roydl.Crypto</AssemblyName>
     <RootNamespace>Roydl.Crypto</RootNamespace>
@@ -18,27 +18,24 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>**❗This release contains a lot of breaking changes❗**
-
-Read the changelog before updating:
-https://github.com/Roydl/Crypto/releases/latest</PackageReleaseNotes>
+    <PackageReleaseNotes>- Update to .NET 6.0 as 5.0 is reaching EOL</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
     <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Debug\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net5.0'">obj\Debug\net5.0\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Debug\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Debug</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Release\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net5.0'">obj\Release\net5.0\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Release</OutputPath>
   </PropertyGroup>

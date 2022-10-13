@@ -34,23 +34,25 @@
                 throw new ArgumentNullException(nameof(inputStream));
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
-            using var rm = new RijndaelManaged
-            {
-                BlockSize = BlockSize,
-                KeySize = (int)KeySize,
-                Mode = (CipherMode)Mode,
-                Padding = (PaddingMode)Padding
-            };
-            using (var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations))
-            {
-                rm.Key = db.GetBytes(rm.KeySize / 8);
-                rm.IV = db.GetBytes(rm.BlockSize / 8);
-            }
+            
+            using var man = Aes.Create(@"AesManaged");
+            if (man == null)
+                throw new NullReferenceException();
+            
+            man.BlockSize = BlockSize;
+            man.KeySize = (int)KeySize;
+            man.Mode = (CipherMode)Mode;
+            man.Padding = (PaddingMode)Padding;
+            
+            using var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations);
+            man.Key = db.GetBytes(man.KeySize / 8);
+            man.IV = db.GetBytes(man.BlockSize / 8);
+
             try
             {
                 var ba = new byte[inputStream.GetBufferSize()];
                 int len;
-                using var cs = new CryptoStream(outputStream, encrypt ? rm.CreateEncryptor() : rm.CreateDecryptor(), CryptoStreamMode.Write);
+                using var cs = new CryptoStream(outputStream, encrypt ? man.CreateEncryptor() : man.CreateDecryptor(), CryptoStreamMode.Write);
                 while ((len = inputStream.Read(ba)) > 0)
                     cs.Write(ba, 0, len);
             }
