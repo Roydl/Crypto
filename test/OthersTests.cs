@@ -33,11 +33,23 @@
         [Test]
         [Explicit]
         [Category("Extension")]
+        [Platform(Include = TestVars.PlatformLnx)]
+        public void Extension_GetChecksums_Lnx()
+        {
+            var items = new DirectoryInfo(TestContext.CurrentContext.TestDirectory).GetChecksums();
+            Assert.GreaterOrEqual(items.Count, 80);
+            foreach (var (_, checksum) in items)
+                Assert.AreEqual(256 / 4, checksum.Length);
+        }
+
+        [Test]
+        [Explicit]
+        [Category("Extension")]
         [Platform(Include = TestVars.PlatformWin)]
-        public void Extension_GetChecksums()
+        public void Extension_GetChecksums_Win()
         {
             var items = new DirectoryInfo(@"C:\Windows\Microsoft.NET").GetChecksums();
-            Assert.GreaterOrEqual(items.Count, 2370);
+            Assert.GreaterOrEqual(items.Count, 2000);
             foreach (var (_, checksum) in items)
                 Assert.AreEqual(256 / 4, checksum.Length);
         }
