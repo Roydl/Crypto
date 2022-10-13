@@ -101,7 +101,7 @@ Casting is also supported to get a hash.
 
 ```cs
 byte[] copyOfRawHash = (byte[])instance;
-ulong cipher = (ulong)instance; // Numeric conversions are unchecked conversions of the `instance.CipherHash` field 
+ulong cipher = (ulong)instance; // Numeric conversions are unchecked conversions of the `instance.CipherHash` field
 string lowercase = (string)instance;
 ```
 
