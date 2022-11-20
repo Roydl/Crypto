@@ -43,12 +43,29 @@
     {
         /// <summary>128 bits.</summary>
         Small = 128,
-
+        
         /// <summary>192 bits.</summary>
         Medium = 192,
 
         /// <summary>256 bits.</summary>
         Large = 256
+    }
+    
+    /// <summary>Specifies the hash algorithm to use to derive the symmetric key.</summary>
+    public enum SymmetricKeyAlgo
+    {
+        /// <summary>SHA-1-160.</summary>
+        Sha1 = 160,
+
+        /// <summary>SHA-2-256.</summary>
+        Sha256 = 256,
+
+        /// <summary>SHA-2-384.</summary>
+        Sha384 = 384,
+
+        /// <summary>SHA-2-512.</summary>
+        /// ReSharper restore CommentTypo
+        Sha512 = 512
     }
 
     /// <summary>Represents the base class from which all implementations of symmetric key encryption algorithms must derive.</summary>
@@ -58,9 +75,12 @@
 
         /// <summary>The block size, in bits, of the cryptographic operation.</summary>
         public int BlockSize { get; }
-
+        
         /// <summary>The size, in bits, of the secret key used for the symmetric algorithm.</summary>
         public SymmetricKeySize KeySize { get; }
+
+        /// <summary>The hash algorithm to use to derive the symmetric key.</summary>
+        public SymmetricKeyAlgo KeyAlgo { get; }
 
         /// <summary>The mode for operation of the symmetric algorithm. The default is <see cref="BlockCipherMode.Cbc"/>.</summary>
         public BlockCipherMode Mode { get; set; } = BlockCipherMode.Cbc;
@@ -89,10 +109,11 @@
         /// <param name="iterations">The number of iterations for the operation.</param>
         /// <param name="blockSize">The block size, in bits, of the cryptographic operation.</param>
         /// <param name="keySize">The size, in bits, of the secret key used for the symmetric algorithm.</param>
+        /// <param name="keyAlgo">The hash algorithm to use to derive the symmetric key.</param>
         /// <exception cref="ArgumentNullException">inputStream, outputStream, password or salt is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException">iterations is less than 1.</exception>
         /// <exception cref="ArgumentException">salt size is smaller than 8 bytes.</exception>
-        protected SymmetricKeyAlgorithm(byte[] password, byte[] salt, int iterations, int blockSize, SymmetricKeySize keySize)
+        protected SymmetricKeyAlgorithm(byte[] password, byte[] salt, int iterations, int blockSize, SymmetricKeySize keySize, SymmetricKeyAlgo keyAlgo)
         {
             _password = password ?? throw new ArgumentNullException(nameof(password));
             if (salt == null)
@@ -105,6 +126,7 @@
             Iterations = iterations;
             BlockSize = blockSize;
             KeySize = keySize;
+            KeyAlgo = keyAlgo;
         }
 
         /// <summary>Encrypts the specified input stream into the specified output stream.</summary>

@@ -37,9 +37,9 @@
         [OneTimeSetUp]
         public void CreateInstance()
         {
-            _instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small);
+            _instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small, SymmetricKey.SymmetricKeyAlgo.Sha1);
             _instance192 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Medium);
-            _instance256 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt());
+            _instance256 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Large, SymmetricKey.SymmetricKeyAlgo.Sha512);
             File.WriteAllText(TestFileSrcPath, TestVars.TestStr);
         }
 
@@ -58,12 +58,13 @@
         [Category("New")]
         public void Instance__Ctor(SymmetricKeyAlgo _)
         {
-            var instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small);
+            var instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small, SymmetricKey.SymmetricKeyAlgo.Sha1);
             Assert.IsInstanceOf(typeof(Rijndael), instance128);
             Assert.IsInstanceOf(typeof(SymmetricKeyAlgorithm), instance128);
             Assert.Greater(instance128.Iterations, 0);
             Assert.AreEqual(128, instance128.BlockSize);
             Assert.AreEqual(128, (int)instance128.KeySize);
+            Assert.AreEqual(160, (int)instance128.KeyAlgo);
             Assert.AreEqual(BlockCipherMode.Cbc, instance128.Mode);
             Assert.AreEqual(BlockPaddingMode.Pkcs7, instance128.Padding);
             Assert.AreEqual((int)CipherMode.CBC, (int)instance128.Mode);
@@ -77,6 +78,7 @@
             Assert.Greater(instance192.Iterations, 0);
             Assert.AreEqual(128, instance192.BlockSize);
             Assert.AreEqual(192, (int)instance192.KeySize);
+            Assert.AreEqual(256, (int)instance192.KeyAlgo);
             Assert.AreEqual(BlockCipherMode.Cbc, instance192.Mode);
             Assert.AreEqual(BlockPaddingMode.Pkcs7, instance192.Padding);
             Assert.AreEqual((int)CipherMode.CBC, (int)instance192.Mode);
@@ -84,12 +86,13 @@
             Assert.NotNull(instance192.Password);
             Assert.NotNull(instance192.Salt);
 
-            var instance256 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt());
+            var instance256 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Large, SymmetricKey.SymmetricKeyAlgo.Sha512);
             Assert.IsInstanceOf(typeof(Rijndael), instance256);
             Assert.IsInstanceOf(typeof(SymmetricKeyAlgorithm), instance256);
             Assert.Greater(instance256.Iterations, 0);
             Assert.AreEqual(128, instance256.BlockSize);
             Assert.AreEqual(256, (int)instance256.KeySize);
+            Assert.AreEqual(512, (int)instance256.KeyAlgo);
             Assert.AreEqual(BlockCipherMode.Cbc, instance256.Mode);
             Assert.AreEqual(BlockPaddingMode.Pkcs7, instance256.Padding);
             Assert.AreEqual((int)CipherMode.CBC, (int)instance256.Mode);

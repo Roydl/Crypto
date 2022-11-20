@@ -17,8 +17,9 @@
         /// </param>
         /// <param name="iterations">The number of iterations for the operation.</param>
         /// <param name="keySize">The size of the secret key.</param>
-        /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, SymmetricKeySize)"/>
-        public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large) : base(password, salt, iterations, 128, keySize) { }
+        /// <param name="keyAlgo">The hash algorithm to use to derive the symmetric key.</param>
+        /// <inheritdoc cref="SymmetricKeyAlgorithm(byte[], byte[], int, int, SymmetricKeySize, SymmetricKeyAlgo)"/>
+        public Rijndael(byte[] password, byte[] salt, int iterations = 1000, SymmetricKeySize keySize = SymmetricKeySize.Large, SymmetricKeyAlgo keyAlgo = SymmetricKeyAlgo.Sha256) : base(password, salt, iterations, 128, keySize, keyAlgo) { }
 
         /// <inheritdoc/>
         public override void Encrypt(Stream inputStream, Stream outputStream, bool dispose = false) =>
@@ -34,17 +35,25 @@
                 throw new ArgumentNullException(nameof(inputStream));
             if (outputStream == null)
                 throw new ArgumentNullException(nameof(outputStream));
-            
-            using var man = Aes.Create(@"AesManaged");
+
+            using var man = Aes.Create();
             if (man == null)
                 throw new NullReferenceException();
-            
+
             man.BlockSize = BlockSize;
             man.KeySize = (int)KeySize;
             man.Mode = (CipherMode)Mode;
             man.Padding = (PaddingMode)Padding;
-            
-            using var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations);
+
+            var keyAlgo = KeyAlgo switch
+            {
+                SymmetricKeyAlgo.Sha1 => HashAlgorithmName.SHA1,
+                SymmetricKeyAlgo.Sha384 => HashAlgorithmName.SHA384,
+                SymmetricKeyAlgo.Sha512 => HashAlgorithmName.SHA512,
+                _ => HashAlgorithmName.SHA256,
+            };
+
+            using var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations, keyAlgo);
             man.Key = db.GetBytes(man.KeySize / 8);
             man.IV = db.GetBytes(man.BlockSize / 8);
 

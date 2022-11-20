@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Roydl.Crypto</AssemblyName>
     <RootNamespace>Roydl.Crypto</RootNamespace>
@@ -17,18 +17,24 @@
     <PackageTags>encryption decryption hmac adler32 crc crc-custom crc-customizable crc8 crc10 crc11 crc12 crc13 crc14 crc15 crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
     <RepositoryType></RepositoryType>
     <SignAssembly>true</SignAssembly>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.2.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.2.2</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Update to .NET 6.0 as 5.0 is reaching EOL</PackageReleaseNotes>
+    <PackageReleaseNotes>- Add full support for .NET 7.0</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
     <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
+    <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>1.2.2</AssemblyVersion>
+    <FileVersion>1.2.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Debug\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
     <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Debug\net6.0\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Debug\net7.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Debug</OutputPath>
   </PropertyGroup>
@@ -36,6 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Release\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
     <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Release</OutputPath>
   </PropertyGroup>
