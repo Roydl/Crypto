@@ -18,18 +18,18 @@
     <RepositoryType></RepositoryType>
     <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
     <PackageReleaseNotes>- Add full support for .NET 7.0
-- Remove support for .NET Core 3.1</PackageReleaseNotes>
+- Remove support for .NET Core 3.1 as it has reached EOL</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
     <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
     <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.2.2</AssemblyVersion>
-    <FileVersion>1.2.2</FileVersion>
+    <AssemblyVersion>1.2.3</AssemblyVersion>
+    <FileVersion>1.2.3</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
