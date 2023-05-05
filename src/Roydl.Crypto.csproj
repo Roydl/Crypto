@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AssemblyName>Roydl.Crypto</AssemblyName>
     <RootNamespace>Roydl.Crypto</RootNamespace>
@@ -21,7 +21,8 @@
     <Version>1.2.2</Version>
     <PackageId>Roydl.Crypto</PackageId>
     <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Add full support for .NET 7.0</PackageReleaseNotes>
+    <PackageReleaseNotes>- Add full support for .NET 7.0
+- Remove support for .NET Core 3.1</PackageReleaseNotes>
     <AppDesignerFolder>Resources</AppDesignerFolder>
     <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
     <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
@@ -32,17 +33,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Debug\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Debug\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Debug\net7.0\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Debug\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Debug</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile Condition="'$(TargetFramework)'=='netcoreapp3.1'">obj\Release\netcoreapp3.1\Roydl.Crypto.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Release\net7.0\Roydl.Crypto.xml</DocumentationFile>
     <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\Release</OutputPath>
   </PropertyGroup>
