@@ -1,10 +1,10 @@
 <p align="center">
-<a href="https://dotnet.microsoft.com/download/dotnet/5.0" rel="nofollow"><img src="https://img.shields.io/badge/core-v3.1%20or%20higher-lightgrey?style=for-the-badge&logo=dot-net&logoColor=white" title=".NET Core v3.1 LTS or higher" alt=".NET Core"></a>
+<a href="https://dotnet.microsoft.com/download/dotnet/5.0" rel="nofollow"><img src="https://img.shields.io/badge/Core%20v6%20LTS-or%20higher-lightgrey?style=for-the-badge&logo=dotnet&logoColor=white" title=".NET6 LTS or higher" alt=".NET Core"></a>
 <a href="https://github.com/Roydl/Crypto/actions"><img src="https://img.shields.io/badge/cross%E2%80%93platform-%e2%9c%94-blue?style=for-the-badge&logo=linux&logoColor=silver" title="Automatically tested with Windows 10 &amp; Ubuntu 20.04 LTS" alt="Cross-platform"></a>
 <a href="https://github.com/Roydl/Crypto/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/Roydl/Crypto?style=for-the-badge" title="Read the license terms" alt="License"></a>
 </p>
 <p align="center">
-<a href="https://github.com/Roydl/Crypto/actions/workflows/dotnet.yml"><img src="https://img.shields.io/github/workflow/status/Roydl/Crypto/build%2Btest?style=for-the-badge&label=build%2Btest&logo=github&logoColor=silver" title="Check the last workflow results" alt="Build+Test"></a>
+<a href="https://github.com/Roydl/Crypto/actions/workflows/dotnet.yml"><img src="https://img.shields.io/github/actions/workflow/status/Roydl/Crypto/dotnet.yml?label=build%2Btest&logo=github&logoColor=silver&style=for-the-badge" title="Check the last workflow results" alt="Build+Test"></a>
 <a href="https://github.com/Roydl/Crypto/commits/master"><img src="https://img.shields.io/github/last-commit/Roydl/Crypto?style=for-the-badge&logo=github&logoColor=silver" title="Check the last commits" alt="Commits"></a>
 <a href="https://github.com/Roydl/Crypto/archive/refs/heads/master.zip"><img src="https://img.shields.io/badge/download-source-important?style=for-the-badge&logo=github&logoColor=silver" title="Start downloading the &apos;master.zip&apos; file" alt="Source"></a>
 </p>
