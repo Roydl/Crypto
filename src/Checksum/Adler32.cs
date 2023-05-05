@@ -1,12 +1,10 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
+    using Internal;
+    using Resources;
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
-    using System.Runtime.Intrinsics;
-    using System.Runtime.Intrinsics.X86;
-    using Internal;
-    using Resources;
 
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
@@ -60,40 +58,17 @@
             var sum1 = hash1;
             var sum2 = hash2;
             var i = 0;
-            if (Sse2.IsSupported)
+            for (; len >= ChunkSize; i += ChunkSize, len -= ChunkSize)
             {
-                var vsum1 = Vector128.Create(sum1);
-                var vsum2 = Vector128.Create(sum2);
-                for (; len >= ChunkSize; i += ChunkSize, len -= ChunkSize)
+                for (var j = 0; j < ChunkSize; j++)
                 {
-                    for (var j = 0; j < ChunkSize; j++)
-                    {
-                        var vb = Vector128.Create((uint)Unsafe.Read<byte>(input + i + j));
-                        vsum1 = Sse2.Add(vsum1, vb);
-                        vsum2 = Sse2.Add(vsum1, vsum2);
-                    }
-                    if (i % 5552 != 0)
-                        continue;
-                    vsum1 = Vector128.Create(Sse2.ConvertToUInt32(vsum1) % ModAdler);
-                    vsum2 = Vector128.Create(Sse2.ConvertToUInt32(vsum2) % ModAdler);
+                    sum1 += Unsafe.Read<byte>(input + i + j);
+                    sum2 += sum1;
                 }
-                sum1 = Sse2.ConvertToUInt32(vsum1);
-                sum2 = Sse2.ConvertToUInt32(vsum2);
-            }
-            else
-            {
-                for (; len >= ChunkSize; i += ChunkSize, len -= ChunkSize)
-                {
-                    for (var j = 0; j < ChunkSize; j++)
-                    {
-                        sum1 += Unsafe.Read<byte>(input + i + j);
-                        sum2 += sum1;
-                    }
-                    if (i % 5552 != 0)
-                        continue;
-                    sum1 %= ModAdler;
-                    sum2 %= ModAdler;
-                }
+                if (i % 5552 != 0)
+                    continue;
+                sum1 %= ModAdler;
+                sum2 %= ModAdler;
             }
             sum1 %= ModAdler;
             sum2 %= ModAdler;
