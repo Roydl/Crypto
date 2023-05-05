@@ -28,7 +28,7 @@ $ dotnet add package Roydl.Crypto
 
 | Name | Bit Width | Algorithm | Type | Hardware Support |
 | :---- | ----: | :---- | :---- | :----: |
-| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | SSE2 CPU _(limited)_ |
+| Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | ~SSE2 CPU _(limited)_~ |
 | CRC | _from_ 8-bit<br>_to_ 82-bit | [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) available + customizable | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | iSCSI @ SSE4.2 CPU <br> iSCSI+PKZip @ ARM |
 | MD5 | 128-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacmd5?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
 | SHA-1 | 160-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha1?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
@@ -40,8 +40,8 @@ _Especially for Alder and CRC, the performance in software mode should be much b
 
 | Algorithm | Library | Mode | Speed |
 | :---- | :----: | :----: | ----: |
-| Adler-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/Adler32.cs#L83) | Software | **1566,2 MiB/s** |
-| Adler-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/Adler32.cs#L63) | Hardware | **2099,4 MiB/s** |
+| Adler-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/Adler32.cs#L56) | Software | **1566,2 MiB/s** |
+| Adler-32 | [**This**](https://github.com/Roydl/Crypto/commit/5294549d135c1799ec9242bdce39a4767f50a555) | Hardware | ~**2099,4 MiB/s**~ |
 | CRC-32 | [Crc32.NET](https://github.com/force-net/Crc32.NET) | Software | 1602,7 MiB/s |
 | CRC-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfig32.cs#L175) | Software | **2040,9 MiB/s** |
 | CRC-32 | [**This**](https://github.com/Roydl/Crypto/blob/master/src/Checksum/CrcConfig32.cs#L157) | Hardware | **8393.9 MiB/s** |
