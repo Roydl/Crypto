@@ -6,10 +6,8 @@
     using System.Runtime.Intrinsics.X86;
     using Internal;
     using Resources;
-#if NET5_0_OR_GREATER
     using Arm = System.Runtime.Intrinsics.Arm.Crc32;
     using Arm64 = System.Runtime.Intrinsics.Arm.Crc32.Arm64;
-#endif
 
     /// <summary>Represents a 32-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig32 : ICrcConfig<uint>
@@ -78,9 +76,7 @@
 
             switch (_mode)
             {
-#if NET5_0_OR_GREATER
                 case > 0 when Arm.IsSupported || Arm64.IsSupported:
-#endif
                 case 1 when Sse42.IsSupported || Sse42.X64.IsSupported:
                     Table = null;
                     break;
@@ -138,7 +134,6 @@
                         significant performance degradation, so we cannot simply
                         merge the loops below
                     */
-#if NET5_0_OR_GREATER
                     case > 0 when Arm64.IsSupported:
                     {
                         if (_mode > 1)
@@ -152,7 +147,6 @@
                         hash = sum;
                         return;
                     }
-#endif
                     case 1 when Sse42.IsSupported:
                     {
                         if (Sse42.X64.IsSupported)
@@ -213,14 +207,12 @@
         {
             switch (_mode)
             {
-#if NET5_0_OR_GREATER
                 case 2 when Arm.IsSupported:
                     hash = Arm.ComputeCrc32(hash, value);
                     return;
                 case 1 when Arm.IsSupported:
                     hash = Arm.ComputeCrc32C(hash, value);
                     return;
-#endif
                 case 1 when Sse42.IsSupported:
                     hash = Sse42.Crc32(hash, value);
                     return;

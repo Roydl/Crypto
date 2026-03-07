@@ -161,7 +161,6 @@
                     else
                         BinaryPrimitives.WriteUInt64BigEndian(bytes, x);
                     break;
-#if NET5_0_OR_GREATER
                 case float x:
                     bytes = new byte[sizeof(float)];
                     if (isLittleEndian)
@@ -176,7 +175,6 @@
                     else
                         BinaryPrimitives.WriteDoubleBigEndian(bytes, x);
                     break;
-#endif
                 case BigInteger x:
                     bytes = x.ToByteArray(true, !isLittleEndian);
                     break;
