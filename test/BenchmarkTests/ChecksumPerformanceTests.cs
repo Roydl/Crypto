@@ -1,4 +1,4 @@
-﻿#if NET5_0_OR_GREATER && RELEASE
+﻿#if RELEASE
 namespace Roydl.Crypto.Test.BenchmarkTests
 {
     using System;
@@ -19,7 +19,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
         private const int BenchmarkRepeats = 20;
 
         private static readonly TestCaseData[] BenchmarkTestData =
-        {
+        [
             new(ChecksumAlgo.Adler32, 65536),
             new(ChecksumAlgo.Crc16, 65536),
             new(ChecksumAlgo.Crc32, 65536),
@@ -27,8 +27,13 @@ namespace Roydl.Crypto.Test.BenchmarkTests
             new(ChecksumAlgo.Crc32Posix, 65536),
             new(ChecksumAlgo.Crc64, 65536),
             new(ChecksumAlgo.Crc64Xz, 65536),
-            new(ChecksumAlgo.Sha256, 65536)
-        };
+            new(ChecksumAlgo.Sha2, 65536),
+            new(ChecksumAlgo.Sha2Bit384, 65536),
+            new(ChecksumAlgo.Sha2Bit512, 65536),
+            new(ChecksumAlgo.Sha3, 65536),
+            new(ChecksumAlgo.Sha3Bit384, 65536),
+            new(ChecksumAlgo.Sha3Bit512, 65536)
+        ];
 
         private static readonly ConcurrentDictionary<string, ConcurrentBag<double>> BenchmarkResults = new(Environment.ProcessorCount, BenchmarkTestData.Length);
 
@@ -36,7 +41,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
         [SetCulture("en-US")]
         public void CreateResultFiles()
         {
-            if (!BenchmarkResults.Any())
+            if (BenchmarkResults.IsEmpty)
                 return;
             var dir = TestContext.CurrentContext.TestDirectory;
             Parallel.ForEach(BenchmarkResults, pair =>
@@ -98,7 +103,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
 
             var key = $"{algorithm.AlgorithmName}@{packetSize}";
             if (!BenchmarkResults.ContainsKey(key))
-                BenchmarkResults[key] = new ConcurrentBag<double>();
+                BenchmarkResults[key] = [];
             BenchmarkResults[key].Add(rate);
         }
 
