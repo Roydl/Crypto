@@ -1,10 +1,12 @@
 ﻿namespace Roydl.Crypto.Test.SymmetricKeyTests
 {
+#if RELEASE
+    using System.Threading.Tasks;
+#endif
     using System;
     using System.IO;
     using System.Security.Cryptography;
     using System.Text;
-    using System.Threading.Tasks;
     using NUnit.Framework;
     using SymmetricKey;
     using Rijndael = SymmetricKey.Rijndael;
@@ -24,13 +26,13 @@
         private static readonly string TestFileDestPath = TestVars.GetTempFilePath(nameof(Rijndael));
 
         private static readonly TestCaseData[] TestData =
-        {
+        [
             new(Algorithm, TestVarsType.TestStream),
             new(Algorithm, TestVarsType.TestBytes),
             new(Algorithm, TestVarsType.TestString),
             new(Algorithm, TestVarsType.TestFile),
             new(Algorithm, TestVarsType.RangeString)
-        };
+        ];
 
         private static Rijndael _instance128, _instance192, _instance256;
 
@@ -59,8 +61,8 @@
         public void Instance__Ctor(SymmetricKeyAlgo _)
         {
             var instance128 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Small, SymmetricKey.SymmetricKeyAlgo.Sha1);
-            Assert.IsInstanceOf(typeof(Rijndael), instance128);
-            Assert.IsInstanceOf(typeof(SymmetricKeyAlgorithm), instance128);
+            Assert.IsInstanceOf<Rijndael>(instance128);
+            Assert.IsInstanceOf<SymmetricKeyAlgorithm>(instance128);
             Assert.Greater(instance128.Iterations, 0);
             Assert.AreEqual(128, instance128.BlockSize);
             Assert.AreEqual(128, (int)instance128.KeySize);
@@ -73,8 +75,8 @@
             Assert.NotNull(instance128.Salt);
 
             var instance192 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Medium);
-            Assert.IsInstanceOf(typeof(Rijndael), instance192);
-            Assert.IsInstanceOf(typeof(SymmetricKeyAlgorithm), instance192);
+            Assert.IsInstanceOf<Rijndael>(instance192);
+            Assert.IsInstanceOf<SymmetricKeyAlgorithm>(instance192);
             Assert.Greater(instance192.Iterations, 0);
             Assert.AreEqual(128, instance192.BlockSize);
             Assert.AreEqual(192, (int)instance192.KeySize);
@@ -87,8 +89,8 @@
             Assert.NotNull(instance192.Salt);
 
             var instance256 = new Rijndael(TestVars.GetRandomBytes(), TestVars.GetRandomBytes(), TestVars.GetRandomInt(), SymmetricKeySize.Large, SymmetricKey.SymmetricKeyAlgo.Sha512);
-            Assert.IsInstanceOf(typeof(Rijndael), instance256);
-            Assert.IsInstanceOf(typeof(SymmetricKeyAlgorithm), instance256);
+            Assert.IsInstanceOf<Rijndael>(instance256);
+            Assert.IsInstanceOf<SymmetricKeyAlgorithm>(instance256);
             Assert.Greater(instance256.Iterations, 0);
             Assert.AreEqual(128, instance256.BlockSize);
             Assert.AreEqual(256, (int)instance256.KeySize);

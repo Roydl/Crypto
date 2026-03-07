@@ -3,9 +3,11 @@
     using System;
     using System.IO;
     using System.Numerics;
-    using System.Threading.Tasks;
     using Checksum;
     using NUnit.Framework;
+#if RELEASE
+    using System.Threading.Tasks;
+#endif
 
     [TestFixture]
     [Parallelizable]
@@ -23,22 +25,22 @@
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestDataDefault =
-        {
+        [
             new(Algorithm, TestSetting.Default, TestVarsType.TestStream, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestBytes, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestString, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestFile, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.RangeString, ExpectedRangeHash)
-        };
+        ];
 
         private static readonly TestCaseData[] TestDataHmac =
-        {
+        [
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestStream, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestBytes, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestString, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestFile, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.RangeString, HmacExpectedRangeHash)
-        };
+        ];
 
         private static Sha1 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
 
@@ -112,8 +114,8 @@
         public void Instance__Ctor(ChecksumAlgo _, int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Sha1();
-            Assert.IsInstanceOf(typeof(Sha1), instanceDefault);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
+            Assert.IsInstanceOf<Sha1>(instanceDefault);
+            Assert.IsInstanceOf<IChecksumAlgorithm>(instanceDefault);
             Assert.IsNotNull(instanceDefault.AlgorithmName);
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
@@ -217,9 +219,12 @@
             Assert.AreNotEqual(new Crc<ulong>().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Crc<BigInteger>().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Md5().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha256().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha384().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha512().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2Bit512().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit512().GetHashCode(), _instanceDefault.GetHashCode());
         }
 
         [Test]

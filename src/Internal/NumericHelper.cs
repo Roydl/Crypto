@@ -8,17 +8,17 @@
 
     internal static class NumericHelper
     {
-        internal static ReadOnlySpan<char> HexLookupUpper => new[]
-        {
+        internal static ReadOnlySpan<char> HexLookupUpper =>
+        [
             '0', '1', '2', '3', '4', '5', '6', '7',
             '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-        };
+        ];
 
-        internal static ReadOnlySpan<char> HexLookupLower => new[]
-        {
+        internal static ReadOnlySpan<char> HexLookupLower =>
+        [
             '0', '1', '2', '3', '4', '5', '6', '7',
             '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-        };
+        ];
 
         internal static TInt CreateBitMask<TInt>(int bitWidth) where TInt : struct, IComparable, IFormattable
         {
@@ -30,49 +30,49 @@
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= (byte)(0xff << (8 * i));
+                        mask ^= (byte)(0xff << 8 * i);
                     return (TInt)(object)mask;
                 }
                 case short x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= (short)(0xff << (8 * i));
+                        mask ^= (short)(0xff << 8 * i);
                     return (TInt)(object)mask;
                 }
                 case ushort x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= (ushort)(0xff << (8 * i));
+                        mask ^= (ushort)(0xff << 8 * i);
                     return (TInt)(object)mask;
                 }
                 case int x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= 0xff << (8 * i);
+                        mask ^= 0xff << 8 * i;
                     return (TInt)(object)mask;
                 }
                 case uint x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= 0xffu << (8 * i);
+                        mask ^= 0xffu << 8 * i;
                     return (TInt)(object)mask;
                 }
                 case long x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= 0xffL << (8 * i);
+                        mask ^= 0xffL << 8 * i;
                     return (TInt)(object)mask;
                 }
                 case ulong x:
                 {
                     var mask = x;
                     for (var i = 1; i < size; i++)
-                        mask ^= 0xffuL << (8 * i);
+                        mask ^= 0xffuL << 8 * i;
                     return (TInt)(object)mask;
                 }
                 case BigInteger x:
@@ -80,7 +80,7 @@
                     var mask = x;
                     BigInteger b = 0xff;
                     for (var i = 1; i < size; i++)
-                        mask ^= b << (8 * i);
+                        mask ^= b << 8 * i;
                     return (TInt)(object)mask;
                 }
                 default:

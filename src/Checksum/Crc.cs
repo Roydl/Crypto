@@ -198,8 +198,7 @@
         public override void ComputeHash(Stream stream)
         {
             Reset();
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             Current.ComputeHash(stream, out var sum);
             Update(sum);
         }

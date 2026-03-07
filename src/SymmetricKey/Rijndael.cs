@@ -31,10 +31,8 @@
 
         private void InternalEncryptDecrypt(Stream inputStream, Stream outputStream, bool encrypt, bool dispose = false)
         {
-            if (inputStream == null)
-                throw new ArgumentNullException(nameof(inputStream));
-            if (outputStream == null)
-                throw new ArgumentNullException(nameof(outputStream));
+            ArgumentNullException.ThrowIfNull(inputStream);
+            ArgumentNullException.ThrowIfNull(outputStream);
 
             using var man = Aes.Create();
             if (man == null)
@@ -53,9 +51,10 @@
                 _ => HashAlgorithmName.SHA256,
             };
 
-            using var db = new Rfc2898DeriveBytes((byte[])Password, (byte[])Salt, Iterations, keyAlgo);
-            man.Key = db.GetBytes(man.KeySize / 8);
-            man.IV = db.GetBytes(man.BlockSize / 8);
+            var key = Rfc2898DeriveBytes.Pbkdf2((byte[])Password, (byte[])Salt, Iterations, keyAlgo, man.KeySize / 8);
+            var iv = Rfc2898DeriveBytes.Pbkdf2((byte[])Password, (byte[])Salt, Iterations, keyAlgo, man.BlockSize / 8);
+            man.Key = key;
+            man.IV = iv;
 
             try
             {

@@ -69,8 +69,7 @@
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out BigInteger hash)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum = Init;
@@ -108,12 +107,12 @@
                 var pos = 0;
                 var bts = 8;
                 var cur = sum;
-                sum = table[(int)(--row * Columns + ((cur & 0xff) ^ bytes[i + pos++]))];
+                sum = table[(int)(--row * Columns + (cur & 0xff ^ bytes[i + pos++]))];
                 for (; pos < Rows; pos++)
                 {
                     if (bts < BitWidth)
                     {
-                        sum ^= table[(int)(--row * Columns + (((cur >> bts) & 0xff) ^ bytes[i + pos]))];
+                        sum ^= table[(int)(--row * Columns + (cur >> bts & 0xff ^ bytes[i + pos]))];
                         bts += 8;
                         continue;
                     }
@@ -159,14 +158,14 @@
         private void AppendData(byte value, ReadOnlySpan<BigInteger> table, ref BigInteger hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ table[(int)(value ^ (hash & 0xff))]) & Mask;
+                hash = (hash >> 8 ^ table[(int)(value ^ hash & 0xff)]) & Mask;
             else
-                hash = (table[(int)(((hash >> (BitWidth - 8)) ^ value) & 0xff)] ^ (hash << 8)) & Mask;
+                hash = (table[(int)((hash >> BitWidth - 8 ^ value) & 0xff)] ^ hash << 8) & Mask;
         }
 
         private static ReadOnlyMemory<BigInteger> CreateTable(int bitWidth, BigInteger poly, BigInteger mask, bool refIn)
         {
-            var top = (BigInteger)(1 << (bitWidth - 1));
+            var top = (BigInteger)(1 << bitWidth - 1);
             var rows = refIn ? Rows : 1;
             var mem = new BigInteger[rows * Columns].AsMemory();
             var span = mem.Span;
@@ -177,12 +176,12 @@
                 {
                     if (refIn)
                         for (var k = 0; k < 8; k++)
-                            x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                            x = (x & 1) == 1 ? x >> 1 ^ poly : x >> 1;
                     else
                     {
                         x <<= bitWidth - 8;
                         for (var k = 0; k < 8; k++)
-                            x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                            x = (x & top) != 0 ? x << 1 ^ poly : x << 1;
                     }
                     span[j * Columns + i] = x & mask;
                 }

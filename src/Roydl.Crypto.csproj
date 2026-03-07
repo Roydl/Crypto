@@ -1,81 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <AssemblyName>Roydl.Crypto</AssemblyName>
-    <RootNamespace>Roydl.Crypto</RootNamespace>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>© Roy Schroedel. All rights reserved.</Copyright>
-    <Company>Roy Schroedel</Company>
-    <Authors>Roy Schroedel</Authors>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>The idea was to create a simple way to hash any type of data. So, there are generic extensions for almost any type. Some algorithms are performance optimized and probably more powerful than any other pure C# library of its kind.</Description>
-    <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
-    <PackageIcon>LOGO.png</PackageIcon>
-    <RepositoryUrl>https://github.com/Roydl/Crypto</RepositoryUrl>
-    <PackageTags>encryption decryption hmac adler32 crc crc-custom crc-customizable crc8 crc10 crc11 crc12 crc13 crc14 crc15 crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
-    <RepositoryType></RepositoryType>
-    <SignAssembly>true</SignAssembly>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.3</Version>
-    <PackageId>Roydl.Crypto</PackageId>
-    <Product>Roydl.Crypto</Product>
-    <PackageReleaseNotes>- Add full support for .NET 7.0
-- Remove support for .NET Core 3.1 as it has reached EOL</PackageReleaseNotes>
-    <AppDesignerFolder>Resources</AppDesignerFolder>
-    <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
-    <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>1.2.3</AssemblyVersion>
-    <FileVersion>1.2.3</FileVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net10.0</TargetFrameworks>
+        <LangVersion>latest</LangVersion>
+        <AssemblyName>Roydl.Crypto</AssemblyName>
+        <RootNamespace>Roydl.Crypto</RootNamespace>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <Copyright>© Roy Schroedel. All rights reserved.</Copyright>
+        <Company>Roy Schroedel</Company>
+        <Authors>Roy Schroedel</Authors>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <Description>The idea was to create a simple way to hash any type of data. So, there are generic extensions for almost any type. Some algorithms are performance optimized and probably more powerful than any other pure C# library of its kind.</Description>
+        <PackageProjectUrl>https://github.com/Roydl/Crypto</PackageProjectUrl>
+        <PackageIcon>LOGO.png</PackageIcon>
+        <RepositoryUrl>https://github.com/Roydl/Crypto</RepositoryUrl>
+        <PackageTags>encryption decryption hmac adler32 crc crc-custom crc-customizable crc8 crc10 crc11 crc12 crc13 crc14 crc15 crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 aes aes128 aes192 aes256 rijndael</PackageTags>
+        <RepositoryType></RepositoryType>
+        <SignAssembly>true</SignAssembly>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.2.4</Version>
+        <PackageId>Roydl.Crypto</PackageId>
+        <Product>Roydl.Crypto</Product>
+        <PackageReleaseNotes>- Add full support for .NET 10.0
+            - Remove support for .NET 7.0 and 6.0
+        </PackageReleaseNotes>
+        <AppDesignerFolder>Resources</AppDesignerFolder>
+        <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
+        <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
+        <PackageLicenseUrl></PackageLicenseUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <AssemblyVersion>1.2.4</AssemblyVersion>
+        <FileVersion>1.2.4</FileVersion>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Debug\net7.0\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Debug\net6.0\Roydl.Crypto.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\bin\Debug</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>obj\Debug\$(TargetFramework)\Roydl.Crypto.xml</DocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutputPath>..\bin\Debug</OutputPath>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile Condition="'$(TargetFramework)'=='net7.0'">obj\Release\net7.0\Roydl.Crypto.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(TargetFramework)'=='net6.0'">obj\Release\net6.0\Roydl.Crypto.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\bin\Release</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DocumentationFile>obj\Release\$(TargetFramework)\Roydl.Crypto.xml</DocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutputPath>..\bin\Release</OutputPath>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-      <Visible>False</Visible>
-    </None>
-    <None Include="..\LOGO.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-      <Visible>False</Visible>
-    </None>
-    <None Include="Roydl.Crypto.snk">
-      <Pack>False</Pack>
-      <Visible>False</Visible>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE.txt">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Visible>False</Visible>
+        </None>
+        <None Include="..\LOGO.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+            <Visible>False</Visible>
+        </None>
+        <None Include="Roydl.Crypto.snk">
+            <Pack>False</Pack>
+            <Visible>False</Visible>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resources\ExceptionMessages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ExceptionMessages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Resources\ExceptionMessages.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ExceptionMessages.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\ExceptionMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\ExceptionMessages.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NUnit3TestAdapter" Version="6.1.0"/>
+    </ItemGroup>
 
 </Project>

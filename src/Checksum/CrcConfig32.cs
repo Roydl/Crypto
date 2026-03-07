@@ -96,8 +96,7 @@
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out uint hash)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum = Init;
@@ -182,10 +181,10 @@
                     {
                         var row = Rows;
                         var pos = 0;
-                        sum = (Unsafe.Read<uint>(table + --row * Columns + (((sum >> 00) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 08) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 16) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<uint>(table + --row * Columns + (((sum >> 24) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                        sum = (Unsafe.Read<uint>(table + --row * Columns + (sum >> 00 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (sum >> 08 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (sum >> 16 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                               Unsafe.Read<uint>(table + --row * Columns + (sum >> 24 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
                                Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
                                Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
                                Unsafe.Read<uint>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
@@ -256,14 +255,14 @@
         private unsafe void AppendData(byte value, uint* table, ref uint hash)
         {
             if (RefIn)
-                hash = ((hash >> 8) ^ Unsafe.Read<uint>(table + (value ^ (hash & 0xff)))) & Mask;
+                hash = (hash >> 8 ^ Unsafe.Read<uint>(table + (value ^ hash & 0xff))) & Mask;
             else
-                hash = (Unsafe.Read<uint>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask;
+                hash = (Unsafe.Read<uint>(table + ((hash >> BitWidth - 8 ^ value) & 0xff)) ^ hash << 8) & Mask;
         }
 
         private static ReadOnlyMemory<uint> CreateTable(int bitWidth, uint poly, uint mask, bool refIn)
         {
-            var top = 1u << (bitWidth - 1);
+            var top = 1u << bitWidth - 1;
             var rows = refIn ? Rows : 1;
             var mem = new uint[rows * Columns].AsMemory();
             var span = mem.Span;
@@ -274,12 +273,12 @@
                 {
                     if (refIn)
                         for (var k = 0; k < 8; k++)
-                            x = (x & 1) == 1 ? (x >> 1) ^ poly : x >> 1;
+                            x = (x & 1) == 1 ? x >> 1 ^ poly : x >> 1;
                     else
                     {
                         x <<= bitWidth - 8;
                         for (var k = 0; k < 8; k++)
-                            x = (x & top) != 0 ? (x << 1) ^ poly : x << 1;
+                            x = (x & top) != 0 ? x << 1 ^ poly : x << 1;
                     }
                     span[j * Columns + i] = x & mask;
                 }

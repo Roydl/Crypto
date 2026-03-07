@@ -20,13 +20,13 @@
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestData =
-        {
+        [
             new(Algorithm, TestVarsType.TestStream, ExpectedTestHash),
             new(Algorithm, TestVarsType.TestBytes, ExpectedTestHash),
             new(Algorithm, TestVarsType.TestString, ExpectedTestHash),
             new(Algorithm, TestVarsType.TestFile, ExpectedTestHash),
             new(Algorithm, TestVarsType.RangeString, ExpectedRangeHash)
-        };
+        ];
 
         private static Adler32 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
 
@@ -130,8 +130,8 @@
         public void Instance__Ctor(ChecksumAlgo _, int bitWidth, int hashSize, int rawHashSize)
         {
             var instanceDefault = new Adler32();
-            Assert.IsInstanceOf(typeof(Adler32), instanceDefault);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
+            Assert.IsInstanceOf<Adler32>(instanceDefault);
+            Assert.IsInstanceOf<IChecksumAlgorithm>(instanceDefault);
             Assert.AreNotSame(_instanceDefault, instanceDefault);
             Assert.IsNotNull(instanceDefault.AlgorithmName);
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
@@ -201,9 +201,12 @@
             Assert.AreNotEqual(new Crc<BigInteger>().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Md5().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Sha1().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha256().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha384().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha512().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2Bit512().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit512().GetHashCode(), _instanceDefault.GetHashCode());
         }
 
         [Test]

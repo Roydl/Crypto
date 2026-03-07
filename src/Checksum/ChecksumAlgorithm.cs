@@ -78,8 +78,7 @@
         /// <inheritdoc/>
         public void ComputeHash(string text)
         {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
+            ArgumentNullException.ThrowIfNull(text);
             if (text.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
             ComputeHash(Encoding.UTF8.GetBytes(text));
@@ -88,8 +87,7 @@
         /// <inheritdoc/>
         public void ComputeHash(FileInfo fileInfo)
         {
-            if (fileInfo == null)
-                throw new ArgumentNullException(nameof(fileInfo));
+            ArgumentNullException.ThrowIfNull(fileInfo);
             if (!fileInfo.Exists)
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, fileInfo.FullName);
             using var fs = fileInfo.OpenRead();
@@ -99,8 +97,7 @@
         /// <inheritdoc/>
         public void ComputeFileHash(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             if (path.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(path));
             if (!File.Exists(path))
@@ -359,8 +356,7 @@
         public sealed override void ComputeHash(Stream stream)
         {
             Reset();
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             Span<byte> bytes = stackalloc byte[stream.GetBufferSize()];
@@ -392,8 +388,7 @@
         /// <inheritdoc cref="IChecksumAlgorithm.ComputeHash(string)"/>
         public new void ComputeHash(string text)
         {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
+            ArgumentNullException.ThrowIfNull(text);
             if (text.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentEmpty, nameof(text));
             ComputeHash(Encoding.UTF8.GetBytes(text));
@@ -424,16 +419,20 @@
         public override int GetHashCode() =>
             GetType().GetHashCode();
 
-        private static int GetBitWidth(HashAlgorithmName algorithm) =>
-            algorithm.Name switch
-            {
-                nameof(HashAlgorithmName.MD5) => 128,
-                nameof(HashAlgorithmName.SHA1) => 160,
-                nameof(HashAlgorithmName.SHA256) => 256,
-                nameof(HashAlgorithmName.SHA384) => 384,
-                nameof(HashAlgorithmName.SHA512) => 512,
-                _ => throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType)
-            };
+        private static int GetBitWidth(HashAlgorithmName algorithm)
+        {
+            if (algorithm == HashAlgorithmName.MD5)
+                return 128;
+            if (algorithm == HashAlgorithmName.SHA1)
+                return 160;
+            if (algorithm == HashAlgorithmName.SHA256 || algorithm == HashAlgorithmName.SHA3_256)
+                return 256;
+            if (algorithm == HashAlgorithmName.SHA384 || algorithm == HashAlgorithmName.SHA3_384)
+                return 384;
+            if (algorithm == HashAlgorithmName.SHA512 || algorithm == HashAlgorithmName.SHA3_512)
+                return 512;
+            throw new InvalidOperationException(ExceptionMessages.InvalidOperationUnsupportedType);
+        }
 
         private IncrementalHash CreateIncrementalHashInstance() =>
             SecretKey != null ? IncrementalHash.CreateHMAC(HashAlgorithm, SecretKey) : IncrementalHash.CreateHash(HashAlgorithm);
@@ -441,13 +440,8 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void FinalizeHash(IncrementalHash algorithm)
         {
-            if (algorithm == null)
-                throw new ArgumentNullException(nameof(algorithm));
-#if NET5_0_OR_GREATER
-            Update(algorithm.GetCurrentHash());
-#else
+            ArgumentNullException.ThrowIfNull(algorithm);
             Update(algorithm.GetHashAndReset());
-#endif
         }
     }
 }

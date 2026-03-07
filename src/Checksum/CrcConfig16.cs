@@ -65,8 +65,7 @@
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out ushort hash)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum = Init;
@@ -104,8 +103,8 @@
                     {
                         var row = Rows;
                         var pos = 0;
-                        sum = (ushort)((Unsafe.Read<ushort>(table + --row * Columns + (((sum >> 00) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                                        Unsafe.Read<ushort>(table + --row * Columns + (((sum >> 08) & 0xff) ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                        sum = (ushort)((Unsafe.Read<ushort>(table + --row * Columns + (sum >> 00 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                        Unsafe.Read<ushort>(table + --row * Columns + (sum >> 08 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
                                         Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
                                         Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
                                         Unsafe.Read<ushort>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
@@ -163,14 +162,14 @@
         private unsafe void AppendData(byte value, ushort* table, ref ushort hash)
         {
             if (RefIn)
-                hash = (ushort)(((hash >> 8) ^ Unsafe.Read<ushort>(table + (value ^ (hash & 0xff)))) & Mask);
+                hash = (ushort)((hash >> 8 ^ Unsafe.Read<ushort>(table + (value ^ hash & 0xff))) & Mask);
             else
-                hash = (ushort)((Unsafe.Read<ushort>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask);
+                hash = (ushort)((Unsafe.Read<ushort>(table + ((hash >> BitWidth - 8 ^ value) & 0xff)) ^ hash << 8) & Mask);
         }
 
         private static ReadOnlyMemory<ushort> CreateTable(int width, ushort poly, ushort mask, bool refIn)
         {
-            var top = (ushort)(1 << (width - 1));
+            var top = (ushort)(1 << width - 1);
             var rows = refIn ? Rows : 1;
             var mem = new ushort[rows * Columns].AsMemory();
             var span = mem.Span;
@@ -181,12 +180,12 @@
                 {
                     if (refIn)
                         for (var k = 0; k < 8; k++)
-                            x = (ushort)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
+                            x = (ushort)((x & 1) == 1 ? x >> 1 ^ poly : x >> 1);
                     else
                     {
                         x <<= width - 8;
                         for (var k = 0; k < 8; k++)
-                            x = (ushort)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
+                            x = (ushort)((x & top) != 0 ? x << 1 ^ poly : x << 1);
                     }
                     span[j * Columns + i] = (ushort)(x & mask);
                 }

@@ -3,64 +3,66 @@
     using System;
     using System.IO;
     using System.Numerics;
-    using System.Threading.Tasks;
     using Checksum;
     using NUnit.Framework;
+#if RELEASE
+    using System.Threading.Tasks;
+#endif
 
     [TestFixture]
     [Parallelizable]
     [Platform(Include = TestVars.PlatformCross)]
-    public class Sha384Tests
+    public class Sha2Bit512Tests
     {
-        private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha384;
-        private const int BitWidth = 384;
+        private const ChecksumAlgo Algorithm = ChecksumAlgo.Sha2Bit512;
+        private const int BitWidth = 512;
         private const int HashSize = BitWidth / 4;
         private const int RawHashSize = BitWidth / 8;
-        private const string ExpectedTestHash = "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3";
-        private const string ExpectedRangeHash = "dd39f42bdb371db2efbaa9d7ed505c332c42e7a900960a8a40fe4890e4de4bb83fa633417844bf1fec41ba9b46a1a522";
-        private const string HmacExpectedTestHash = "e7ca02e47635a2dcadb00d55c3582caa30b8a4a180ea9d9500ba935353d745e80ba0cc1450dbf971575e6629f749d01b";
-        private const string HmacExpectedRangeHash = "8518a4e907a75f0059fd265f26219b5731cb4c961e3bcca1bed8017cb29bbd7ea193e69687d418bde01a79cb9749b8bf";
+        private const string ExpectedTestHash = "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31";
+        private const string ExpectedRangeHash = "0523f0b765970e2d2b04eb14e2f797b0c4d4b348b02dc5b7d16e49a0fdff3328ab711490b02b9fb6d7c71c7ac529e2c98c2719b7cf7561b1221b33397931af74";
+        private const string HmacExpectedTestHash = "3359b5fa34b289f2bfe0a7fa592a1c5c030052e82e6e07981b2360ecbd3adffa8450856cee6ce89d2d645ff61ac3ea8a6a6ea684a316c357f9129c833545c55a";
+        private const string HmacExpectedRangeHash = "2c7d58cc987034cb266b7329aac27a9f11fc3155ee56f81117440e6f4fa300412cc459da6d42aea644144623c1e7e7c73ca229c5f579b4264989510c9453d370";
         private static readonly string TestFilePath = TestVars.GetTempFilePath(Algorithm.ToString());
 
         private static readonly TestCaseData[] TestDataDefault =
-        {
+        [
             new(Algorithm, TestSetting.Default, TestVarsType.TestStream, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestBytes, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestString, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.TestFile, ExpectedTestHash),
             new(Algorithm, TestSetting.Default, TestVarsType.RangeString, ExpectedRangeHash)
-        };
+        ];
 
         private static readonly TestCaseData[] TestDataHmac =
-        {
+        [
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestStream, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestBytes, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestString, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.TestFile, HmacExpectedTestHash),
             new(Algorithm, TestSetting.Hmac, TestVarsType.RangeString, HmacExpectedRangeHash)
-        };
+        ];
 
-        private static Sha384 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
+        private static Sha2Bit512 _instanceDefault, _instanceStream, _instanceByteArray, _instanceString, _instanceFilePath;
 
         [OneTimeSetUp]
         public void CreateInstances()
         {
-            _instanceDefault = new Sha384();
+            _instanceDefault = new Sha2Bit512();
 
             using (var ms = new MemoryStream(TestVars.TestBytes))
             {
-                _instanceStream = new Sha384();
+                _instanceStream = new Sha2Bit512();
                 _instanceStream.ComputeHash(ms);
             }
 
-            _instanceByteArray = new Sha384();
+            _instanceByteArray = new Sha2Bit512();
             _instanceByteArray.ComputeHash(TestVars.TestBytes);
 
-            _instanceString = new Sha384();
+            _instanceString = new Sha2Bit512();
             _instanceString.ComputeHash(TestVars.TestStr);
 
             File.WriteAllBytes(TestFilePath, TestVars.TestBytes);
-            _instanceFilePath = new Sha384();
+            _instanceFilePath = new Sha2Bit512();
             _instanceFilePath.ComputeFileHash(TestFilePath);
         }
 
@@ -111,9 +113,9 @@
         [Category("New")]
         public void Instance__Ctor(ChecksumAlgo _, int bitWidth, int hashSize, int rawHashSize)
         {
-            var instanceDefault = new Sha384();
-            Assert.IsInstanceOf(typeof(Sha384), instanceDefault);
-            Assert.IsInstanceOf(typeof(IChecksumAlgorithm), instanceDefault);
+            var instanceDefault = new Sha2Bit512();
+            Assert.IsInstanceOf<Sha2Bit512>(instanceDefault);
+            Assert.IsInstanceOf<IChecksumAlgorithm>(instanceDefault);
             Assert.IsNotNull(instanceDefault.AlgorithmName);
             Assert.AreEqual(bitWidth, instanceDefault.BitWidth);
             Assert.AreEqual(hashSize, instanceDefault.HashSize);
@@ -163,10 +165,10 @@
         public void Instance_DestroySecretKey(ChecksumAlgo _)
         {
             var secretKey = new WeakReference(TestVars.GetRandomBytes(64));
-            var instance = new Sha384((byte[])secretKey.Target);
+            var instance = new Sha2Bit512((byte[])secretKey.Target);
 
             // Let's see if the password and salt were created correctly.
-            Assert.GreaterOrEqual(instance.SecretKey?.Length, 64);
+            Assert.GreaterOrEqual(instance.SecretKey?.Length ?? 0, 64);
             Assert.AreEqual(secretKey.Target, instance.SecretKey);
             Assert.AreSame(secretKey.Target, instance.SecretKey);
 
@@ -209,7 +211,7 @@
         [Category("Method")]
         public void Instance_GetHashCode(ChecksumAlgo _)
         {
-            Assert.AreEqual(_instanceDefault.GetHashCode(), new Sha384().GetHashCode());
+            Assert.AreEqual(_instanceDefault.GetHashCode(), new Sha2Bit512().GetHashCode());
             Assert.AreNotEqual(new Adler32().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Crc<byte>().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Crc<ushort>().GetHashCode(), _instanceDefault.GetHashCode());
@@ -218,8 +220,11 @@
             Assert.AreNotEqual(new Crc<BigInteger>().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Md5().GetHashCode(), _instanceDefault.GetHashCode());
             Assert.AreNotEqual(new Sha1().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha256().GetHashCode(), _instanceDefault.GetHashCode());
-            Assert.AreNotEqual(new Sha512().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha2Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit384().GetHashCode(), _instanceDefault.GetHashCode());
+            Assert.AreNotEqual(new Sha3Bit512().GetHashCode(), _instanceDefault.GetHashCode());
         }
 
         [Test]

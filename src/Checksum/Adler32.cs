@@ -1,10 +1,10 @@
 ﻿namespace Roydl.Crypto.Checksum
 {
-    using Internal;
-    using Resources;
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
+    using Internal;
+    using Resources;
 
     /// <summary>Provides functionality to compute Adler-32 hashes.</summary>
     public sealed class Adler32 : ChecksumAlgorithm<Adler32, uint>
@@ -23,8 +23,7 @@
         public override unsafe void ComputeHash(Stream stream)
         {
             Reset();
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum1 = 1u;
@@ -53,7 +52,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void AppendData(byte* input, int len, ref uint hash1, ref uint hash2)
+        private unsafe static void AppendData(byte* input, int len, ref uint hash1, ref uint hash2)
         {
             var sum1 = hash1;
             var sum2 = hash2;
@@ -82,6 +81,6 @@
         }
 
         private void FinalizeHash(uint hash1, uint hash2) =>
-            Update(((hash2 << 16) | hash1) & uint.MaxValue);
+            Update((hash2 << 16 | hash1) & uint.MaxValue);
     }
 }

@@ -16,8 +16,8 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CombineHashCodes(int hash1, int hash2)
         {
-            var hash = (uint)((hash1 << 5) | (int)((uint)hash1 >> 27));
-            return ((int)hash + hash1) ^ hash2;
+            var hash = (uint)(hash1 << 5 | hash1 >>> 27);
+            return (int)hash + hash1 ^ hash2;
         }
 
         /// <summary>Combines the hash codes of the specified objects.</summary>
@@ -114,10 +114,10 @@
             switch (source)
             {
                 case sbyte x:
-                    bytes = new[] { (byte)x };
+                    bytes = [(byte)x];
                     break;
                 case byte x:
-                    bytes = new[] { x };
+                    bytes = [x];
                     break;
                 case short x:
                     bytes = new byte[sizeof(short)];

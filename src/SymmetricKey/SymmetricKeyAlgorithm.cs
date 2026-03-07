@@ -43,14 +43,14 @@
     {
         /// <summary>128 bits.</summary>
         Small = 128,
-        
+
         /// <summary>192 bits.</summary>
         Medium = 192,
 
         /// <summary>256 bits.</summary>
         Large = 256
     }
-    
+
     /// <summary>Specifies the hash algorithm to use to derive the symmetric key.</summary>
     public enum SymmetricKeyAlgo
     {
@@ -75,7 +75,7 @@
 
         /// <summary>The block size, in bits, of the cryptographic operation.</summary>
         public int BlockSize { get; }
-        
+
         /// <summary>The size, in bits, of the secret key used for the symmetric algorithm.</summary>
         public SymmetricKeySize KeySize { get; }
 
@@ -116,8 +116,7 @@
         protected SymmetricKeyAlgorithm(byte[] password, byte[] salt, int iterations, int blockSize, SymmetricKeySize keySize, SymmetricKeyAlgo keyAlgo)
         {
             _password = password ?? throw new ArgumentNullException(nameof(password));
-            if (salt == null)
-                throw new ArgumentNullException(nameof(salt));
+            ArgumentNullException.ThrowIfNull(salt);
             if (salt.Length < 8)
                 throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(salt));
             _salt = salt;
@@ -142,8 +141,7 @@
         /// <exception cref="ArgumentException">bytes is empty.</exception>
         public byte[] Encrypt(byte[] bytes)
         {
-            if (bytes == null)
-                throw new ArgumentNullException(nameof(bytes));
+            ArgumentNullException.ThrowIfNull(bytes);
             if (bytes.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(bytes));
             using var msi = new MemoryStream(bytes);
@@ -162,10 +160,8 @@
         /// <exception cref="DirectoryNotFoundException">destPath is invalid.</exception>
         public bool EncryptFile(string srcPath, string destPath, bool overwrite = true)
         {
-            if (srcPath == null)
-                throw new ArgumentNullException(nameof(srcPath));
-            if (destPath == null)
-                throw new ArgumentNullException(nameof(destPath));
+            ArgumentNullException.ThrowIfNull(srcPath);
+            ArgumentNullException.ThrowIfNull(destPath);
             if (!File.Exists(srcPath))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, srcPath);
             var dir = Path.GetDirectoryName(destPath);
@@ -184,8 +180,7 @@
         /// <exception cref="FileNotFoundException">path cannot be found.</exception>
         public byte[] EncryptFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             if (!File.Exists(path))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
@@ -207,8 +202,7 @@
         /// <exception cref="ArgumentException">code is empty.</exception>
         public byte[] Decrypt(byte[] code)
         {
-            if (code == null)
-                throw new ArgumentNullException(nameof(code));
+            ArgumentNullException.ThrowIfNull(code);
             if (code.Length < 1)
                 throw new ArgumentException(ExceptionMessages.ArgumentSizeTooSmall, nameof(code));
             using var msi = new MemoryStream(code);
@@ -227,10 +221,8 @@
         /// <exception cref="DirectoryNotFoundException">destPath is invalid.</exception>
         public bool DecryptFile(string srcPath, string destPath, bool overwrite = true)
         {
-            if (srcPath == null)
-                throw new ArgumentNullException(nameof(srcPath));
-            if (destPath == null)
-                throw new ArgumentNullException(nameof(destPath));
+            ArgumentNullException.ThrowIfNull(srcPath);
+            ArgumentNullException.ThrowIfNull(destPath);
             if (!File.Exists(srcPath))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, srcPath);
             using var fsi = new FileStream(srcPath, FileMode.Open, FileAccess.Read);
@@ -246,8 +238,7 @@
         /// <exception cref="FileNotFoundException">path cannot be found.</exception>
         public byte[] DecryptFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
             if (!File.Exists(path))
                 throw new FileNotFoundException(ExceptionMessages.FileNotFound, path);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);

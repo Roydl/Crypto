@@ -9,12 +9,7 @@
     /// <summary>Represents a 8-bit CRC configuration structure.</summary>
     public readonly struct CrcConfig : ICrcConfig<byte>
     {
-        internal static readonly byte[] ValidationBytes =
-        {
-            0x31, 0x32, 0x33,
-            0x34, 0x35, 0x36,
-            0x37, 0x38, 0x39
-        };
+        internal static readonly byte[] ValidationBytes = "123456789"u8.ToArray();
 
         /// <inheritdoc/>
         public int BitWidth { get; }
@@ -80,8 +75,7 @@
         /// <inheritdoc/>
         public void ComputeHash(Stream stream, out byte hash)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
+            ArgumentNullException.ThrowIfNull(stream);
             if (!stream.CanRead)
                 throw new NotSupportedException(ExceptionMessages.NotSupportedStreamRead);
             var sum = Init;
@@ -154,14 +148,14 @@
         private unsafe void AppendData(byte value, byte* table, ref byte hash)
         {
             if (RefIn)
-                hash = (byte)(((hash >> 8) ^ Unsafe.Read<byte>(table + (value ^ (hash & 0xff)))) & Mask);
+                hash = (byte)((hash >> 8 ^ Unsafe.Read<byte>(table + (value ^ hash & 0xff))) & Mask);
             else
-                hash = (byte)((Unsafe.Read<byte>(table + (((hash >> (BitWidth - 8)) ^ value) & 0xff)) ^ (hash << 8)) & Mask);
+                hash = (byte)((Unsafe.Read<byte>(table + ((hash >> BitWidth - 8 ^ value) & 0xff)) ^ hash << 8) & Mask);
         }
 
         private static ReadOnlyMemory<byte> CreateTable(int bitWidth, byte poly, byte mask, bool refIn)
         {
-            var top = (byte)(1 << (bitWidth - 1));
+            var top = (byte)(1 << bitWidth - 1);
             var mem = new byte[1 << 8].AsMemory();
             var span = mem.Span;
             for (var i = 0; i < mem.Length; i++)
@@ -169,12 +163,12 @@
                 var x = (byte)i;
                 if (refIn)
                     for (var j = 0; j < 8; j++)
-                        x = (byte)((x & 1) == 1 ? (x >> 1) ^ poly : x >> 1);
+                        x = (byte)((x & 1) == 1 ? x >> 1 ^ poly : x >> 1);
                 else
                 {
                     x <<= bitWidth - 8;
                     for (var j = 0; j < 8; j++)
-                        x = (byte)((x & top) != 0 ? (x << 1) ^ poly : x << 1);
+                        x = (byte)((x & top) != 0 ? x << 1 ^ poly : x << 1);
                 }
                 span[i] = (byte)(x & mask);
             }
