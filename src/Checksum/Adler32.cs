@@ -54,25 +54,53 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe static void AppendData(byte* input, int len, ref uint hash1, ref uint hash2)
         {
+            // Hardware-accelerated SIMD dispatch for Adler-32 computation.
+            //
+            // We attempt to use the widest available SIMD instruction set in descending order:
+            //
+            //   AVX-512 (512-bit): Processes 64 bytes per iteration using ZMM registers.
+            //                      Requires Intel Skylake-X / Ice Lake or AMD Zen 4 and newer.
+            //                      Offers the highest throughput but is not universally available.
+            //
+            //   AVX2   (256-bit): Processes 32 bytes per iteration using YMM registers.
+            //                     Available on Intel Haswell (2013) / AMD Ryzen (2017) and newer.
+            //                     Good balance between availability and throughput.
+            //
+            //   SSSE3  (128-bit): Processes 16 bytes per iteration using XMM registers.
+            //                     Available on virtually all x86-64 CPUs since ~2007.
+            //                     Used as a safe minimum baseline for SIMD acceleration.
+            //
+            //   Scalar:           Processes one byte at a time. No SIMD dependency whatsoever.
+            //                     Applied to any remaining bytes after the SIMD block, or
+            //                     exclusively when no SIMD instruction set is available.
+            //
+            // Each SIMD path uses pmaddubsw (u8 × s8 → s16 pair-sum) combined with psadbw
+            // (absolute difference sum against zero) to compute the weighted sum2 and byte
+            // sum1 accumulations respectively, deferring the modulo reduction to NMAX-sized
+            // block boundaries to minimize the number of expensive mod operations.
+            //
+            // Note: Although the three SIMD blocks are structurally similar, they are kept
+            // as separate, explicit code paths intentionally. Abstracting them into a single
+            // generic or delegate-based method would introduce indirect calls, virtual dispatch,
+            // or lambda overhead that the JIT cannot reliably eliminate — directly undermining
+            // the very performance gains SIMD is supposed to provide. The code duplication
+            // is an acceptable and deliberate trade-off for zero-overhead hot path execution.
+
+            const int scalarMax = 5552;
+            
             var sum1 = hash1;
             var sum2 = hash2;
 
+            // SIMD dispatch: AVX-512BW (64 B/iter) → AVX2 (32 B/iter) → SSSE3 (16 B/iter), scalar tail handles the rest.
             if (Avx512BW.IsSupported && len >= 64)
             {
-                // Weights for sum2: byte at position i gets weight (64 - i)
-                var vtap = Vector512.Create(64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49,
-                                            48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33,
-                                            32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17,
-                                            16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+                var vtap = Tap512.Value;
                 var vzero = Vector512<byte>.Zero;
                 var vones = Vector512.Create((short)1);
 
-                // NMAX=5552, 5552/64=86
-                const int maxBlocks = 5552 / 64;
-
                 while (len >= 64)
                 {
-                    var blocks = Math.Min(len / 64, maxBlocks);
+                    var blocks = Math.Min(len / 64, scalarMax / 64);
 
                     var vs1 = Vector512<uint>.Zero;
                     var vs1Prev = Vector512<uint>.Zero;
@@ -96,8 +124,8 @@
                     len -= blocks * 64;
 
                     ulong s2 = sum2;
-                    s2 += (ulong)64 * (uint)blocks * sum1;
-                    s2 += (ulong)64 * HorizontalSum512(vs1Prev);
+                    s2 += 64uL * (uint)blocks * sum1;
+                    s2 += 64uL * HorizontalSum512(vs1Prev);
                     s2 += HorizontalSum512(vs2);
 
                     sum1 = (sum1 + HorizontalSum512(vs1)) % ModAdler;
@@ -106,18 +134,13 @@
             }
             else if (Avx2.IsSupported && len >= 32)
             {
-                // Weights for sum2: byte at position i gets weight (32 - i)
-                var vtap = Vector256.Create(32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17,
-                                            16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+                var vtap = Tap256.Value;
                 var vzero = Vector256<byte>.Zero;
                 var vones = Vector256.Create((short)1);
 
-                // NMAX=5552, 5552/32=173
-                const int maxBlocks = 5552 / 32;
-
                 while (len >= 32)
                 {
-                    var blocks = Math.Min(len / 32, maxBlocks);
+                    var blocks = Math.Min(len / 32, scalarMax / 32);
 
                     var vs1 = Vector256<uint>.Zero;
                     var vs1Prev = Vector256<uint>.Zero;
@@ -141,8 +164,8 @@
                     len -= blocks * 32;
 
                     ulong s2 = sum2;
-                    s2 += (ulong)32 * (uint)blocks * sum1;
-                    s2 += (ulong)32 * HorizontalSum256(vs1Prev);
+                    s2 += 32uL * (uint)blocks * sum1;
+                    s2 += 32uL * HorizontalSum256(vs1Prev);
                     s2 += HorizontalSum256(vs2);
 
                     sum1 = (sum1 + HorizontalSum256(vs1)) % ModAdler;
@@ -151,17 +174,13 @@
             }
             else if (Ssse3.IsSupported && len >= 16)
             {
-                // Weights for sum2: byte at position i gets weight (16 - i)
-                var vtap = Vector128.Create(16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+                var vtap = Tap128.Value;
                 var vzero = Vector128<byte>.Zero;
                 var vones = Vector128.Create((short)1);
 
-                // NMAX=5552, 5552/16=347
-                const int maxBlocks = 5552 / 16;
-
                 while (len >= 16)
                 {
-                    var blocks = Math.Min(len / 16, maxBlocks);
+                    var blocks = Math.Min(len / 16, scalarMax / 16);
 
                     var vs1 = Vector128<uint>.Zero;
                     var vs1Prev = Vector128<uint>.Zero;
@@ -185,8 +204,8 @@
                     len -= blocks * 16;
 
                     ulong s2 = sum2;
-                    s2 += (ulong)16 * (uint)blocks * sum1;
-                    s2 += (ulong)16 * HorizontalSum128(vs1Prev);
+                    s2 += 16uL * (uint)blocks * sum1;
+                    s2 += 16uL * HorizontalSum128(vs1Prev);
                     s2 += HorizontalSum128(vs2);
 
                     sum1 = (sum1 + HorizontalSum128(vs1)) % ModAdler;
@@ -195,7 +214,6 @@
             }
 
             // Scalar tail for remaining bytes
-            const int scalarMax = 5552;
             while (len > 0)
             {
                 var n = Math.Min(len, scalarMax);
@@ -239,5 +257,20 @@
 
         private void FinalizeHash(uint hash1, uint hash2) =>
             Update((hash2 << 16 | hash1) & uint.MaxValue);
+
+        private static class Tap512
+        {
+            internal static readonly Vector512<sbyte> Value = NumericHelper.CreateDescendingByteVector<Vector512<sbyte>>();
+        }
+
+        private static class Tap256
+        {
+            internal static readonly Vector256<sbyte> Value = NumericHelper.CreateDescendingByteVector<Vector256<sbyte>>();
+        }
+
+        private static class Tap128
+        {
+            internal static readonly Vector128<sbyte> Value = NumericHelper.CreateDescendingByteVector<Vector128<sbyte>>();
+        }
     }
 }

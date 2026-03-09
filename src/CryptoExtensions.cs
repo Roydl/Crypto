@@ -23,7 +23,7 @@
     public enum ChecksumAlgo
     {
         /// <summary>Adler-32.</summary>
-        /// <remarks><b>Performance</b>: Highly optimized. Faster than non-optimized CRC algorithms, but slower than optimized ones.</remarks>
+        /// <remarks><b>Performance</b>: Depending on CPU capabilities, the hashing is hardware-accelerated using the best available instruction set (AVX-512, AVX2, or SSSE3), selected automatically in descending order of performance; otherwise, a highly optimized scalar fallback is used.</remarks>
         Adler32,
 
         #region CRC-8
