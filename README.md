@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://dotnet.microsoft.com/download/dotnet/10.0" rel="nofollow"><img src="https://img.shields.io/badge/10%20LTS-or%20higher-lightgrey?style=for-the-badge&logo=dotnet&logoColor=white" title=".NET10 LTS or higher" alt=".NET Core"></a>
+<a href="https://dotnet.microsoft.com/download/dotnet/10.0" rel="nofollow"><img src="https://img.shields.io/badge/Core%2010%20LTS-or%20higher-lightgrey?style=for-the-badge&logo=dotnet&logoColor=white" title=".NET10 LTS or higher" alt=".NET Core"></a>
 <a href="https://github.com/Roydl/Crypto/actions"><img src="https://img.shields.io/badge/cross%E2%80%93platform-%e2%9c%94-blue?style=for-the-badge&logo=linux&logoColor=silver" title="Automatically tested with Windows 11 &amp; Ubuntu 24.04 LTS" alt="Cross-platform"></a>
 <a href="https://github.com/Roydl/Crypto/blob/master/LICENSE.txt"><img src="https://img.shields.io/github/license/Roydl/Crypto?style=for-the-badge" title="Read the license terms" alt="License"></a>
 </p>
@@ -58,10 +58,12 @@ $ dotnet add package Roydl.Crypto
 | :---- | ----: | :---- | :---- | :----: |
 | Adler-32 | 32-bit | Standard | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | AVX-512 <br> AVX2 <br> SSSE3 |
 | CRC | _from_ 8-bit<br>_to_ 82-bit | [88 presets](https://github.com/Roydl/Crypto/wiki/1.-Checksum-Algorithms) available + customizable | [Cyclic](https://en.wikipedia.org/wiki/Cyclic_code) | iSCSI @ SSE4.2 CPU <br> iSCSI+PKZip @ ARM |
-| MD5 | 128-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacmd5?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
-| SHA1 | 160-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha1?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
-| SHA2 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-10.0) + [HMAC](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-10.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
-| SHA3 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha3_256?view=net-10.0) + [HMAC](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha3_256?view=net-10.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | :heavy_multiplication_x: |
+| MD5 | 128-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.md5?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacmd5?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | See ¹ |
+| SHA1 | 160-bit | [Built-in](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha1?view=net-5.0) + [HMAC](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha1?view=net-5.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | See ¹ |
+| SHA2 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256?view=net-10.0) + [HMAC](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha256?view=net-10.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | See ¹ |
+| SHA3 | 256-bit<br>384-bit<br>512-bit | [Built-in](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha3_256?view=net-10.0) + [HMAC](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.hmacsha3_256?view=net-10.0) keyed-hash support | [Cryptographic](https://en.wikipedia.org/wiki/Cryptographic_hash_function) | See ¹ |
+
+> ¹ Hardware acceleration for cryptographic algorithms is handled transparently by the .NET runtime and depends on the underlying platform (e.g. Intel SHA Extensions for SHA1 and SHA2-256 on supported CPUs).
 
 ---
 
@@ -132,7 +134,7 @@ ulong hash = value.GetCipher(ChecksumAlgo.Crc64);
 Note that `HMAC` keyed-hashing is only supported for cryptographic algorithms via instances by setting a secret key.
 
 ```cs
-Sha3 instance = Sha3.Create(new byte[128] { /* some bytes */ });
+Sha512 instance = Sha512.Create(new byte[128] { /* some bytes */ });
 ```
 
 The `ComputeHash` methods use the secret key until `DestroySecretKey` is called.
