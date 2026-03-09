@@ -99,28 +99,81 @@
                 fixed (byte* input = bytes)
                 {
                     var i = 0;
-                    while (RefIn && len >= Rows)
+
+                    switch (RefIn)
                     {
-                        ulong row = Rows;
-                        var pos = 0;
-                        sum = (Unsafe.Read<ulong>(table + --row * Columns + (sum >> 00 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 08 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 16 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 24 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 32 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 40 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 48 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + (sum >> 56 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
-                               Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask;
-                        i += Rows;
-                        len -= Rows;
+                        // Non-reflected sliced-by-16 (64-bit only; L^16(crc) derivation relies on 64-bit shift-out behavior)
+                        // Unlike reflected, carry bytes and data bytes use separate table rows and cannot share a combined
+                        // index — 24 reads vs. 16.
+                        case false when BitWidth == 64:
+                        {
+                            while (len >= Rows)
+                            {
+                                var row = Rows;
+                                var pos = 0;
+
+                                // Note: byte order is reversed compared to reflected (high byte → high row)
+                                sum = (Unsafe.Read<ulong>(table + 15 * Columns + (int)(sum >> 56)) ^
+                                       Unsafe.Read<ulong>(table + 14 * Columns + (int)(sum >> 48 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 13 * Columns + (int)(sum >> 40 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 12 * Columns + (int)(sum >> 32 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 11 * Columns + (int)(sum >> 24 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 10 * Columns + (int)(sum >> 16 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 9 * Columns + (int)(sum >> 8 & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + 8 * Columns + (int)(sum & 0xff)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask;
+
+                                i += Rows;
+                                len -= Rows;
+                            }
+                            break;
+                        }
+                        case true:
+                        {
+                            /*
+                                replacing `i + pos++` with `i++` or replacing `--row` with
+                                constants, both lead to a significant drop in performance
+                            */
+                            while (len >= Rows)
+                            {
+                                ulong row = Rows;
+                                var pos = 0;
+                                sum = (Unsafe.Read<ulong>(table + --row * Columns + (sum & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 8 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 16 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 24 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 32 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 40 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 48 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + (sum >> 56 & 0xff ^ Unsafe.Read<byte>(input + i + pos++))) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos++)) ^
+                                       Unsafe.Read<ulong>(table + --row * Columns + Unsafe.Read<byte>(input + i + pos))) & Mask;
+                                i += Rows;
+                                len -= Rows;
+                            }
+                            break;
+                        }
                     }
                     while (--len >= 0)
                         AppendData(input[i++], table, ref sum);
@@ -170,26 +223,35 @@
         private static ReadOnlyMemory<ulong> CreateTable(int bitWidth, ulong poly, ulong mask, bool refIn)
         {
             var top = 1uL << bitWidth - 1;
-            var rows = refIn ? Rows : 1;
-            var mem = new ulong[rows * Columns].AsMemory();
+            var mem = new ulong[Rows * Columns].AsMemory();
             var span = mem.Span;
+
+            // Phase 1: build T[0] — the standard single-byte CRC lookup table
             for (var i = 0; i < Columns; i++)
             {
                 var x = (ulong)i;
-                for (var j = 0; j < rows; j++)
+                if (refIn)
+                    for (var k = 0; k < 8; k++)
+                        x = (x & 1) == 1 ? x >> 1 ^ poly : x >> 1;
+                else
                 {
-                    if (refIn)
-                        for (var k = 0; k < 8; k++)
-                            x = (x & 1) == 1 ? x >> 1 ^ poly : x >> 1;
-                    else
-                    {
-                        x <<= bitWidth - 8;
-                        for (var k = 0; k < 8; k++)
-                            x = (x & top) != 0 ? x << 1 ^ poly : x << 1;
-                    }
-                    span[j * Columns + i] = x & mask;
+                    x <<= bitWidth - 8;
+                    for (var k = 0; k < 8; k++)
+                        x = (x & top) != 0 ? x << 1 ^ poly : x << 1;
                 }
+                span[i] = x & mask;
             }
+
+            // Phase 2: build T[1..Rows-1] by propagating one zero-byte update per row
+            for (var j = 1; j < Rows; j++)
+                for (var i = 0; i < Columns; i++)
+                {
+                    var prev = span[(j - 1) * Columns + i];
+                    span[j * Columns + i] = refIn
+                        ? (prev >> 8 ^ span[(int)(prev & 0xff)]) & mask
+                        : (prev << 8 ^ span[(int)(prev >> bitWidth - 8 & 0xff)]) & mask;
+                }
+
             return mem;
         }
     }
