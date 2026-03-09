@@ -165,7 +165,7 @@
 
         private static ReadOnlyMemory<BigInteger> CreateTable(int bitWidth, BigInteger poly, BigInteger mask, bool refIn)
         {
-            var top = (BigInteger)(1 << bitWidth - 1);
+            var top = BigInteger.One << bitWidth - 1;
             var rows = refIn ? Rows : 1;
             var mem = new BigInteger[rows * Columns].AsMemory();
             var span = mem.Span;
