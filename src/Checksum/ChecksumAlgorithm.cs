@@ -37,13 +37,17 @@
         }
 
         /// <inheritdoc/>
+        public bool IsSupported { get; }
+
+        /// <inheritdoc/>
         public ReadOnlySpan<byte> RawHash => _rawHash;
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="bitWidth">The bit width of a computed hash.</param>
         /// <param name="strSize">The maximum length of the string representation of a computed hash. This is useful to prevent zero padding in algorithms with unusual bit widths.</param>
+        /// <param name="isSupported">Gets a value that indicates whether the algorithm is supported on the current platform.</param>
         /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
-        protected ChecksumAlgorithm(int bitWidth, int strSize = default)
+        protected ChecksumAlgorithm(int bitWidth, int strSize = default, bool isSupported = true)
         {
             if (bitWidth < 8)
                 throw new ArgumentOutOfRangeException(nameof(bitWidth), bitWidth, null);
@@ -56,6 +60,7 @@
             RawHashSize = (int)MathF.Ceiling(HashSize / 2f);
             if (strSize > 0)
                 HashSize = strSize;
+            IsSupported = isSupported;
         }
 
         /// <inheritdoc/>
@@ -207,7 +212,7 @@
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm{TAlgo, TCipher}"/> class.</summary>
         /// <inheritdoc/>
-        protected ChecksumAlgorithm(int bitWidth, int strSize = default) : base(bitWidth, strSize) { }
+        protected ChecksumAlgorithm(int bitWidth, int strSize = default, bool isSupported = true) : base(bitWidth, strSize, isSupported) { }
 
         /// <summary>Determines whether this instance have same values as the specified <typeparamref name="TAlgo"/> instance.</summary>
         /// <param name="other">The <typeparamref name="TAlgo"/> instance to compare.</param>
@@ -343,9 +348,10 @@
 
         /// <summary>Initializes a new instance of the <see cref="ChecksumAlgorithm"/> class.</summary>
         /// <param name="algorithm">The built-in algorithm to use.</param>
+        /// <param name="isSupported">Gets a value that indicates whether the algorithm is supported on the current platform.</param>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> hashing.</param>
         /// <exception cref="ArgumentOutOfRangeException">bitWidth is less than 8.</exception>
-        protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, byte[] secretKey = default) : base(GetBitWidth(algorithm))
+        protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, bool isSupported, byte[] secretKey = default) : base(GetBitWidth(algorithm), default, isSupported)
         {
             HashAlgorithm = algorithm;
             AlgorithmName = algorithm.Name;

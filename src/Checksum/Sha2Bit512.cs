@@ -8,7 +8,7 @@
     {
         /// <summary>Initializes a new instance of the <see cref="Sha2Bit512"/> class.</summary>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> hashing.</param>
-        public Sha2Bit512(byte[] secretKey = null) : base(HashAlgorithmName.SHA512, secretKey) { }
+        public Sha2Bit512(byte[] secretKey = null) : base(HashAlgorithmName.SHA512, true, secretKey) { }
 
         /// <returns>A newly created <see cref="Sha2Bit512"/> instance.</returns>
         /// <inheritdoc cref="Sha2Bit512(byte[])"/>

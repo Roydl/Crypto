@@ -8,7 +8,7 @@ namespace Roydl.Crypto.Checksum
     {
         /// <summary>Initializes a new instance of the <see cref="Sha3"/> class.</summary>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> hashing.</param>
-        public Sha3(byte[] secretKey = null) : base(HashAlgorithmName.SHA3_256, secretKey) { }
+        public Sha3(byte[] secretKey = null) : base(HashAlgorithmName.SHA3_256, SHA3_256.IsSupported, secretKey) { }
 
         /// <returns>A newly created <see cref="Sha3"/> instance.</returns>
         /// <inheritdoc cref="Sha3(byte[])"/>

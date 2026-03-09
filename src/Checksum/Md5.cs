@@ -8,7 +8,7 @@
     {
         /// <summary>Initializes a new instance of the <see cref="Md5"/> class.</summary>
         /// <param name="secretKey">The secret key for <see cref="HMAC"/> hashing.</param>
-        public Md5(byte[] secretKey = null) : base(HashAlgorithmName.MD5, secretKey) { }
+        public Md5(byte[] secretKey = null) : base(HashAlgorithmName.MD5, true, secretKey) { }
 
         /// <returns>A newly created <see cref="Md5"/> instance.</returns>
         /// <inheritdoc cref="Md5(byte[])"/>

@@ -12,6 +12,9 @@
         /// <summary>Gets the bit width of a computed hash.</summary>
         int BitWidth { get; }
 
+        /// <summary>Gets a value that indicates whether the algorithm is supported on the current platform.</summary>
+        bool IsSupported { get; }
+
         /// <summary>Computes the hash from the bytes of the specified stream starting at its current position.</summary>
         /// <param name="stream">The stream to hash.</param>
         /// <exception cref="ArgumentNullException">stream is null.</exception>
