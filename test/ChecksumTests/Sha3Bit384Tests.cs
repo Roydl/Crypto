@@ -162,6 +162,7 @@ namespace Roydl.Crypto.Test.ChecksumTests
         [MaxTime(3000)]
         [RequiresThread]
         [Category("Security")]
+        [Platform(Include = TestVars.PlatformWin)]
         public void Instance_DestroySecretKey(ChecksumAlgo _)
         {
             var secretKey = new WeakReference(TestVars.GetRandomBytes(64));

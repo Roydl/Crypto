@@ -64,7 +64,6 @@
         Sha384 = 384,
 
         /// <summary>SHA-2-512.</summary>
-        /// ReSharper restore CommentTypo
         Sha512 = 512
     }
 

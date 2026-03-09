@@ -27,6 +27,7 @@ namespace Roydl.Crypto.Test.BenchmarkTests
             new(ChecksumAlgo.Crc32Posix, 65536),
             new(ChecksumAlgo.Crc64, 65536),
             new(ChecksumAlgo.Crc64Xz, 65536),
+            new(ChecksumAlgo.Crc82, 65536),
             new(ChecksumAlgo.Sha2, 65536),
             new(ChecksumAlgo.Sha2Bit384, 65536),
             new(ChecksumAlgo.Sha2Bit512, 65536),

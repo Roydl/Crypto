@@ -22,7 +22,6 @@
     /// <remarks>Note that most of the CRC constants are tagged with <see cref="EditorBrowsableState.Never"/>. You are able to find all available names by performing a <see langword="Go To Definition"/> on <see cref="ChecksumAlgo"/>. It is also possible to convert <see cref="CrcOptions"/> to <see cref="ChecksumAlgo"/>.</remarks>
     public enum ChecksumAlgo
     {
-        /// ReSharper disable CommentTypo
         /// <summary>Adler-32.</summary>
         /// <remarks><b>Performance</b>: Highly optimized. Faster than non-optimized CRC algorithms, but slower than optimized ones.</remarks>
         Adler32,
@@ -411,7 +410,6 @@
         Sha2Bit384,
 
         /// <summary>SHA-2-512.</summary>
-        /// ReSharper restore CommentTypo
         Sha2Bit512,
 
         /// <summary>SHA-3-256.</summary>
@@ -421,7 +419,6 @@
         Sha3Bit384,
 
         /// <summary>SHA-3-512.</summary>
-        /// ReSharper restore CommentTypo
         Sha3Bit512
     }
 

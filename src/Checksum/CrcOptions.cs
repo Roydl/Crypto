@@ -6,7 +6,6 @@
         /// <summary>Specifies which CRC-8 configuration should be loaded.</summary>
         public enum Crc
         {
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-8.
             ///     <para><b>Alias:</b> SMBUS.</para>
             /// </summary>
@@ -38,8 +37,8 @@
             /// </summary>
             I4321 = ChecksumAlgo.Crc8I4321,
 
-            /// ReSharper disable once InconsistentNaming
             /// <summary>CRC-8/I-CODE.</summary>
+            /// ReSharper disable once InconsistentNaming
             ICode = ChecksumAlgo.Crc8ICode,
 
             /// <summary>CRC-8/LTE.</summary>
@@ -71,7 +70,6 @@
             Tech3250 = ChecksumAlgo.Crc8Tech3250,
 
             /// <summary>CRC-8/WCDMA.</summary>
-            /// ReSharper restore CommentTypo
             Wcdma = ChecksumAlgo.Crc8Wcdma
         }
 
@@ -83,7 +81,6 @@
             /// </summary>
             Default = ChecksumAlgo.Crc10,
 
-            /// ReSharper disable once CommentTypo
             /// <summary>CRC-10/CDMA2000.</summary>
             Cdma2000 = ChecksumAlgo.Crc10Cdma2000,
 
@@ -94,21 +91,18 @@
         /// <summary>Specifies which CRC-11 configuration should be loaded.</summary>
         public enum Crc11
         {
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-11.
             ///     <para><b>Alias:</b> FLEXRAY.</para>
             /// </summary>
             Default = ChecksumAlgo.Crc11,
 
             /// <summary>CRC-11/UMTS.</summary>
-            /// ReSharper restore CommentTypo
             Umts = ChecksumAlgo.Crc11Umts
         }
 
         /// <summary>Specifies which CRC-12 configuration should be loaded.</summary>
         public enum Crc12
         {
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-12.
             ///     <para><b>Alias:</b> CDMA2000.</para>
             /// </summary>
@@ -125,7 +119,6 @@
             /// <summary>CRC-12/UMTS.
             ///     <para><b>Alias:</b> 3GPP.</para>
             /// </summary>
-            /// ReSharper restore CommentTypo
             Umts = ChecksumAlgo.Crc12Umts
         }
 
@@ -141,7 +134,6 @@
         /// <summary>Specifies which CRC-14 configuration should be loaded.</summary>
         public enum Crc14
         {
-            /// ReSharper disable once CommentTypo
             /// <summary>CRC-14.
             ///     <para><b>Alias:</b> DARC.</para>
             /// </summary>
@@ -177,7 +169,6 @@
             /// <inheritdoc cref="Crc14.Default"/>
             A = ChecksumAlgo.Crc16A,
 
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-16/BUYPASS.</summary>
             Buypass = ChecksumAlgo.Crc16Buypass,
 
@@ -269,7 +260,6 @@
             Usb = ChecksumAlgo.Crc16Usb,
 
             /// <summary>CRC-16/XMODEM.</summary>
-            /// ReSharper restore CommentTypo
             XModem = ChecksumAlgo.Crc16XModem
         }
 
@@ -294,7 +284,6 @@
         /// <summary>Specifies which CRC-24 configuration should be loaded.</summary>
         public enum Crc24
         {
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-24.
             ///     <para><b>Alias:</b> OPENPGP.</para>
             /// </summary>
@@ -317,7 +306,6 @@
             FlexRayB = ChecksumAlgo.Crc24FlexRayB,
 
             /// <summary>CRC-24/INTERLAKEN.</summary>
-            /// ReSharper restore CommentTypo
             Interlaken = ChecksumAlgo.Crc24Interlaken,
 
             /// <summary>CRC-24/OS-9.</summary>
@@ -327,7 +315,6 @@
         /// <summary>Specifies which CRC-30 configuration should be loaded.</summary>
         public enum Crc30
         {
-            /// ReSharper disable once CommentTypo
             /// <summary>CRC-30.
             ///     <para><b>Alias:</b> CDMA.</para>
             /// </summary>
@@ -346,7 +333,6 @@
         /// <summary>Specifies which CRC-32 configuration should be loaded.</summary>
         public enum Crc32
         {
-            /// ReSharper disable CommentTypo
             /// <summary>CRC-32/C.
             ///     <para><b>Alias:</b> BASE91-C, Castagnoli, Interlaken, ISCSI.</para>
             /// </summary>
@@ -396,7 +382,6 @@
             ///     <para><b>Alias:</b> ADCCP, ISO-HDLC, PKZip, V-24.</para>
             /// </summary>
             /// <inheritdoc cref="Crc14.Default"/>
-            /// ReSharper restore CommentTypo
             Xz = ChecksumAlgo.Crc32Xz
         }
 
@@ -434,7 +419,6 @@
         /// <summary>Specifies which CRC-82 configuration should be loaded.</summary>
         public enum Crc82
         {
-            /// ReSharper disable once CommentTypo
             /// <summary>CRC-82.
             ///     <para><b>Alias:</b> DARC.</para>
             /// </summary>
