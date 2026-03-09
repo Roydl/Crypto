@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using System.Numerics;
+    using System.Runtime.CompilerServices;
 
     internal static class NumericHelper
     {
@@ -262,6 +263,15 @@
             if (flags == NumberStyles.HexNumber)
                 value = value[2..];
             return BigInteger.TryParse(value, flags, null, out var result) ? result : BigInteger.Zero;
+        }
+
+        internal static TVector CreateDescendingByteVector<TVector>() where TVector : struct
+        {
+            var width = Unsafe.SizeOf<TVector>();
+            Span<byte> buf = stackalloc byte[width];
+            for (var i = 0; i < width; i++)
+                buf[i] = (byte)(width - i);
+            return Unsafe.ReadUnaligned<TVector>(ref buf[0]);
         }
     }
 }
