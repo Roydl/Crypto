@@ -50,10 +50,12 @@
     <ItemGroup>
         <None Include="..\LICENSE.txt">
             <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
             <Visible>False</Visible>
         </None>
         <None Include="..\LOGO.png">
             <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
             <Visible>False</Visible>
         </None>
         <None Include="Roydl.Crypto.snk">
