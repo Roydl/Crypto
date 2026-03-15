@@ -21,8 +21,12 @@
         <Version>1.2.4</Version>
         <PackageId>Roydl.Crypto</PackageId>
         <Product>Roydl.Crypto</Product>
-        <PackageReleaseNotes>- Add full support for .NET 10.0
-            - Remove support for .NET 7.0 and 6.0
+        <PackageReleaseNotes>- Added full support for .NET 10.0
+            - Added support for SHA3
+            - Removed support for older .NET versions as they have already reached EOL or will soon reach it
+            - Renamed `Sha256` to `Sha2`
+            - Renamed `Sha384` to `Sha2Bit384`
+            - Renamed `Sha512` to `Sha2Bit512`
         </PackageReleaseNotes>
         <AppDesignerFolder>Resources</AppDesignerFolder>
         <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
