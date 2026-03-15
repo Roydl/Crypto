@@ -23,14 +23,13 @@
         <PackageReleaseNotes>- Added full support for .NET 10.0
 - Added support for SHA3
 - Removed support for older .NET versions as they have already reached EOL or will soon reach it
-- Renamed `Sha256` to `Sha2`
-- Renamed `Sha384` to `Sha2Bit384`
-- Renamed `Sha512` to `Sha2Bit512`
+- Renamed Sha256 to Sha2
+- Renamed Sha384 to Sha2Bit384
+- Renamed Sha512 to Sha2Bit512
         </PackageReleaseNotes>
         <AppDesignerFolder>Resources</AppDesignerFolder>
         <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
         <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
-        <PackageLicenseUrl></PackageLicenseUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <AssemblyVersion>1.2.5</AssemblyVersion>
         <FileVersion>1.2.5</FileVersion>
@@ -51,12 +50,10 @@
     <ItemGroup>
         <None Include="..\LICENSE.txt">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
             <Visible>False</Visible>
         </None>
         <None Include="..\LOGO.png">
             <Pack>True</Pack>
-            <PackagePath></PackagePath>
             <Visible>False</Visible>
         </None>
         <None Include="Roydl.Crypto.snk">
@@ -78,10 +75,6 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="NUnit3TestAdapter" Version="6.1.0"/>
     </ItemGroup>
 
 </Project>
