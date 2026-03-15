@@ -1,4 +1,4 @@
-﻿#if RELEASE
+#if RELEASE
 namespace Roydl.Crypto.Test.BenchmarkTests
 {
     using System;
@@ -17,26 +17,24 @@ namespace Roydl.Crypto.Test.BenchmarkTests
     public class ChecksumPerformanceTests
     {
         private const int BenchmarkRepeats = 20;
+        private const int DefaultDataSize = 65536;
 
         private static readonly TestCaseData[] BenchmarkTestData =
         [
-            new(ChecksumAlgo.Adler32, 65536),
-            new(ChecksumAlgo.Crc16, 65536),
-            new(ChecksumAlgo.Crc32, 65536),
-            new(ChecksumAlgo.Crc32Xz, 65536),
-            new(ChecksumAlgo.Crc32Posix, 65536),
-            new(ChecksumAlgo.Crc64, 65536),
-            new(ChecksumAlgo.Crc64Xz, 65536),
-            new(ChecksumAlgo.Crc82, 65536),
-            new(ChecksumAlgo.Sha2, 65536),
-            new(ChecksumAlgo.Sha2Bit384, 65536),
-            new(ChecksumAlgo.Sha2Bit512, 65536),
-            new(ChecksumAlgo.Sha3, 65536),
-            new(ChecksumAlgo.Sha3Bit384, 65536),
-            new(ChecksumAlgo.Sha3Bit512, 65536)
+            new(ChecksumAlgo.Adler32, DefaultDataSize),
+            new(ChecksumAlgo.Crc16, DefaultDataSize),
+            new(ChecksumAlgo.Crc32, DefaultDataSize),
+            new(ChecksumAlgo.Crc32Xz, DefaultDataSize),
+            new(ChecksumAlgo.Crc32Posix, DefaultDataSize),
+            new(ChecksumAlgo.Crc64, DefaultDataSize),
+            new(ChecksumAlgo.Crc64Xz, DefaultDataSize),
+            new(ChecksumAlgo.Crc82, DefaultDataSize),
+            new(ChecksumAlgo.Sha2, DefaultDataSize),
+            new(ChecksumAlgo.Sha3, DefaultDataSize),
         ];
 
-        private static readonly ConcurrentDictionary<string, ConcurrentBag<double>> BenchmarkResults = new(Environment.ProcessorCount, BenchmarkTestData.Length);
+        private static readonly ConcurrentDictionary<string, ConcurrentBag<double>> BenchmarkResults =
+            new(Environment.ProcessorCount, BenchmarkTestData.Length);
 
         [OneTimeTearDown]
         [SetCulture("en-US")]
@@ -52,16 +50,16 @@ namespace Roydl.Crypto.Test.BenchmarkTests
                 var sorted = value.OrderByDescending(x => x).ToArray();
                 var digits = BenchmarkRepeats.ToString(NumberFormatInfo.InvariantInfo).Length;
                 var content =
-                    $"Average: {sorted.Sum() / sorted.Length:0.0,6} MiB/s" +
+                    $"Average: {sorted.Sum() / sorted.Length:0.000,6} GiB/s" +
                     Environment.NewLine +
-                    $"   Best: {sorted[0]:0.0,6} MiB/s" +
+                    $"   Best: {sorted[0]:0.000,6} GiB/s" +
                     Environment.NewLine +
-                    $"  Worst: {sorted[^1]:0.0,6} MiB/s" +
+                    $"  Worst: {sorted[^1]:0.000,6} GiB/s" +
                     Environment.NewLine +
                     Environment.NewLine +
                     $"Results of {sorted.Length} runs with a total duration of {sorted.Length * 9} seconds:" +
                     Environment.NewLine +
-                    string.Join(Environment.NewLine, sorted.Select((x, i) => $"{(i + 1).ToString().PadLeft(digits)}: {x:0.0,6} MiB/s"));
+                    string.Join(Environment.NewLine, sorted.Select((x, i) => $"{(i + 1).ToString().PadLeft(digits)}: {x:0.000,6} GiB/s"));
                 File.WriteAllText(file, content);
             });
         }
@@ -84,19 +82,19 @@ namespace Roydl.Crypto.Test.BenchmarkTests
                     total += data.Length;
                 }
                 sw.Stop();
-                rate = Math.Max(total / sw.Elapsed.TotalSeconds / 1024 / 1024, rate);
+                rate = Math.Max(total / sw.Elapsed.TotalSeconds / 1024 / 1024 / 1024, rate);
             }
 
             if (!saveResults)
             {
-                TestContext.Write(@"  {0} Benchmark - Throughput: '{1:0.0} MiB/s'; ", algorithm.AlgorithmName, rate);
+                TestContext.Write(@"{0} Benchmark - Throughput: '{1:0.000} GiB/s'; ", algorithm.AlgorithmName, rate);
                 switch (packetSize)
                 {
                     case > 1024:
-                        TestContext.Write(@"Packet Size: '{0:0} KiB';", packetSize / 1024);
+                        TestContext.WriteLine(@"Packet Size: '{0:0} KiB';", packetSize / 1024);
                         break;
                     default:
-                        TestContext.Write(@"Packet Size: '{0:0} Bytes';", packetSize);
+                        TestContext.WriteLine(@"Packet Size: '{0:0} Bytes';", packetSize);
                         break;
                 }
                 return;
@@ -110,15 +108,15 @@ namespace Roydl.Crypto.Test.BenchmarkTests
 
         [Test]
         [TestCaseSource(nameof(BenchmarkTestData))]
-        public void BenchmarkOnce(ChecksumAlgo algorithm, int dataSize) =>
-            RunBenchmark(algorithm.GetDefaultInstance(), dataSize, false);
+        public void BenchmarkOnce(ChecksumAlgo algorithm, int packetSize) =>
+            RunBenchmark(algorithm.GetDefaultInstance(), packetSize, false);
 
         [Explicit]
         [Test]
         [TestCaseSource(nameof(BenchmarkTestData))]
         [Repeat(BenchmarkRepeats)]
-        public void BenchmarkRepeat(ChecksumAlgo algorithm, int dataSize) =>
-            RunBenchmark(algorithm.GetDefaultInstance(), dataSize, true);
+        public void BenchmarkRepeat(ChecksumAlgo algorithm, int packetSize) =>
+            RunBenchmark(algorithm.GetDefaultInstance(), packetSize, true);
     }
 }
 #endif
