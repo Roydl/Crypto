@@ -17,7 +17,7 @@
         <PackageTags>encryption decryption hmac adler32 crc crc-custom crc-customizable crc8 crc10 crc11 crc12 crc13 crc14 crc15 crc16 crc17 crc21 crc24 crc30 crc31 crc32 crc40 crc64 crc82 md5 sha sha1 sha2 sha256 sha384 sha512 sha3 aes aes128 aes192 aes256 rijndael</PackageTags>
         <SignAssembly>true</SignAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>1.2.5</Version>
+        <Version>1.3.0</Version>
         <PackageId>Roydl.Crypto</PackageId>
         <Product>Roydl.Crypto</Product>
         <PackageReleaseNotes>- Added full support for .NET 10.0
@@ -31,8 +31,8 @@
         <AssemblyOriginatorKeyFile>Roydl.Crypto.snk</AssemblyOriginatorKeyFile>
         <Title>Roy's Dynamic-Link Libraries – Cryptography and more</Title>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <AssemblyVersion>1.2.5</AssemblyVersion>
-        <FileVersion>1.2.5</FileVersion>
+        <AssemblyVersion>1.3.0</AssemblyVersion>
+        <FileVersion>1.3.0</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
