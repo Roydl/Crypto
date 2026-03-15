@@ -354,7 +354,13 @@
         protected ChecksumAlgorithmBuiltIn(HashAlgorithmName algorithm, bool isSupported, byte[] secretKey = default) : base(GetBitWidth(algorithm), default, isSupported)
         {
             HashAlgorithm = algorithm;
-            AlgorithmName = algorithm.Name;
+            AlgorithmName = algorithm.Name switch
+            {
+                "SHA256" => "SHA2-256",
+                "SHA384" => "SHA2-384",
+                "SHA512" => "SHA2-512",
+                _ => algorithm.Name
+            };
             SecretKey = secretKey;
         }
 
